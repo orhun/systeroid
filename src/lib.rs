@@ -1,3 +1,4 @@
+pub mod kernel;
 pub mod parser;
 pub mod reader;
 #[macro_use]
@@ -12,8 +13,8 @@ pub fn run() {
     let kernel_section = reader::read_to_string(&sysctl_docs.join("kernel.rst")).unwrap();
 
     let kernel_section_docs = RstParser::parse_input(&kernel_section);
-    for (module, documentation) in kernel_section_docs {
-        println!("## {}", module);
-        println!("{}", documentation);
+    for kernel_parameter in kernel_section_docs.parameters {
+        println!("## {}", kernel_parameter.name);
+        println!("{}", kernel_parameter.description);
     }
 }

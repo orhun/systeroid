@@ -1,4 +1,4 @@
-use dashmap::DashMap;
+use crate::kernel::{Documentation, Parameter};
 use pest::Parser;
 use pest::Token;
 
@@ -8,9 +8,9 @@ use pest::Token;
 pub struct RstParser;
 
 impl RstParser {
-    pub fn parse_input(input: &str) -> DashMap<&str, &str> {
-        let documentation = DashMap::new();
-        let rst_document = Self::parse(Rule::document, &input).expect("unsuccessful parse");
+    pub fn parse_input(input: &str) -> Documentation {
+        let rst_document = Self::parse(Rule::document, input).expect("unsuccessful parse");
+        let mut kernel_parameters = Vec::new();
         let titles = rst_document
             .filter(|block| block.as_rule() == Rule::title)
             .map(|title| {
@@ -34,11 +34,14 @@ impl RstParser {
         for (i, (title, pos)) in titles.iter().enumerate() {
             assert_eq!(2, pos.len());
             if let Some(next_title) = titles.get(i + 1) {
-                documentation.insert(*title, (input[pos[1]..next_title.1[0]]).as_ref());
+                kernel_parameters.push(Parameter::new(
+                    *title,
+                    (input[pos[1]..next_title.1[0]]).as_ref(),
+                ));
             } else {
-                documentation.insert(*title, (input[pos[1]..]).as_ref());
+                kernel_parameters.push(Parameter::new(*title, (input[pos[1]..]).as_ref()));
             };
         }
-        documentation
+        Documentation::new(kernel_parameters)
     }
 }
