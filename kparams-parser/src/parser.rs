@@ -1,6 +1,6 @@
 #![allow(missing_docs)] // pest_derive does not have doc comments.
 
-use crate::kernel::{Documentation, Parameter};
+use kparams_core::kernel::{Documentation, Parameter};
 use pest::Parser;
 use pest::Token;
 

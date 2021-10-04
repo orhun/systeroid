@@ -63,13 +63,19 @@ dependencies = [
 name = "kparams"
 version = "0.1.0"
 dependencies = [
+ "kparams-core",
  "kparams-parser",
 ]
+
+[[package]]
+name = "kparams-core"
+version = "0.1.0"
 
 [[package]]
 name = "kparams-parser"
 version = "0.1.0"
 dependencies = [
+ "kparams-core",
  "pest",
  "pest_derive",
 ]

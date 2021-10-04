@@ -1,5 +1,5 @@
+use kparams_core::reader;
 use kparams_parser::parser::RstParser;
-use kparams_parser::reader;
 use std::path::PathBuf;
 
 fn main() {

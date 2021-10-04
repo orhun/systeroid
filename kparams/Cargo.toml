@@ -9,3 +9,7 @@ edition = "2021"
 [dependencies.kparams-parser]
 version = "0.1.0"
 path = "../kparams-parser"
+
+[dependencies.kparams-core]
+version = "0.1.0"
+path = "../kparams-core"
