@@ -1,29 +1,5 @@
-[package]
-name = "kparams"
-version = "0.1.0"
-authors = ["Orhun Parmaksız <orhunparmaksiz@gmail.com>"]
-edition = "2021"
-
-[dependencies]
-pest = "2.1.3"
-pest_derive = "2.1.0"
-
-[profile.dev]
-opt-level = 0
-debug = true
-panic = "abort"
-
-[profile.test]
-opt-level = 0
-debug = true
-
-[profile.release]
-opt-level = 3
-debug = false
-panic = "abort"
-lto = true
-codegen-units = 1
-
-[profile.bench]
-opt-level = 3
-debug = false
+[workspace]
+members = [
+    "kparams-parser",
+    "kparams"
+]

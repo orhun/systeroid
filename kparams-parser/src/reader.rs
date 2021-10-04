@@ -3,22 +3,27 @@ use std::io::{BufRead, BufReader as IoBufReader, Result as IoResult};
 use std::path::Path;
 use std::rc::Rc;
 
+/// Default buffer size of the reader.
 const DEFAULT_BUFFER_SIZE: usize = 1024;
 
+/// Buffered reader.
 pub struct BufReader {
+    /// Inner type.
     reader: IoBufReader<File>,
+    /// Buffer.
     buffer: Rc<String>,
 }
 
 impl BufReader {
+    /// Opens the given file and initializes the buffered reader with given buffer size.
     pub fn open(path: impl AsRef<Path>, buffer_size: Option<usize>) -> IoResult<Self> {
         let file = File::open(path)?;
         let reader = IoBufReader::new(file);
         let buffer = Self::new_buffer(buffer_size);
-
         Ok(Self { reader, buffer })
     }
 
+    /// Creates a new buffer with the given size.
     fn new_buffer(buffer_size: Option<usize>) -> Rc<String> {
         Rc::new(String::with_capacity(
             buffer_size.unwrap_or(DEFAULT_BUFFER_SIZE),
@@ -28,7 +33,6 @@ impl BufReader {
 
 impl Iterator for BufReader {
     type Item = IoResult<Rc<String>>;
-
     fn next(&mut self) -> Option<Self::Item> {
         let buffer = match Rc::get_mut(&mut self.buffer) {
             Some(rc_buffer) => {
@@ -53,6 +57,9 @@ impl Iterator for BufReader {
     }
 }
 
+/// Reads the contents of the file into a string.
+///
+/// Uses [`BufReader`] under the hood.
 pub fn read_to_string(path: &Path) -> IoResult<String> {
     let mut lines = Vec::<String>::new();
     for line in BufReader::open(path, None)? {

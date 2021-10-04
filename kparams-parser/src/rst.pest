@@ -1,3 +1,5 @@
+// Taken from https://github.com/flying-sheep/rust-rst/blob/master/parser/src/rst.pest
+
 // Entry point: the document.
 
 // This grammar is aligned to the doctree names when possible.

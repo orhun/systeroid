@@ -1,0 +1,11 @@
+[package]
+name = "kparams"
+version = "0.1.0"
+authors = ["Orhun Parmaksız <orhunparmaksiz@gmail.com>"]
+edition = "2021"
+
+[dependencies]
+
+[dependencies.kparams-parser]
+version = "0.1.0"
+path = "../kparams-parser"

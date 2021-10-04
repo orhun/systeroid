@@ -1,5 +1,3 @@
-//! Linux kernel types.
-
 /// Documentation of the Linux kernel.
 #[derive(Clone, Debug)]
 pub struct Documentation<'a> {
