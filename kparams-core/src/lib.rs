@@ -7,3 +7,6 @@ pub mod kernel;
 
 /// File reader.
 pub mod reader;
+
+/// Error handler.
+pub mod error;
