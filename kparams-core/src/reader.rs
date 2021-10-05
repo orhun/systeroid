@@ -16,7 +16,7 @@ pub struct BufReader {
 
 impl BufReader {
     /// Opens the given file and initializes the buffered reader with given buffer size.
-    pub fn open(path: impl AsRef<Path>, buffer_size: Option<usize>) -> IoResult<Self> {
+    pub fn open<P: AsRef<Path>>(path: P, buffer_size: Option<usize>) -> IoResult<Self> {
         let file = File::open(path)?;
         let reader = IoBufReader::new(file);
         let buffer = Self::new_buffer(buffer_size);
@@ -60,10 +60,27 @@ impl Iterator for BufReader {
 /// Reads the contents of the file into a string.
 ///
 /// Uses [`BufReader`] under the hood.
-pub fn read_to_string(path: &Path) -> IoResult<String> {
+pub fn read_to_string<P: AsRef<Path>>(path: P) -> IoResult<String> {
     let mut lines = Vec::<String>::new();
     for line in BufReader::open(path, None)? {
         lines.push(line?.to_string());
     }
     Ok(lines.join(""))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::path::PathBuf;
+
+    #[test]
+    fn test_file_reader() {
+        let path = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("Cargo.toml");
+        println!("{:?}", path);
+        assert!(read_to_string(path)
+            .expect("cannot read Cargo.toml")
+            .lines()
+            .collect::<String>()
+            .contains(&format!("name = \"{}\"", env!("CARGO_PKG_NAME"))));
+    }
 }
