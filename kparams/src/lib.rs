@@ -13,7 +13,7 @@ pub fn run() -> Result<()> {
     let sysctl_docs = kernel_docs.join("admin-guide").join("sysctl");
     let kernel_section = reader::read_to_string(&sysctl_docs.join("kernel.rst"))?;
 
-    let kernel_section_docs = RstParser::parse_docs(&kernel_section);
+    let kernel_section_docs = RstParser::parse_docs(&kernel_section)?;
     for kernel_parameter in kernel_section_docs.parameters {
         println!("## {}", kernel_parameter.name);
         println!("{}", kernel_parameter.description);
