@@ -22,7 +22,7 @@ impl<'a> TryFrom<Pair<'a, Rule>> for Title<'a> {
         let mut title = Title::default();
 
         // check if the rule matches
-        if pair.as_rule() == Rule::title {
+        if pair.as_rule() != Rule::title {
             return Err(ErrorImpl::ParseError(String::from(
                 "parsed section is not a title",
             )));
