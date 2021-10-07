@@ -30,6 +30,11 @@ impl<'a> TryFrom<Pair<'a, Rule>> for Title<'a> {
 
         // set the actual title
         if let Some(value) = pair.as_str().lines().next() {
+            if value.chars().all(|v| v == '=') {
+                return Err(ErrorImpl::ParseError(String::from(
+                    "document beginning found",
+                )));
+            }
             title.value = value;
         } else {
             return Err(ErrorImpl::ParseError(String::from("invalid title")));
