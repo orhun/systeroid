@@ -1,8 +1,17 @@
 use crate::parser::Rule;
 use kparams_core::error::Error as ErrorImpl;
+use lazy_regex::{regex, Lazy, Regex};
 use pest::iterators::Pair;
 use pest::Token;
 use std::convert::TryFrom;
+
+/// Regex for matching the explanation of the sysctl sections.
+///
+/// These _titles_ should be skipped since they are often describing the
+/// documentation in the following section rather than a kernel parameter.
+///
+/// e.g. `2. /proc/sys/fs/binfmt_misc`
+static SECTION_EXPL_REGEX: &Lazy<Regex> = regex!("[0-9].\\s/proc/sys/");
 
 /// Title from the parsed RST document.
 #[derive(Debug, Default)]
@@ -33,6 +42,10 @@ impl<'a> TryFrom<Pair<'a, Rule>> for Title<'a> {
             if value.chars().all(|v| v == '=') {
                 return Err(ErrorImpl::ParseError(String::from(
                     "document beginning found",
+                )));
+            } else if SECTION_EXPL_REGEX.is_match(value) {
+                return Err(ErrorImpl::ParseError(String::from(
+                    "section explanation found",
                 )));
             }
             title.value = value;
