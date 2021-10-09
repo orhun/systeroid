@@ -2,7 +2,7 @@
 
 use crate::title::Title;
 use kparams_core::error::{Error, Result};
-use kparams_core::kernel::{Documentation, Parameter};
+use kparams_core::kernel::{Parameter, SysctlSection};
 use pest::Parser;
 use std::convert::TryFrom;
 
@@ -12,10 +12,13 @@ use std::convert::TryFrom;
 pub struct RstParser;
 
 impl RstParser {
-    /// Parses the given reStructuredText input and returns the [`kernel documentation`].
+    /// Parses the given reStructuredText input and returns the [`kernel parameters`].
     ///
-    /// [`kernel documentation`]: Documentation
-    pub fn parse_docs(input: &str) -> Result<Documentation> {
+    /// [`kernel parameters`]: Parameter
+    pub fn parse_docs<'a>(
+        input: &'a str,
+        section: &'a SysctlSection,
+    ) -> Result<Vec<Parameter<'a>>> {
         let mut kernel_parameters = Vec::new();
         let rst_document =
             Self::parse(Rule::document, input).map_err(|e| Error::ParseError(e.to_string()))?;
@@ -30,8 +33,9 @@ impl RstParser {
                 } else {
                     (input[title.end_pos..]).as_ref()
                 },
+                section,
             ));
         }
-        Ok(Documentation::new(kernel_parameters))
+        Ok(kernel_parameters)
     }
 }
