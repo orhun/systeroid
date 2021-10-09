@@ -29,9 +29,9 @@ impl RstParser {
             kernel_parameters.push(Parameter::new(
                 title.value,
                 if let Some(next_title) = titles.get(i + 1) {
-                    (input[title.end_pos..next_title.start_pos]).as_ref()
+                    (input[title.end_pos..next_title.start_pos]).trim().as_ref()
                 } else {
-                    (input[title.end_pos..]).as_ref()
+                    (input[title.end_pos..]).trim().as_ref()
                 },
                 section,
             ));

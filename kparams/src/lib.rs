@@ -18,8 +18,8 @@ pub fn run() -> Result<()> {
             reader::read_to_string(&sysctl_docs.join(sysctl_section.as_file()))?;
         let kernel_parameters = RstParser::parse_docs(&sysctl_section_docs, sysctl_section)?;
         for param in kernel_parameters {
-            println!("## {}::{}", param.section, param.name);
-            println!("{}", param.description);
+            println!("## {}::{}\n", param.section, param.name);
+            println!("{}\n", param.description);
         }
     }
 
