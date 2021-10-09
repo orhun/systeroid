@@ -5,6 +5,7 @@ authors = ["Orhun Parmaksız <orhunparmaksiz@gmail.com>"]
 edition = "2021"
 
 [dependencies]
+rayon = "1.5.1"
 
 [dependencies.kparams-parser]
 version = "0.1.0"
