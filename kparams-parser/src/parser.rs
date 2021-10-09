@@ -15,10 +15,7 @@ impl RstParser {
     /// Parses the given reStructuredText input and returns the [`kernel parameters`].
     ///
     /// [`kernel parameters`]: Parameter
-    pub fn parse_docs<'a>(
-        input: &'a str,
-        section: &'a SysctlSection,
-    ) -> Result<Vec<Parameter<'a>>> {
+    pub fn parse_docs(input: &str, section: SysctlSection) -> Result<Vec<Parameter>> {
         let mut kernel_parameters = Vec::new();
         let rst_document =
             Self::parse(Rule::document, input).map_err(|e| Error::ParseError(e.to_string()))?;
@@ -27,11 +24,13 @@ impl RstParser {
             .collect::<Vec<Title<'_>>>();
         for (i, title) in titles.iter().enumerate() {
             kernel_parameters.push(Parameter::new(
-                title.value,
+                title.value.to_string(),
                 if let Some(next_title) = titles.get(i + 1) {
-                    (input[title.end_pos..next_title.start_pos]).trim()
+                    (input[title.end_pos..next_title.start_pos])
+                        .trim()
+                        .to_string()
                 } else {
-                    (input[title.end_pos..]).trim()
+                    (input[title.end_pos..]).trim().to_string()
                 },
                 section,
             ));

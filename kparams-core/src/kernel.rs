@@ -2,7 +2,7 @@ use std::fmt::{self, Display, Formatter};
 use std::path::{Path, PathBuf};
 
 /// Sections of the sysctl documentation.
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum SysctlSection {
     /// Documentation for `/proc/sys/abi/*`
     Abi,
@@ -28,15 +28,15 @@ impl Display for SysctlSection {
 
 impl SysctlSection {
     /// Returns the variants.
-    pub fn iter() -> &'static [&'static SysctlSection] {
+    pub fn variants() -> &'static [SysctlSection] {
         &[
-            &Self::Abi,
-            &Self::Fs,
-            &Self::Kernel,
-            &Self::Net,
-            &Self::Sunrpc,
-            &Self::User,
-            &Self::Vm,
+            Self::Abi,
+            Self::Fs,
+            Self::Kernel,
+            Self::Net,
+            Self::Sunrpc,
+            Self::User,
+            Self::Vm,
         ]
     }
 
@@ -48,18 +48,18 @@ impl SysctlSection {
 
 /// Representation of a kernel parameter.
 #[derive(Clone, Debug)]
-pub struct Parameter<'a> {
+pub struct Parameter {
     /// Name of the kernel parameter.
-    pub name: &'a str,
+    pub name: String,
     /// Description of the kernel parameter.
-    pub description: &'a str,
+    pub description: String,
     /// Section of the kernel parameter.
-    pub section: &'a SysctlSection,
+    pub section: SysctlSection,
 }
 
-impl<'a> Parameter<'a> {
+impl Parameter {
     /// Constructs a new instance.
-    pub fn new(name: &'a str, description: &'a str, section: &'a SysctlSection) -> Self {
+    pub fn new(name: String, description: String, section: SysctlSection) -> Self {
         Self {
             name,
             description,

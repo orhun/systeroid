@@ -13,14 +13,15 @@ pub fn run() -> Result<()> {
     let kernel_docs = PathBuf::from("/usr/share/doc/linux");
     let sysctl_docs = kernel_docs.join("admin-guide").join("sysctl");
 
-    for sysctl_section in SysctlSection::iter() {
-        let sysctl_section_docs =
-            reader::read_to_string(&sysctl_docs.join(sysctl_section.as_file()))?;
-        let kernel_parameters = RstParser::parse_docs(&sysctl_section_docs, sysctl_section)?;
-        for param in kernel_parameters {
-            println!("## {}::{}\n", param.section, param.name);
-            println!("{}\n", param.description);
-        }
+    let mut kernel_parameters = Vec::new();
+    for section in SysctlSection::variants().iter() {
+        let docs = reader::read_to_string(&sysctl_docs.join(section.as_file()))?;
+        kernel_parameters.extend(RstParser::parse_docs(&docs, *section)?);
+    }
+
+    for param in kernel_parameters {
+        println!("## {}::{}\n", param.section, param.name);
+        println!("{}\n", param.description);
     }
 
     Ok(())
