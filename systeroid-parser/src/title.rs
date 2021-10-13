@@ -1,9 +1,9 @@
 use crate::parser::Rule;
-use kparams_core::error::Error as ErrorImpl;
 use lazy_regex::{regex, Lazy, Regex};
 use pest::iterators::Pair;
 use pest::Token;
 use std::convert::TryFrom;
+use systeroid_core::error::Error as ErrorImpl;
 
 /// Regex for matching the explanation of the sysctl sections.
 ///

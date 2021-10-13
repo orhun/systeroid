@@ -1,4 +1,4 @@
-//! kparams-parser
+//! systeroid-parser
 
 #![warn(missing_docs, clippy::unwrap_used)]
 

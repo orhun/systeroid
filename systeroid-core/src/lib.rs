@@ -1,4 +1,4 @@
-//! kparams-core
+//! systeroid-core
 
 #![warn(missing_docs, clippy::unwrap_used)]
 

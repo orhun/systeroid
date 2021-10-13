@@ -1,6 +1,6 @@
 [workspace]
 members = [
-    "kparams-core",
-    "kparams-parser",
-    "kparams"
+    "systeroid-core",
+    "systeroid-parser",
+    "systeroid"
 ]

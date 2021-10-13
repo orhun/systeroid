@@ -1,16 +1,16 @@
-//! kparams
+//! systeroid
 
 #![warn(missing_docs, clippy::unwrap_used)]
 
-use kparams_core::error::{Error, Result};
-use kparams_core::kernel::SysctlSection;
-use kparams_core::reader;
-use kparams_parser::parser::RstParser;
 use rayon::prelude::*;
 use std::path::PathBuf;
 use std::sync::Mutex;
+use systeroid_core::error::{Error, Result};
+use systeroid_core::kernel::SysctlSection;
+use systeroid_core::reader;
+use systeroid_parser::parser::RstParser;
 
-/// Runs `kparams`.
+/// Runs `systeroid`.
 pub fn run() -> Result<()> {
     let kernel_docs = PathBuf::from("/usr/share/doc/linux");
     let sysctl_docs = kernel_docs.join("admin-guide").join("sysctl");

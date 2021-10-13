@@ -1,10 +1,10 @@
 #![allow(missing_docs)] // pest_derive does not generate doc comments
 
 use crate::title::Title;
-use kparams_core::error::{Error, Result};
-use kparams_core::kernel::{Parameter, SysctlSection};
 use pest::Parser;
 use std::convert::TryFrom;
+use systeroid_core::error::{Error, Result};
+use systeroid_core::kernel::{Parameter, SysctlSection};
 
 /// Parser for the reStructuredText format.
 #[derive(Parser)]

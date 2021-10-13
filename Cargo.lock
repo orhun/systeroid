@@ -140,32 +140,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "kparams"
-version = "0.1.0"
-dependencies = [
- "kparams-core",
- "kparams-parser",
- "rayon",
-]
-
-[[package]]
-name = "kparams-core"
-version = "0.1.0"
-dependencies = [
- "thiserror",
-]
-
-[[package]]
-name = "kparams-parser"
-version = "0.1.0"
-dependencies = [
- "kparams-core",
- "lazy-regex",
- "pest",
- "pest_derive",
-]
-
-[[package]]
 name = "lazy-regex"
 version = "2.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -373,6 +347,32 @@ dependencies = [
  "proc-macro2",
  "quote",
  "unicode-xid",
+]
+
+[[package]]
+name = "systeroid"
+version = "0.1.0"
+dependencies = [
+ "rayon",
+ "systeroid-core",
+ "systeroid-parser",
+]
+
+[[package]]
+name = "systeroid-core"
+version = "0.1.0"
+dependencies = [
+ "thiserror",
+]
+
+[[package]]
+name = "systeroid-parser"
+version = "0.1.0"
+dependencies = [
+ "lazy-regex",
+ "pest",
+ "pest_derive",
+ "systeroid-core",
 ]
 
 [[package]]

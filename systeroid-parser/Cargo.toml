@@ -1,5 +1,5 @@
 [package]
-name = "kparams-parser"
+name = "systeroid-parser"
 version = "0.1.0"
 authors = ["Orhun Parmaksız <orhunparmaksiz@gmail.com>"]
 edition = "2021"
@@ -9,6 +9,6 @@ pest = "2.1.3"
 pest_derive = "2.1.0"
 lazy-regex = "2.2.1"
 
-[dependencies.kparams-core]
+[dependencies.systeroid-core]
 version = "0.1.0"
-path = "../kparams-core"
+path = "../systeroid-core"

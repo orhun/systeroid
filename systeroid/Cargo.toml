@@ -1,5 +1,5 @@
 [package]
-name = "kparams"
+name = "systeroid"
 version = "0.1.0"
 authors = ["Orhun Parmaksız <orhunparmaksiz@gmail.com>"]
 edition = "2021"
@@ -7,10 +7,10 @@ edition = "2021"
 [dependencies]
 rayon = "1.5.1"
 
-[dependencies.kparams-parser]
+[dependencies.systeroid-parser]
 version = "0.1.0"
-path = "../kparams-parser"
+path = "../systeroid-parser"
 
-[dependencies.kparams-core]
+[dependencies.systeroid-core]
 version = "0.1.0"
-path = "../kparams-core"
+path = "../systeroid-core"

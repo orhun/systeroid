@@ -1,7 +1,7 @@
 use std::process;
 
 fn main() {
-    match kparams::run() {
+    match systeroid::run() {
         Ok(_) => process::exit(0),
         Err(e) => {
             eprintln!("{}", e);

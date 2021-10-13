@@ -1,5 +1,5 @@
 [package]
-name = "kparams-core"
+name = "systeroid-core"
 version = "0.1.0"
 authors = ["Orhun Parmaksız <orhunparmaksiz@gmail.com>"]
 edition = "2021"
