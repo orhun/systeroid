@@ -3,7 +3,7 @@
 use crate::title::Title;
 use pest::Parser;
 use std::convert::TryFrom;
-use systeroid_core::docs::{ParamDoc, SysctlSection};
+use systeroid_core::docs::{Documentation, SysctlSection};
 use systeroid_core::error::{Error, Result};
 
 /// Parser for the reStructuredText format.
@@ -14,8 +14,8 @@ pub struct RstParser;
 impl RstParser {
     /// Parses the given reStructuredText input and returns the [`documentation`] of kernel parameters.
     ///
-    /// [`documentation`]: ParamDoc
-    pub fn parse_docs(input: &str, section: SysctlSection) -> Result<Vec<ParamDoc>> {
+    /// [`documentation`]: Documentation
+    pub fn parse_docs(input: &str, section: SysctlSection) -> Result<Vec<Documentation>> {
         let mut param_docs = Vec::new();
         let rst_document =
             Self::parse(Rule::document, input).map_err(|e| Error::ParseError(e.to_string()))?;
@@ -23,7 +23,7 @@ impl RstParser {
             .filter_map(|pair| Title::try_from(pair).ok())
             .collect::<Vec<Title<'_>>>();
         for (i, title) in titles.iter().enumerate() {
-            param_docs.push(ParamDoc::new(
+            param_docs.push(Documentation::new(
                 title.value.to_string(),
                 if let Some(next_title) = titles.get(i + 1) {
                     (input[title.end_pos..next_title.start_pos])

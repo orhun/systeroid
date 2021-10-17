@@ -48,7 +48,7 @@ impl SysctlSection {
 
 /// Documentation of a kernel parameter.
 #[derive(Clone, Debug)]
-pub struct ParamDoc {
+pub struct Documentation {
     /// Name of the kernel parameter.
     pub name: String,
     /// Description of the kernel parameter.
@@ -57,7 +57,7 @@ pub struct ParamDoc {
     pub section: SysctlSection,
 }
 
-impl ParamDoc {
+impl Documentation {
     /// Constructs a new instance.
     pub fn new(name: String, description: String, section: SysctlSection) -> Self {
         Self {
