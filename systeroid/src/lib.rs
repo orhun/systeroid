@@ -26,25 +26,25 @@ pub fn run(args: Args) -> Result<()> {
             .into());
         }
 
-        let kernel_parameters = Mutex::new(Vec::new());
+        let param_docs = Mutex::new(Vec::new());
         SysctlSection::variants().par_iter().try_for_each(|s| {
-            let mut kernel_parameters = kernel_parameters
+            let mut param_docs = param_docs
                 .lock()
                 .map_err(|e| Error::ThreadLockError(e.to_string()))?;
             let mut parse = |section: SysctlSection| -> Result<()> {
                 let docs = reader::read_to_string(&sysctl_docs.join(section.as_file()))?;
-                kernel_parameters.extend(RstParser::parse_docs(&docs, section)?);
+                param_docs.extend(RstParser::parse_docs(&docs, section)?);
                 Ok(())
             };
             parse(*s)
         })?;
 
-        for param in kernel_parameters
+        for param in param_docs
             .lock()
             .map_err(|e| Error::ThreadLockError(e.to_string()))?
             .iter()
         {
-            println!("## {}::{}\n", param.section, param.name);
+            println!("## {}.{}\n", param.section, param.name);
             println!("{}\n", param.description);
         }
     }
