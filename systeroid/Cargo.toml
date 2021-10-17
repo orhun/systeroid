@@ -6,6 +6,7 @@ edition = "2021"
 
 [dependencies]
 rayon = "1.5.1"
+getopts = "0.2.21"
 
 [dependencies.systeroid-parser]
 version = "0.1.0"
