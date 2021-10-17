@@ -12,10 +12,13 @@ use std::sync::Mutex;
 use systeroid_core::docs::SysctlSection;
 use systeroid_core::error::{Error, Result};
 use systeroid_core::reader;
+use systeroid_core::sysctl::Sysctl;
 use systeroid_parser::parser::RstParser;
 
 /// Runs `systeroid`.
 pub fn run(args: Args) -> Result<()> {
+    let sysctl = Sysctl::init();
+
     if let Some(kernel_docs) = args.kernel_docs {
         let sysctl_docs = kernel_docs.join("admin-guide").join("sysctl");
         if !sysctl_docs.exists() {
@@ -47,6 +50,10 @@ pub fn run(args: Args) -> Result<()> {
             println!("## {}.{}\n", param.section, param.name);
             println!("{}\n", param.description);
         }
+    }
+
+    for param in sysctl.parameters {
+        println!("{}: {} ({:?})", param.name, param.value, param.description);
     }
 
     Ok(())

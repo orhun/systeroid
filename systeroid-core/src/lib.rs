@@ -5,6 +5,9 @@
 /// Linux kernel documentation.
 pub mod docs;
 
+/// Linux kernel parameter handler.
+pub mod sysctl;
+
 /// File reader.
 pub mod reader;
 
