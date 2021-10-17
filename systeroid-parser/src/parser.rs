@@ -3,8 +3,8 @@
 use crate::title::Title;
 use pest::Parser;
 use std::convert::TryFrom;
+use systeroid_core::docs::{ParamDoc, SysctlSection};
 use systeroid_core::error::{Error, Result};
-use systeroid_core::kernel::{ParamDoc, SysctlSection};
 
 /// Parser for the reStructuredText format.
 #[derive(Parser)]

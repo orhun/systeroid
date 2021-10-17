@@ -9,8 +9,8 @@ use crate::args::Args;
 use rayon::prelude::*;
 use std::io::{Error as IoError, ErrorKind as IoErrorKind};
 use std::sync::Mutex;
+use systeroid_core::docs::SysctlSection;
 use systeroid_core::error::{Error, Result};
-use systeroid_core::kernel::SysctlSection;
 use systeroid_core::reader;
 use systeroid_parser::parser::RstParser;
 

@@ -2,8 +2,8 @@
 
 #![warn(missing_docs, clippy::unwrap_used)]
 
-/// Linux kernel types.
-pub mod kernel;
+/// Linux kernel documentation.
+pub mod docs;
 
 /// File reader.
 pub mod reader;
