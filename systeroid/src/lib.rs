@@ -22,7 +22,8 @@ pub fn run(args: Args) -> Result<()> {
             return Err(IoError::new(
                 IoErrorKind::Other,
                 format!("cannot find sysctl documentation: {:?}", sysctl_docs),
-            ).into());
+            )
+            .into());
         }
 
         let kernel_parameters = Mutex::new(Vec::new());
@@ -32,7 +33,8 @@ pub fn run(args: Args) -> Result<()> {
                 .map_err(|e| Error::ThreadLockError(e.to_string()))?;
             let mut parse = |section: SysctlSection| -> Result<()> {
                 let docs = reader::read_to_string(&sysctl_docs.join(section.as_file()))?;
-                Ok(kernel_parameters.extend(RstParser::parse_docs(&docs, section)?))
+                kernel_parameters.extend(RstParser::parse_docs(&docs, section)?);
+                Ok(())
             };
             parse(*s)
         })?;
