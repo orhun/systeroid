@@ -1,4 +1,4 @@
-use crate::docs::SysctlSection;
+use crate::docs::{Documentation, SysctlSection};
 use crate::error::Result;
 use std::result::Result as StdResult;
 use sysctl::{CtlIter, Sysctl as SysctlImpl};
@@ -13,6 +13,8 @@ pub struct Parameter {
     pub description: Option<String>,
     /// Section of the kernel parameter.
     pub section: SysctlSection,
+    /// Documentation of the kernel parameter.
+    pub documentation: Option<Documentation>,
 }
 
 /// Sysctl wrapper for managing the kernel parameters.
@@ -31,8 +33,36 @@ impl Sysctl {
                 value: ctl.value_string()?,
                 description: ctl.description().ok(),
                 section: SysctlSection::from(ctl.name()?),
+                documentation: None,
             });
         }
         Ok(Self { parameters })
+    }
+
+    /// Updates the description of the kernel parameters based on the parsed documentation.
+    ///
+    /// [`parsed documentation`]: Documentation
+    pub fn update_docs(&mut self, docs: Vec<Documentation>) {
+        for param in self
+            .parameters
+            .iter_mut()
+            .filter(|p| p.description.is_none() || p.description.as_deref() == Some("[N/A]"))
+        {
+            if let Some(documentation) =
+                docs.iter().find(
+                    |doc| match param.name.split('.').collect::<Vec<&str>>().last() {
+                        Some(absolute_name) => {
+                            absolute_name.len() > 2
+                                && doc.name.contains(absolute_name)
+                                && doc.section == param.section
+                        }
+                        _ => false,
+                    },
+                )
+            {
+                param.description = Some(documentation.description.to_owned());
+                param.documentation = Some(documentation.clone());
+            }
+        }
     }
 }

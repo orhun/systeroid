@@ -17,9 +17,9 @@ use systeroid_parser::parser::RstParser;
 
 /// Runs `systeroid`.
 pub fn run(args: Args) -> Result<()> {
-    let sysctl = Sysctl::init()?;
+    let mut sysctl = Sysctl::init()?;
 
-    if let Some(kernel_docs) = args.kernel_docs {
+    let param_docs = if let Some(kernel_docs) = args.kernel_docs {
         let sysctl_docs = kernel_docs.join("admin-guide").join("sysctl");
         if !sysctl_docs.exists() {
             return Err(IoError::new(
@@ -41,18 +41,29 @@ pub fn run(args: Args) -> Result<()> {
             };
             parse(*s)
         })?;
-
-        let _param_docs = param_docs
+        let param_docs = param_docs
             .lock()
             .map_err(|e| Error::ThreadLockError(e.to_string()))?
-            .iter()
-            .collect::<Vec<&Documentation>>();
+            .clone()
+            .into_iter()
+            .collect::<Vec<Documentation>>();
+        Some(param_docs)
+    } else {
+        None
+    };
+
+    if let Some(param_docs) = param_docs {
+        sysctl.update_docs(param_docs);
     }
 
     for param in sysctl.parameters {
         println!(
-            "{} -> {}: {} ({:?})",
-            param.section, param.name, param.value, param.description
+            "{} ({})\n===\n{}\n",
+            param.name,
+            param.documentation.map(|d| d.name).unwrap_or_default(),
+            param
+                .description
+                .unwrap_or_else(|| String::from("no documentation"))
         );
     }
 

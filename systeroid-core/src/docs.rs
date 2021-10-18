@@ -2,7 +2,7 @@ use std::fmt::{self, Display, Formatter};
 use std::path::{Path, PathBuf};
 
 /// Sections of the sysctl documentation.
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub enum SysctlSection {
     /// Documentation for `/proc/sys/abi/*`
     Abi,
