@@ -9,7 +9,7 @@ use crate::args::Args;
 use rayon::prelude::*;
 use std::io::{Error as IoError, ErrorKind as IoErrorKind};
 use std::sync::Mutex;
-use systeroid_core::docs::SysctlSection;
+use systeroid_core::docs::{Documentation, SysctlSection};
 use systeroid_core::error::{Error, Result};
 use systeroid_core::reader;
 use systeroid_core::sysctl::Sysctl;
@@ -17,7 +17,7 @@ use systeroid_parser::parser::RstParser;
 
 /// Runs `systeroid`.
 pub fn run(args: Args) -> Result<()> {
-    let sysctl = Sysctl::init();
+    let sysctl = Sysctl::init()?;
 
     if let Some(kernel_docs) = args.kernel_docs {
         let sysctl_docs = kernel_docs.join("admin-guide").join("sysctl");
@@ -42,18 +42,18 @@ pub fn run(args: Args) -> Result<()> {
             parse(*s)
         })?;
 
-        for param in param_docs
+        let _param_docs = param_docs
             .lock()
             .map_err(|e| Error::ThreadLockError(e.to_string()))?
             .iter()
-        {
-            println!("## {}.{}\n", param.section, param.name);
-            println!("{}\n", param.description);
-        }
+            .collect::<Vec<&Documentation>>();
     }
 
     for param in sysctl.parameters {
-        println!("{}: {} ({:?})", param.name, param.value, param.description);
+        println!(
+            "{} -> {}: {} ({:?})",
+            param.section, param.name, param.value, param.description
+        );
     }
 
     Ok(())

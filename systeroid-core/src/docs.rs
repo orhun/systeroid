@@ -18,6 +18,19 @@ pub enum SysctlSection {
     User,
     /// Documentation for `/proc/sys/vm/*`
     Vm,
+    /// Unknown.
+    Unknown,
+}
+
+impl From<String> for SysctlSection {
+    fn from(value: String) -> Self {
+        for section in Self::variants() {
+            if value.starts_with(&format!("{}.", section)) {
+                return *section;
+            }
+        }
+        Self::Unknown
+    }
 }
 
 impl Display for SysctlSection {
