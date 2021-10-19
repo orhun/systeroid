@@ -1,7 +1,7 @@
 use crate::docs::{Documentation, SysctlSection};
 use crate::error::Result;
 use std::result::Result as StdResult;
-use sysctl::{CtlIter, Sysctl as SysctlImpl};
+use sysctl::{CtlFlags, CtlIter, Sysctl as SysctlImpl};
 
 /// Representation of a kernel parameter.
 pub struct Parameter {
@@ -27,7 +27,11 @@ impl Sysctl {
     /// Constructs a new instance by fetching the available kernel parameters.
     pub fn init() -> Result<Self> {
         let mut parameters = Vec::new();
-        for ctl in CtlIter::root().filter_map(StdResult::ok) {
+        for ctl in CtlIter::root().filter_map(StdResult::ok).filter(|ctl| {
+            ctl.flags()
+                .map(|flags| !flags.contains(CtlFlags::SKIP))
+                .unwrap_or(false)
+        }) {
             parameters.push(Parameter {
                 name: ctl.name()?,
                 value: ctl.value_string()?,
