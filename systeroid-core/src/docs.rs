@@ -53,9 +53,12 @@ impl SysctlSection {
         ]
     }
 
-    /// Returns the sysctl section as a file with `.rst` extension.
-    pub fn as_file(&self) -> PathBuf {
-        Path::new(&self.to_string()).with_extension("rst")
+    /// Returns the path of the sysctl section.
+    pub fn as_path(&self, kernel_docs: &Path) -> PathBuf {
+        kernel_docs
+            .join("admin-guide")
+            .join("sysctl")
+            .join(Path::new(&self.to_string()).with_extension("rst"))
     }
 }
 
