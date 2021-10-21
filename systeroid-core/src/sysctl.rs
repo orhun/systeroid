@@ -4,6 +4,7 @@ use std::result::Result as StdResult;
 use sysctl::{CtlFlags, CtlIter, Sysctl as SysctlImpl};
 
 /// Representation of a kernel parameter.
+#[derive(Debug)]
 pub struct Parameter {
     /// Name of the kernel parameter.
     pub name: String,
@@ -18,6 +19,7 @@ pub struct Parameter {
 }
 
 /// Sysctl wrapper for managing the kernel parameters.
+#[derive(Debug)]
 pub struct Sysctl {
     /// Available kernel parameters.
     pub parameters: Vec<Parameter>,
