@@ -1,5 +1,5 @@
 use std::fmt::{self, Display, Formatter};
-use std::path::{Path, PathBuf};
+use std::path::Path;
 
 /// Sections of the sysctl documentation.
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -33,6 +33,17 @@ impl From<String> for SysctlSection {
     }
 }
 
+impl<'a> From<&'a Path> for SysctlSection {
+    fn from(value: &'a Path) -> Self {
+        for section in Self::variants() {
+            if value.file_stem().map(|v| v.to_str()).flatten() == Some(&section.to_string()) {
+                return *section;
+            }
+        }
+        Self::Unknown
+    }
+}
+
 impl Display for SysctlSection {
     fn fmt(&self, f: &mut Formatter) -> fmt::Result {
         write!(f, "{}", format!("{:?}", self).to_lowercase())
@@ -51,14 +62,6 @@ impl SysctlSection {
             Self::User,
             Self::Vm,
         ]
-    }
-
-    /// Returns the path of the sysctl section.
-    pub fn as_path(&self, kernel_docs: &Path) -> PathBuf {
-        kernel_docs
-            .join("admin-guide")
-            .join("sysctl")
-            .join(Path::new(&self.to_string()).with_extension("rst"))
     }
 }
 

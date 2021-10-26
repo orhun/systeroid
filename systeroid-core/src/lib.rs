@@ -11,5 +11,5 @@ pub mod sysctl;
 /// File reader.
 pub mod reader;
 
-/// Error handler.
+/// Error implementation.
 pub mod error;
