@@ -1,9 +1,10 @@
 use regex::{Captures, RegexBuilder};
 use std::path::Path;
 use std::result::Result as StdResult;
-use systeroid_core::docs::{Documentation, SysctlSection};
+use systeroid_core::docs::Documentation;
 use systeroid_core::error::{Error, Result};
 use systeroid_core::reader;
+use systeroid_core::sysctl::Section;
 
 /// Parser for the reStructuredText format.
 #[derive(Clone, Copy, Debug)]
@@ -13,7 +14,7 @@ pub struct RstParser<'a> {
     /// Regular expression to use for parsing.
     pub regex: &'a str,
     /// Section of the parsed documents.
-    pub section: Option<SysctlSection>,
+    pub section: Option<Section>,
 }
 
 impl RstParser<'_> {
@@ -36,9 +37,7 @@ impl RstParser<'_> {
         .map_err(|e| Error::GlobError(e.to_string()))?
         .filter_map(StdResult::ok)
         {
-            let section = self
-                .section
-                .unwrap_or_else(|| SysctlSection::from(file.path()));
+            let section = self.section.unwrap_or_else(|| Section::from(file.path()));
             let input = reader::read_to_string(file.path())?;
             let capture_group = regex.captures_iter(&input).collect::<Vec<Captures<'_>>>();
 

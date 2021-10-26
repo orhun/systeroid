@@ -8,9 +8,9 @@ pub mod args;
 use crate::args::Args;
 use rayon::prelude::*;
 use std::sync::Mutex;
-use systeroid_core::docs::{Documentation, SysctlSection};
+use systeroid_core::docs::Documentation;
 use systeroid_core::error::{Error, Result};
-use systeroid_core::sysctl::Sysctl;
+use systeroid_core::sysctl::{Section, Sysctl};
 use systeroid_parser::parser::RstParser;
 
 /// Runs `systeroid`.
@@ -26,7 +26,7 @@ pub fn run(args: Args) -> Result<()> {
         RstParser {
             glob_path: "networking/*-sysctl.rst",
             regex: "^([a-zA-Z0-9_/-]+)[ ]-[ ][a-zA-Z].*$",
-            section: Some(SysctlSection::Net),
+            section: Some(Section::Net),
         },
     ];
 
