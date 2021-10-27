@@ -5,5 +5,9 @@ authors = ["Orhun Parmaksız <orhunparmaksiz@gmail.com>"]
 edition = "2021"
 
 [dependencies]
-thiserror = "1.0.29"
 sysctl = "0.4.2"
+thiserror = "1.0.29"
+
+[dependencies.systeroid-parser]
+version = "0.1.0"
+path = "../systeroid-parser"

@@ -326,6 +326,7 @@ name = "systeroid-core"
 version = "0.1.0"
 dependencies = [
  "sysctl",
+ "systeroid-parser",
  "thiserror",
 ]
 
@@ -335,7 +336,7 @@ version = "0.1.0"
 dependencies = [
  "globwalk",
  "regex",
- "systeroid-core",
+ "thiserror",
 ]
 
 [[package]]

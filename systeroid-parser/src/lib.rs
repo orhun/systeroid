@@ -4,3 +4,12 @@
 
 /// RST parser.
 pub mod parser;
+
+/// Parsed document.
+pub mod document;
+
+/// Error implementation.
+pub mod error;
+
+/// File reader.
+pub mod reader;

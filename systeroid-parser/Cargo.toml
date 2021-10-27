@@ -7,7 +7,4 @@ edition = "2021"
 [dependencies]
 regex = "1.5.4"
 globwalk = "0.8.1"
-
-[dependencies.systeroid-core]
-version = "0.1.0"
-path = "../systeroid-core"
+thiserror = "1.0.29"

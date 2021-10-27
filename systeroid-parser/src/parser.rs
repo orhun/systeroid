@@ -1,65 +1,49 @@
-use regex::{Captures, RegexBuilder};
+use crate::document::{Document, Paragraph};
+use crate::error::Error;
+use crate::reader;
+use regex::{Captures, Regex, RegexBuilder};
 use std::path::Path;
 use std::result::Result as StdResult;
-use systeroid_core::docs::Documentation;
-use systeroid_core::error::{Error, Result};
-use systeroid_core::reader;
-use systeroid_core::sysctl::Section;
 
 /// Parser for the reStructuredText format.
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Debug)]
 pub struct RstParser<'a> {
     /// Glob pattern to specify the files to parse.
     pub glob_path: &'a str,
     /// Regular expression to use for parsing.
-    pub regex: &'a str,
-    /// Section of the parsed documents.
-    pub section: Option<Section>,
+    pub regex: Regex,
 }
 
-impl RstParser<'_> {
-    /// Parses the given reStructuredText input and returns the [`documentation`] of kernel parameters.
-    ///
-    /// [`documentation`]: Documentation
-    pub fn parse(&self, kernel_docs: &Path) -> Result<Vec<Documentation>> {
-        let mut param_docs = Vec::new();
+impl<'a> RstParser<'a> {
+    /// Constructs a new instance.
+    pub fn new(glob_path: &'a str, regex: &'a str) -> Result<Self, Error> {
+        Ok(Self {
+            glob_path,
+            regex: RegexBuilder::new(regex).multi_line(true).build()?,
+        })
+    }
 
-        let regex = RegexBuilder::new(self.regex)
-            .multi_line(true)
-            .build()
-            .map_err(|e| Error::RegexError(e.to_string()))?;
+    /// Parses the files in the given base path and returns the documents.
+    pub fn parse(&self, base_path: &Path) -> Result<Vec<Document>, Error> {
+        let mut documents = Vec::new();
         for file in globwalk::glob(
-            kernel_docs
+            base_path
                 .join(self.glob_path)
                 .to_str()
                 .ok_or(Error::Utf8Error)?,
-        )
-        .map_err(|e| Error::GlobError(e.to_string()))?
+        )?
         .filter_map(StdResult::ok)
         {
-            let section = self.section.unwrap_or_else(|| Section::from(file.path()));
             let input = reader::read_to_string(file.path())?;
-            let capture_group = regex.captures_iter(&input).collect::<Vec<Captures<'_>>>();
-
-            for (i, captures) in capture_group.iter().enumerate() {
-                let title_capture = captures.iter().last().flatten().unwrap();
-                let capture = captures.iter().next().flatten().unwrap();
-
-                param_docs.push(Documentation::new(
-                    title_capture.as_str().trim().to_string(),
-                    if let Some(next_capture) = capture_group.get(i + 1) {
-                        let next_capture = next_capture.iter().next().flatten().unwrap();
-                        (input[capture.end()..next_capture.start()])
-                            .trim()
-                            .to_string()
-                    } else {
-                        (input[capture.end()..]).trim().to_string()
-                    },
-                    section,
-                ));
-            }
+            let capture_group = self
+                .regex
+                .captures_iter(&input)
+                .collect::<Vec<Captures<'_>>>();
+            documents.push(Document::new(
+                Paragraph::from_captures(capture_group, &input)?,
+                file.path().to_path_buf(),
+            ));
         }
-
-        Ok(param_docs)
+        Ok(documents)
     }
 }

@@ -10,17 +10,8 @@ pub enum Error {
     #[error("thread lock error: `{0}`")]
     ThreadLockError(String),
     /// Error that may occur while parsing documents.
-    #[error("parse error: `{0}`")]
-    ParseError(String),
-    /// Error that may occur due to invalid UTF-8 strings.
-    #[error("non-UTF-8 string")]
-    Utf8Error,
-    /// Error that may occur while traversing paths using a glob pattern.
-    #[error("glob error: `{0}`")]
-    GlobError(String),
-    /// Error that may occur during the compilation of a regex.
-    #[error("regex error: `{0}`")]
-    RegexError(String),
+    #[error("parser error: `{0}`")]
+    ParseError(#[from] systeroid_parser::error::Error),
     /// Error that may occur while handling sysctl operations.
     #[error("sysctl error: `{0}`")]
     SysctlError(#[from] sysctl::SysctlError),

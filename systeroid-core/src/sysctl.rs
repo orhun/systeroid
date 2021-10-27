@@ -1,9 +1,9 @@
-use crate::docs::Documentation;
 use crate::error::Result;
 use std::fmt::{self, Display, Formatter};
 use std::path::Path;
 use std::result::Result as StdResult;
 use sysctl::{CtlFlags, CtlIter, Sysctl as SysctlImpl};
+use systeroid_parser::document::Document;
 
 /// Sections of the sysctl documentation.
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -44,7 +44,7 @@ impl<'a> From<&'a Path> for Section {
                 return *section;
             }
         }
-        Self::Unknown
+        Self::Net
     }
 }
 
@@ -80,8 +80,8 @@ pub struct Parameter {
     pub description: Option<String>,
     /// Section of the kernel parameter.
     pub section: Section,
-    /// Documentation of the kernel parameter.
-    pub documentation: Option<Documentation>,
+    /// Parsed document about the kernel parameter.
+    pub document: Option<Document>,
 }
 
 /// Sysctl wrapper for managing the kernel parameters.
@@ -105,35 +105,37 @@ impl Sysctl {
                 value: ctl.value_string()?,
                 description: ctl.description().ok(),
                 section: Section::from(ctl.name()?),
-                documentation: None,
+                document: None,
             });
         }
         Ok(Self { parameters })
     }
 
-    /// Updates the description of the kernel parameters based on the parsed documentation.
+    /// Updates the description of the kernel parameters based on the [`parsed document`].
     ///
-    /// [`parsed documentation`]: Documentation
-    pub fn update_docs(&mut self, docs: Vec<Documentation>) {
+    /// [`parsed document`]: Document
+    pub fn update_docs(&mut self, documents: Vec<Document>) {
         for param in self
             .parameters
             .iter_mut()
             .filter(|p| p.description.is_none() || p.description.as_deref() == Some("[N/A]"))
         {
-            if let Some(documentation) =
-                docs.iter().find(
-                    |doc| match param.name.split('.').collect::<Vec<&str>>().last() {
+            for document in documents
+                .iter()
+                .filter(|document| Section::from(document.path.as_path()) == param.section)
+            {
+                if let Some(paragraph) = document.paragraphs.iter().find(|paragraph| {
+                    match param.name.split('.').collect::<Vec<&str>>().last() {
                         Some(absolute_name) => {
-                            absolute_name.len() > 2
-                                && doc.name.contains(absolute_name)
-                                && doc.section == param.section
+                            absolute_name.len() > 2 && paragraph.title.contains(absolute_name)
                         }
                         _ => false,
-                    },
-                )
-            {
-                param.description = Some(documentation.description.to_owned());
-                param.documentation = Some(documentation.clone());
+                    }
+                }) {
+                    param.description = Some(paragraph.contents.to_owned());
+                    param.document = Some(document.clone());
+                    continue;
+                }
             }
         }
     }
