@@ -325,6 +325,7 @@ dependencies = [
 name = "systeroid-core"
 version = "0.1.0"
 dependencies = [
+ "lazy_static",
  "sysctl",
  "systeroid-parser",
  "thiserror",

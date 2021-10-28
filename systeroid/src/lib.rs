@@ -9,6 +9,7 @@ use crate::args::Args;
 use rayon::prelude::*;
 use std::sync::Mutex;
 use systeroid_core::error::{Error, Result};
+use systeroid_core::parsers::PARSERS;
 use systeroid_core::sysctl::Sysctl;
 use systeroid_parser::document::Document;
 use systeroid_parser::parser::Parser;
@@ -17,16 +18,9 @@ use systeroid_parser::parser::Parser;
 pub fn run(args: Args) -> Result<()> {
     let mut sysctl = Sysctl::init()?;
 
-    let parsers = vec![
-        Parser::new("admin-guide/sysctl/*.rst", "^\n([a-z].*)\n[=,-]{2,}+\n\n")?,
-        Parser::new(
-            "networking/*-sysctl.rst",
-            "^([a-zA-Z0-9_/-]+)[ ]-[ ][a-zA-Z].*$",
-        )?,
-    ];
     let documents = if let Some(kernel_docs) = args.kernel_docs {
         let documents = Mutex::new(Vec::new());
-        parsers.par_iter().try_for_each(|s| {
+        PARSERS.par_iter().try_for_each(|s| {
             let mut documents = documents
                 .lock()
                 .map_err(|e| Error::ThreadLockError(e.to_string()))?;

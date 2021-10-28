@@ -7,6 +7,7 @@ edition = "2021"
 [dependencies]
 sysctl = "0.4.2"
 thiserror = "1.0.29"
+lazy_static = "1.4.0"
 
 [dependencies.systeroid-parser]
 version = "0.1.0"
