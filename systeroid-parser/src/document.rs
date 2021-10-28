@@ -54,7 +54,7 @@ impl Paragraph {
     }
 }
 
-/// Representation of a parsed document.
+/// Representation of a parsed document which consists of paragraphs.
 #[derive(Clone, Debug)]
 pub struct Document {
     /// Paragraphs in the document.

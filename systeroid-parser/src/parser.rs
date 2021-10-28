@@ -5,16 +5,19 @@ use regex::{Captures, Regex, RegexBuilder};
 use std::path::Path;
 use std::result::Result as StdResult;
 
-/// Parser for the reStructuredText format.
+/// Regex-powered parser for text documents.
+///
+/// It is responsible for traversing the path specified with
+/// a glob pattern and parsing the contents of the files.
 #[derive(Clone, Debug)]
-pub struct RstParser<'a> {
+pub struct Parser<'a> {
     /// Glob pattern to specify the files to parse.
     pub glob_path: &'a str,
     /// Regular expression to use for parsing.
     pub regex: Regex,
 }
 
-impl<'a> RstParser<'a> {
+impl<'a> Parser<'a> {
     /// Constructs a new instance.
     pub fn new(glob_path: &'a str, regex: &'a str) -> Result<Self, Error> {
         Ok(Self {

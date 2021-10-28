@@ -2,10 +2,10 @@
 
 #![warn(missing_docs, clippy::unwrap_used)]
 
-/// RST parser.
+/// Document parser.
 pub mod parser;
 
-/// Parsed document.
+/// Parse results.
 pub mod document;
 
 /// Error implementation.
