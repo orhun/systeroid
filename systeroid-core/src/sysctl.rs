@@ -2,6 +2,7 @@ use crate::error::Result;
 use crate::parsers::parse_kernel_docs;
 use rayon::prelude::*;
 use std::fmt::{self, Display, Formatter};
+use std::io::Write;
 use std::path::Path;
 use std::result::Result as StdResult;
 use sysctl::{CtlFlags, CtlIter, Sysctl as SysctlImpl};
@@ -141,6 +142,14 @@ impl Sysctl {
                     }
                 }
             });
+        Ok(())
+    }
+
+    /// Prints the available kernel parameters to the given output.
+    pub fn print_all<W: Write>(&self, output: &mut W) -> Result<()> {
+        for parameter in &self.parameters {
+            writeln!(output, "{} = {}", parameter.name, parameter.value)?;
+        }
         Ok(())
     }
 }

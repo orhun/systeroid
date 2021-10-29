@@ -40,7 +40,7 @@ impl Args {
             .map_err(|e| eprintln!("error: {}", e))
             .ok()?;
 
-        if matches.opt_present("h") {
+        if matches.opt_present("h") || !matches.opt_present("a") {
             let usage = opts.usage_with_format(|opts| {
                 HELP_MESSAGE
                     .replace("{bin}", env!("CARGO_PKG_NAME"))
