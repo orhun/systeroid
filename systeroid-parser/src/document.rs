@@ -3,7 +3,7 @@ use regex::Captures;
 use std::path::PathBuf;
 
 /// Representation of a paragraph in a [`Document`].
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct Paragraph {
     /// Paragraph title.
     pub title: String,
@@ -55,7 +55,7 @@ impl Paragraph {
 }
 
 /// Representation of a parsed document which consists of paragraphs.
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct Document {
     /// Paragraphs in the document.
     pub paragraphs: Vec<Paragraph>,
@@ -67,5 +67,34 @@ impl Document {
     /// Constructs a new instance.
     pub fn new(paragraphs: Vec<Paragraph>, path: PathBuf) -> Self {
         Self { paragraphs, path }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::reader;
+    use regex::RegexBuilder;
+
+    #[test]
+    fn test_paragraph() -> Result<(), Error> {
+        let input =
+            reader::read_to_string(PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("Cargo.toml"))?;
+        let captures = RegexBuilder::new(r#"^\[[a-zA-Z]+\]\n"#)
+            .multi_line(true)
+            .build()?
+            .captures_iter(&input)
+            .collect::<Vec<_>>();
+        let paragraphs = Paragraph::from_captures(captures, &input)?;
+        assert!(paragraphs.len() >= 2);
+
+        assert_eq!("[package]", paragraphs[0].title);
+        assert!(paragraphs[0]
+            .contents
+            .contains(&format!("version = \"{}\"", env!("CARGO_PKG_VERSION"))));
+
+        assert_eq!("[dependencies]", paragraphs[1].title);
+        assert!(paragraphs[1].contents.contains("regex = "));
+        Ok(())
     }
 }

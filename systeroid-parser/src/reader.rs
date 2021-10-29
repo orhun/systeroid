@@ -71,16 +71,13 @@ pub fn read_to_string<P: AsRef<Path>>(path: P) -> IoResult<String> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::error::Error;
     use std::path::PathBuf;
 
     #[test]
-    fn test_file_reader() {
+    fn test_file_reader() -> Result<(), Error> {
         let path = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("Cargo.toml");
-        println!("{:?}", path);
-        assert!(read_to_string(path)
-            .expect("cannot read Cargo.toml")
-            .lines()
-            .collect::<String>()
-            .contains(&format!("name = \"{}\"", env!("CARGO_PKG_NAME"))));
+        assert!(read_to_string(path)?.contains(&format!("name = \"{}\"", env!("CARGO_PKG_NAME"))));
+        Ok(())
     }
 }

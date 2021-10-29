@@ -50,3 +50,33 @@ impl<'a> Parser<'a> {
         Ok(documents)
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::path::PathBuf;
+
+    #[test]
+    fn test_document_parser() -> Result<(), Error> {
+        let base_path = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
+        let parser = Parser::new("Cargo.*", r#"^\[package\]\n"#)?;
+        let mut documents = parser.parse(base_path.as_path())?;
+
+        assert!(documents[0].paragraphs[0]
+            .contents
+            .contains(&format!("name = \"{}\"", env!("CARGO_PKG_NAME"))));
+
+        documents[0].paragraphs[0].contents = String::new();
+        assert_eq!(
+            Document {
+                paragraphs: vec![Paragraph {
+                    title: String::from("[package]"),
+                    contents: String::new(),
+                }],
+                path: base_path.join("Cargo.toml")
+            },
+            documents[0]
+        );
+        Ok(())
+    }
+}
