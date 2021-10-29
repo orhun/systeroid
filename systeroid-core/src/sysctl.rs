@@ -1,4 +1,5 @@
 use crate::error::Result;
+use rayon::prelude::*;
 use std::fmt::{self, Display, Formatter};
 use std::path::Path;
 use std::result::Result as StdResult;
@@ -115,28 +116,30 @@ impl Sysctl {
     ///
     /// [`parsed document`]: Document
     pub fn update_docs(&mut self, documents: Vec<Document>) {
-        for param in self
-            .parameters
-            .iter_mut()
+        self.parameters
+            .par_iter_mut()
             .filter(|p| p.description.is_none() || p.description.as_deref() == Some("[N/A]"))
-        {
-            for document in documents
-                .iter()
-                .filter(|document| Section::from(document.path.as_path()) == param.section)
-            {
-                if let Some(paragraph) = document.paragraphs.iter().find(|paragraph| {
-                    match param.name.split('.').collect::<Vec<&str>>().last() {
-                        Some(absolute_name) => {
-                            absolute_name.len() > 2 && paragraph.title.contains(absolute_name)
-                        }
-                        _ => false,
+            .for_each(|param| {
+                for document in documents
+                    .iter()
+                    .filter(|document| Section::from(document.path.as_path()) == param.section)
+                {
+                    if let Some(paragraph) =
+                        document.paragraphs.par_iter().find_first(|paragraph| {
+                            match param.name.split('.').collect::<Vec<&str>>().last() {
+                                Some(absolute_name) => {
+                                    absolute_name.len() > 2
+                                        && paragraph.title.contains(absolute_name)
+                                }
+                                _ => false,
+                            }
+                        })
+                    {
+                        param.description = Some(paragraph.contents.to_owned());
+                        param.document = Some(document.clone());
+                        continue;
                     }
-                }) {
-                    param.description = Some(paragraph.contents.to_owned());
-                    param.document = Some(document.clone());
-                    continue;
                 }
-            }
-        }
+            });
     }
 }

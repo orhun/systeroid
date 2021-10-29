@@ -6,42 +6,22 @@
 pub mod args;
 
 use crate::args::Args;
-use rayon::prelude::*;
-use std::sync::Mutex;
 use systeroid_core::error::{Error, Result};
 use systeroid_core::parsers::PARSERS;
 use systeroid_core::sysctl::Sysctl;
 use systeroid_parser::document::Document;
-use systeroid_parser::parser::Parser;
 
 /// Runs `systeroid`.
 pub fn run(args: Args) -> Result<()> {
     let mut sysctl = Sysctl::init()?;
 
-    let documents = if let Some(kernel_docs) = args.kernel_docs {
-        let documents = Mutex::new(Vec::new());
-        PARSERS.par_iter().try_for_each(|s| {
-            let mut documents = documents
-                .lock()
-                .map_err(|e| Error::ThreadLockError(e.to_string()))?;
-            let mut parse = |parser: Parser| -> Result<()> {
+    if let Some(kernel_docs) = args.kernel_docs {
+        let documents = PARSERS
+            .iter()
+            .try_fold(Vec::new(), |mut documents, parser| {
                 documents.extend(parser.parse(&kernel_docs)?);
-                Ok(())
-            };
-            parse(s.clone())
-        })?;
-        let documents = documents
-            .lock()
-            .map_err(|e| Error::ThreadLockError(e.to_string()))?
-            .clone()
-            .into_iter()
-            .collect::<Vec<Document>>();
-        Some(documents)
-    } else {
-        None
-    };
-
-    if let Some(documents) = documents {
+                Ok::<Vec<Document>, Error>(documents)
+            })?;
         sysctl.update_docs(documents);
     }
 
