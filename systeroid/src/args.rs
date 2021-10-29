@@ -17,6 +17,8 @@ For more details see {bin}(8)."#;
 pub struct Args {
     /// Path of the Linux kernel documentation.
     pub kernel_docs: Option<PathBuf>,
+    /// Display all of the kernel parameters.
+    pub all: bool,
 }
 
 impl Args {
@@ -25,10 +27,11 @@ impl Args {
         let mut opts = Options::new();
         opts.optflag("h", "help", "display this help and exit");
         opts.optflag("V", "version", "output version information and exit");
+        opts.optflag("a", "all", "display all variables");
         opts.optopt(
             "d",
-            "kernel-docs",
-            "set the path of the linux kernel documentation",
+            "docs",
+            "set the path of the kernel documentation",
             "<path>",
         );
 
@@ -51,6 +54,7 @@ impl Args {
         } else {
             Some(Args {
                 kernel_docs: matches.opt_str("d").map(PathBuf::from),
+                all: matches.opt_present("a"),
             })
         }
     }

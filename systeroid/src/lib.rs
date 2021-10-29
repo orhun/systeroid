@@ -6,23 +6,15 @@
 pub mod args;
 
 use crate::args::Args;
-use systeroid_core::error::{Error, Result};
-use systeroid_core::parsers::PARSERS;
+use systeroid_core::error::Result;
 use systeroid_core::sysctl::Sysctl;
-use systeroid_parser::document::Document;
 
 /// Runs `systeroid`.
 pub fn run(args: Args) -> Result<()> {
     let mut sysctl = Sysctl::init()?;
 
     if let Some(kernel_docs) = args.kernel_docs {
-        let documents = PARSERS
-            .iter()
-            .try_fold(Vec::new(), |mut documents, parser| {
-                documents.extend(parser.parse(&kernel_docs)?);
-                Ok::<Vec<Document>, Error>(documents)
-            })?;
-        sysctl.update_docs(documents);
+        sysctl.update_docs(&kernel_docs)?;
     }
 
     for param in sysctl.parameters {

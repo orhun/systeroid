@@ -1,4 +1,5 @@
 use crate::error::Result;
+use crate::parsers::parse_kernel_docs;
 use rayon::prelude::*;
 use std::fmt::{self, Display, Formatter};
 use std::path::Path;
@@ -112,10 +113,9 @@ impl Sysctl {
         Ok(Self { parameters })
     }
 
-    /// Updates the description of the kernel parameters based on the [`parsed document`].
-    ///
-    /// [`parsed document`]: Document
-    pub fn update_docs(&mut self, documents: Vec<Document>) {
+    /// Updates the descriptions of the kernel parameters.
+    pub fn update_docs(&mut self, kernel_docs: &Path) -> Result<()> {
+        let documents = parse_kernel_docs(kernel_docs)?;
         self.parameters
             .par_iter_mut()
             .filter(|p| p.description.is_none() || p.description.as_deref() == Some("[N/A]"))
@@ -141,5 +141,6 @@ impl Sysctl {
                     }
                 }
             });
+        Ok(())
     }
 }
