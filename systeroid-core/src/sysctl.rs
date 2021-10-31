@@ -1,5 +1,7 @@
+use crate::config::SysctlConfig;
 use crate::error::Result;
 use crate::parsers::parse_kernel_docs;
+use colored::*;
 use rayon::prelude::*;
 use std::fmt::{self, Display, Formatter};
 use std::io::Write;
@@ -9,7 +11,7 @@ use sysctl::{CtlFlags, CtlIter, Sysctl as SysctlImpl};
 use systeroid_parser::document::Document;
 
 /// Sections of the sysctl documentation.
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
 pub enum Section {
     /// Documentation for `/proc/sys/abi/*`
     Abi,
@@ -87,16 +89,44 @@ pub struct Parameter {
     pub document: Option<Document>,
 }
 
+impl Parameter {
+    /// Returns the parameter name with corresponding section colors.
+    pub fn colored_name(&self, config: &SysctlConfig) -> String {
+        let fields = self.name.split('.').collect::<Vec<&str>>();
+        fields
+            .iter()
+            .enumerate()
+            .fold(String::new(), |mut result, (i, v)| {
+                if i != fields.len() - 1 {
+                    let section_color = *(config
+                        .section_colors
+                        .get(&self.section)
+                        .unwrap_or(&config.default_color));
+                    result += &format!(
+                        "{}{}",
+                        v.color(section_color),
+                        ".".color(config.default_color)
+                    );
+                } else {
+                    result += v;
+                }
+                result
+            })
+    }
+}
+
 /// Sysctl wrapper for managing the kernel parameters.
 #[derive(Debug)]
 pub struct Sysctl {
     /// Available kernel parameters.
     pub parameters: Vec<Parameter>,
+    /// Configuration.
+    pub config: SysctlConfig,
 }
 
 impl Sysctl {
     /// Constructs a new instance by fetching the available kernel parameters.
-    pub fn init() -> Result<Self> {
+    pub fn init(config: SysctlConfig) -> Result<Self> {
         let mut parameters = Vec::new();
         for ctl in CtlIter::root().filter_map(StdResult::ok).filter(|ctl| {
             ctl.flags()
@@ -111,7 +141,7 @@ impl Sysctl {
                 document: None,
             });
         }
-        Ok(Self { parameters })
+        Ok(Self { parameters, config })
     }
 
     /// Updates the descriptions of the kernel parameters.
@@ -146,9 +176,19 @@ impl Sysctl {
     }
 
     /// Prints the available kernel parameters to the given output.
-    pub fn print_all<W: Write>(&self, output: &mut W) -> Result<()> {
+    pub fn print_all<W: Write>(&self, output: &mut W, colored: bool) -> Result<()> {
         for parameter in &self.parameters {
-            writeln!(output, "{} = {}", parameter.name, parameter.value)?;
+            if colored {
+                writeln!(
+                    output,
+                    "{} {} {}",
+                    parameter.colored_name(&self.config),
+                    "=".color(self.config.default_color),
+                    parameter.value.bold(),
+                )?;
+            } else {
+                writeln!(output, "{} = {}", parameter.name, parameter.value)?;
+            }
         }
         Ok(())
     }

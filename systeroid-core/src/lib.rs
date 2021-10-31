@@ -13,3 +13,6 @@ pub mod error;
 
 /// Parsers for the kernel documentation.
 pub mod parsers;
+
+/// Configuration.
+pub mod config;

@@ -19,6 +19,8 @@ pub struct Args {
     pub kernel_docs: Option<PathBuf>,
     /// Display all of the kernel parameters.
     pub all: bool,
+    /// Disable colored output.
+    pub no_color: bool,
 }
 
 impl Args {
@@ -28,6 +30,7 @@ impl Args {
         opts.optflag("h", "help", "display this help and exit");
         opts.optflag("V", "version", "output version information and exit");
         opts.optflag("a", "all", "display all variables");
+        opts.optflag("", "no-color", "disable colored output");
         opts.optopt(
             "d",
             "docs",
@@ -55,6 +58,7 @@ impl Args {
             Some(Args {
                 kernel_docs: matches.opt_str("d").map(PathBuf::from),
                 all: matches.opt_present("a"),
+                no_color: matches.opt_present("no-color"),
             })
         }
     }
