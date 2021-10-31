@@ -21,7 +21,7 @@ pub fn run(args: Args) -> Result<()> {
         sysctl.update_docs(&kernel_docs)?;
     }
 
-    if args.all {
+    if args.display_all {
         sysctl.print_all(&mut stdout, !args.no_color)?;
     }
 

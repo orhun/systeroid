@@ -18,7 +18,7 @@ pub struct Args {
     /// Path of the Linux kernel documentation.
     pub kernel_docs: Option<PathBuf>,
     /// Display all of the kernel parameters.
-    pub all: bool,
+    pub display_all: bool,
     /// Disable colored output.
     pub no_color: bool,
 }
@@ -30,6 +30,8 @@ impl Args {
         opts.optflag("h", "help", "display this help and exit");
         opts.optflag("V", "version", "output version information and exit");
         opts.optflag("a", "all", "display all variables");
+        opts.optflag("A", "", "alias of -a");
+        opts.optflag("X", "", "alias of -a");
         opts.optflag("", "no-color", "disable colored output");
         opts.optopt(
             "d",
@@ -43,7 +45,10 @@ impl Args {
             .map_err(|e| eprintln!("error: {}", e))
             .ok()?;
 
-        if matches.opt_present("h") || !matches.opt_present("a") {
+        let display_all =
+            matches.opt_present("a") || matches.opt_present("A") || matches.opt_present("X");
+
+        if matches.opt_present("h") || !display_all {
             let usage = opts.usage_with_format(|opts| {
                 HELP_MESSAGE
                     .replace("{bin}", env!("CARGO_PKG_NAME"))
@@ -57,7 +62,7 @@ impl Args {
         } else {
             Some(Args {
                 kernel_docs: matches.opt_str("d").map(PathBuf::from),
-                all: matches.opt_present("a"),
+                display_all,
                 no_color: matches.opt_present("no-color"),
             })
         }
