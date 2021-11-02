@@ -22,7 +22,7 @@ pub fn run(args: Args) -> Result<()> {
     }
 
     if args.display_all {
-        sysctl.print_all(&mut stdout, !args.no_color)?;
+        sysctl.display(&mut stdout, args.param_names, !args.no_color)?;
     }
 
     Ok(())

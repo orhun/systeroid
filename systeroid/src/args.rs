@@ -21,6 +21,8 @@ pub struct Args {
     pub display_all: bool,
     /// Disable colored output.
     pub no_color: bool,
+    /// Parameter names.
+    pub param_names: Vec<String>,
 }
 
 impl Args {
@@ -45,8 +47,10 @@ impl Args {
             .map_err(|e| eprintln!("error: {}", e))
             .ok()?;
 
-        let display_all =
-            matches.opt_present("a") || matches.opt_present("A") || matches.opt_present("X");
+        let display_all = matches.opt_present("a")
+            || matches.opt_present("A")
+            || matches.opt_present("X")
+            || !matches.free.is_empty();
 
         if matches.opt_present("h") || !display_all {
             let usage = opts.usage_with_format(|opts| {
@@ -64,6 +68,7 @@ impl Args {
                 kernel_docs: matches.opt_str("d").map(PathBuf::from),
                 display_all,
                 no_color: matches.opt_present("no-color"),
+                param_names: matches.free,
             })
         }
     }

@@ -176,8 +176,17 @@ impl Sysctl {
     }
 
     /// Prints the available kernel parameters to the given output.
-    pub fn print_all<W: Write>(&self, output: &mut W, colored: bool) -> Result<()> {
-        for parameter in &self.parameters {
+    pub fn display<W: Write>(
+        &self,
+        output: &mut W,
+        names: Vec<String>,
+        colored: bool,
+    ) -> Result<()> {
+        for parameter in self
+            .parameters
+            .iter()
+            .filter(|param| names.is_empty() || names.iter().any(|name| param.name == *name))
+        {
             if colored {
                 writeln!(
                     output,
