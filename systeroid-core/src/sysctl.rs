@@ -1,13 +1,14 @@
-use crate::config::SysctlConfig;
+use crate::config::ColorConfig;
 use crate::error::Result;
 use crate::parsers::parse_kernel_docs;
 use colored::*;
 use rayon::prelude::*;
+use std::convert::TryFrom;
 use std::fmt::{self, Display, Formatter};
 use std::io::Write;
 use std::path::Path;
 use std::result::Result as StdResult;
-use sysctl::{CtlFlags, CtlIter, Sysctl as SysctlImpl};
+use sysctl::{Ctl, CtlFlags, CtlIter, Sysctl as SysctlImpl};
 use systeroid_parser::document::Document;
 
 /// Sections of the sysctl documentation.
@@ -91,7 +92,7 @@ pub struct Parameter {
 
 impl Parameter {
     /// Returns the parameter name with corresponding section colors.
-    pub fn colored_name(&self, config: &SysctlConfig) -> String {
+    pub fn colored_name(&self, config: &ColorConfig) -> String {
         let fields = self.name.split('.').collect::<Vec<&str>>();
         fields
             .iter()
@@ -113,6 +114,48 @@ impl Parameter {
                 result
             })
     }
+
+    /// Prints the kernel parameter to given output.
+    pub fn display<W: Write>(&self, config: &ColorConfig, output: &mut W) -> Result<()> {
+        if !config.no_color {
+            writeln!(
+                output,
+                "{} {} {}",
+                self.colored_name(config),
+                "=".color(config.default_color),
+                self.value.bold(),
+            )?;
+        } else {
+            writeln!(output, "{} = {}", self.name, self.value)?;
+        }
+        Ok(())
+    }
+
+    /// Sets a new value for the kernel parameter.
+    pub fn update<W: Write>(
+        &mut self,
+        new_value: &str,
+        config: &ColorConfig,
+        output: &mut W,
+    ) -> Result<()> {
+        let ctl = Ctl::new(&self.name)?;
+        let new_value = ctl.set_value_string(new_value)?;
+        self.value = new_value;
+        self.display(config, output)
+    }
+}
+
+impl<'a> TryFrom<&'a Ctl> for Parameter {
+    type Error = crate::error::Error;
+    fn try_from(ctl: &'a Ctl) -> Result<Self> {
+        Ok(Parameter {
+            name: ctl.name()?,
+            value: ctl.value_string()?,
+            description: ctl.description().ok(),
+            section: Section::from(ctl.name()?),
+            document: None,
+        })
+    }
 }
 
 /// Sysctl wrapper for managing the kernel parameters.
@@ -120,28 +163,27 @@ impl Parameter {
 pub struct Sysctl {
     /// Available kernel parameters.
     pub parameters: Vec<Parameter>,
-    /// Configuration.
-    pub config: SysctlConfig,
 }
 
 impl Sysctl {
     /// Constructs a new instance by fetching the available kernel parameters.
-    pub fn init(config: SysctlConfig) -> Result<Self> {
+    pub fn init() -> Result<Self> {
         let mut parameters = Vec::new();
         for ctl in CtlIter::root().filter_map(StdResult::ok).filter(|ctl| {
             ctl.flags()
                 .map(|flags| !flags.contains(CtlFlags::SKIP))
                 .unwrap_or(false)
         }) {
-            parameters.push(Parameter {
-                name: ctl.name()?,
-                value: ctl.value_string()?,
-                description: ctl.description().ok(),
-                section: Section::from(ctl.name()?),
-                document: None,
-            });
+            match Parameter::try_from(&ctl) {
+                Ok(parameter) => {
+                    parameters.push(parameter);
+                }
+                Err(e) => {
+                    eprintln!("{} ({})", e, ctl.name()?);
+                }
+            }
         }
-        Ok(Self { parameters, config })
+        Ok(Self { parameters })
     }
 
     /// Updates the descriptions of the kernel parameters.
@@ -172,33 +214,6 @@ impl Sysctl {
                     }
                 }
             });
-        Ok(())
-    }
-
-    /// Prints the available kernel parameters to the given output.
-    pub fn display<W: Write>(
-        &self,
-        output: &mut W,
-        names: Vec<String>,
-        colored: bool,
-    ) -> Result<()> {
-        for parameter in self
-            .parameters
-            .iter()
-            .filter(|param| names.is_empty() || names.iter().any(|name| param.name == *name))
-        {
-            if colored {
-                writeln!(
-                    output,
-                    "{} {} {}",
-                    parameter.colored_name(&self.config),
-                    "=".color(self.config.default_color),
-                    parameter.value.bold(),
-                )?;
-            } else {
-                writeln!(output, "{} = {}", parameter.name, parameter.value)?;
-            }
-        }
         Ok(())
     }
 }

@@ -14,22 +14,25 @@ macro_rules! map {
 /// General configuration.
 #[derive(Debug, Default)]
 pub struct Config {
-    /// Sysctl configuration.
-    pub sysctl: SysctlConfig,
+    /// Color configuration.
+    pub color: ColorConfig,
 }
 
 /// Sysctl configuration.
 #[derive(Debug)]
-pub struct SysctlConfig {
+pub struct ColorConfig {
+    /// Whether if the colors are disabled.
+    pub no_color: bool,
     /// Sections and the corresponding colors.
     pub section_colors: HashMap<Section, Color>,
     /// Default color for the output
     pub default_color: Color,
 }
 
-impl Default for SysctlConfig {
+impl Default for ColorConfig {
     fn default() -> Self {
         Self {
+            no_color: false,
             section_colors: map! {
                 Section::Abi => Color::Red,
                 Section::Fs => Color::Green,
