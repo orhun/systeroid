@@ -25,7 +25,9 @@ pub fn run(args: Args) -> Result<()> {
 
     let mut app = App::new(&mut sysctl, &config);
 
-    if args.param_names.is_empty() {
+    if let Some(param) = args.param_to_explain {
+        app.display_documentation(&param)?;
+    } else if args.param_names.is_empty() {
         app.display_parameters()?;
     } else {
         for param_name in args.param_names {

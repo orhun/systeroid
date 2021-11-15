@@ -186,6 +186,22 @@ impl Sysctl {
         Ok(Self { parameters })
     }
 
+    /// Searches and returns the parameter if it exists.
+    pub fn get_parameter(&mut self, param_name: &str) -> Option<&mut Parameter> {
+        let parameter = self
+            .parameters
+            .iter_mut()
+            .find(|param| param.name == *param_name);
+        if parameter.is_none() {
+            eprintln!(
+                "{}: cannot stat /proc/{}: No such file or directory",
+                env!("CARGO_PKG_NAME").split('-').collect::<Vec<_>>()[0],
+                param_name.replace(".", "/")
+            )
+        }
+        parameter
+    }
+
     /// Updates the descriptions of the kernel parameters.
     pub fn update_docs(&mut self, kernel_docs: &Path) -> Result<()> {
         let documents = parse_kernel_docs(kernel_docs)?;

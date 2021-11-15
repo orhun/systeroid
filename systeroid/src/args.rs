@@ -17,10 +17,10 @@ For more details see {bin}(8)."#;
 pub struct Args {
     /// Path of the Linux kernel documentation.
     pub kernel_docs: Option<PathBuf>,
-    /// Display all of the kernel parameters.
-    pub display_all: bool,
     /// Disable colored output.
     pub no_color: bool,
+    /// Parameter to explain.
+    pub param_to_explain: Option<String>,
     /// Parameter names.
     pub param_names: Vec<String>,
 }
@@ -36,6 +36,12 @@ impl Args {
         opts.optflag("X", "", "alias of -a");
         opts.optflag("", "no-color", "disable colored output");
         opts.optopt(
+            "",
+            "explain",
+            "provide a detailed explanation for a variable",
+            "<var>",
+        );
+        opts.optopt(
             "d",
             "docs",
             "set the path of the kernel documentation",
@@ -47,12 +53,13 @@ impl Args {
             .map_err(|e| eprintln!("error: {}", e))
             .ok()?;
 
-        let display_all = matches.opt_present("a")
+        let required_args_present = matches.opt_present("a")
             || matches.opt_present("A")
             || matches.opt_present("X")
-            || !matches.free.is_empty();
+            || !matches.free.is_empty()
+            || matches.opt_str("explain").is_some();
 
-        if matches.opt_present("h") || !display_all {
+        if matches.opt_present("h") || !required_args_present {
             let usage = opts.usage_with_format(|opts| {
                 HELP_MESSAGE
                     .replace("{bin}", env!("CARGO_PKG_NAME"))
@@ -66,8 +73,8 @@ impl Args {
         } else {
             Some(Args {
                 kernel_docs: matches.opt_str("d").map(PathBuf::from),
-                display_all,
                 no_color: matches.opt_present("no-color"),
+                param_to_explain: matches.opt_str("explain"),
                 param_names: matches.free,
             })
         }

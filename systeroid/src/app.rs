@@ -1,4 +1,4 @@
-use std::io::{self, Stdout};
+use std::io::{self, Stdout, Write};
 use systeroid_core::config::Config;
 use systeroid_core::error::Result;
 use systeroid_core::sysctl::Sysctl;
@@ -33,6 +33,21 @@ impl<'a> App<'a> {
             .try_for_each(|parameter| parameter.display(&self.config.color, &mut self.stdout))
     }
 
+    /// Displays the documentation of a parameter.
+    pub fn display_documentation(&mut self, param_name: &str) -> Result<()> {
+        if let Some(parameter) = self.sysctl.get_parameter(param_name) {
+            writeln!(
+                self.stdout,
+                "{}",
+                parameter
+                    .description
+                    .as_deref()
+                    .unwrap_or("No documentation available")
+            )?;
+        }
+        Ok(())
+    }
+
     /// Updates the parameter if it has the format `name=value`, displays it otherwise.
     pub fn process_parameter(&mut self, mut param_name: String) -> Result<()> {
         let new_value = if param_name.contains('=') {
@@ -46,24 +61,12 @@ impl<'a> App<'a> {
         } else {
             None
         };
-        match self
-            .sysctl
-            .parameters
-            .iter_mut()
-            .find(|param| param.name == *param_name)
-        {
-            Some(parameter) => {
-                if let Some(new_value) = new_value {
-                    parameter.update(&new_value, &self.config.color, &mut self.stdout)?;
-                } else {
-                    parameter.display(&self.config.color, &mut self.stdout)?;
-                }
+        if let Some(parameter) = self.sysctl.get_parameter(&param_name) {
+            if let Some(new_value) = new_value {
+                parameter.update(&new_value, &self.config.color, &mut self.stdout)?;
+            } else {
+                parameter.display(&self.config.color, &mut self.stdout)?;
             }
-            None => eprintln!(
-                "{}: cannot stat /proc/{}: No such file or directory",
-                env!("CARGO_PKG_NAME"),
-                param_name.replace(".", "/")
-            ),
         }
         Ok(())
     }
