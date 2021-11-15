@@ -151,7 +151,10 @@ impl<'a> TryFrom<&'a Ctl> for Parameter {
         Ok(Parameter {
             name: ctl.name()?,
             value: ctl.value_string()?,
-            description: ctl.description().ok(),
+            description: ctl
+                .description()
+                .ok()
+                .and_then(|v| (v == "[N/A]").then(|| None)?),
             section: Section::from(ctl.name()?),
             document: None,
         })
@@ -207,7 +210,7 @@ impl Sysctl {
         let documents = parse_kernel_docs(kernel_docs)?;
         self.parameters
             .par_iter_mut()
-            .filter(|p| p.description.is_none() || p.description.as_deref() == Some("[N/A]"))
+            .filter(|p| p.description.is_none())
             .for_each(|param| {
                 for document in documents
                     .iter()
