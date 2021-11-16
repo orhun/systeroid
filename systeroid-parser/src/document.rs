@@ -42,12 +42,16 @@ impl Paragraph {
                         .next()
                         .flatten()
                         .ok_or(Error::CaptureError)?;
-                    (input[content_capture.end()..next_capture.start()])
-                        .trim()
-                        .to_string()
+                    (input[content_capture.end()..next_capture.start()]).to_string()
                 } else {
-                    (input[content_capture.end()..]).trim().to_string()
-                },
+                    (input[content_capture.end()..]).to_string()
+                }
+                .lines()
+                .map(|v| v.trim_start_matches('\t'))
+                .collect::<Vec<&str>>()
+                .join("\n")
+                .trim()
+                .to_string(),
             ));
         }
         Ok(paragraphs)
