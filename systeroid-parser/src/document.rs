@@ -24,16 +24,8 @@ impl Paragraph {
     ) -> Result<Vec<Self>, Error> {
         let mut paragraphs = Vec::new();
         for (i, captures) in capture_group.iter().enumerate() {
-            let title_capture = captures
-                .iter()
-                .last()
-                .flatten()
-                .ok_or(Error::CaptureError)?;
-            let content_capture = captures
-                .iter()
-                .next()
-                .flatten()
-                .ok_or(Error::CaptureError)?;
+            let content_capture = captures.get(0).ok_or(Error::CaptureError)?;
+            let title_capture = captures.get(1).ok_or(Error::CaptureError)?;
             paragraphs.push(Paragraph::new(
                 title_capture.as_str().trim().to_string(),
                 if let Some(next_capture) = capture_group.get(i + 1) {

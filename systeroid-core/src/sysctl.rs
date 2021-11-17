@@ -6,10 +6,9 @@ use rayon::prelude::*;
 use std::convert::TryFrom;
 use std::fmt::{self, Display, Formatter};
 use std::io::Write;
-use std::path::Path;
+use std::path::{Path, PathBuf};
 use std::result::Result as StdResult;
 use sysctl::{Ctl, CtlFlags, CtlIter, Sysctl as SysctlImpl};
-use systeroid_parser::document::Document;
 
 /// Sections of the sysctl documentation.
 #[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
@@ -86,8 +85,10 @@ pub struct Parameter {
     pub description: Option<String>,
     /// Section of the kernel parameter.
     pub section: Section,
-    /// Parsed document about the kernel parameter.
-    pub document: Option<Document>,
+    /// Documentation path.
+    pub docs_path: PathBuf,
+    /// Title of the kernel parameter taken from the documentation.
+    pub docs_title: Option<String>,
 }
 
 impl Parameter {
@@ -116,7 +117,7 @@ impl Parameter {
     }
 
     /// Prints the kernel parameter to given output.
-    pub fn display<W: Write>(&self, config: &ColorConfig, output: &mut W) -> Result<()> {
+    pub fn display_value<W: Write>(&self, config: &ColorConfig, output: &mut W) -> Result<()> {
         if !config.no_color {
             writeln!(
                 output,
@@ -131,8 +132,24 @@ impl Parameter {
         Ok(())
     }
 
+    /// Prints the description of the kernel parameter to the given output.
+    pub fn display_documentation<W: Write>(&self, output: &mut W) -> Result<()> {
+        if let Some(title) = &self.docs_title {
+            writeln!(output, "{}", title)?;
+        }
+        writeln!(
+            output,
+            "\n{}\n",
+            self.description
+                .as_deref()
+                .unwrap_or("No documentation available")
+        )?;
+        writeln!(output, "Reference: {}", self.docs_path.to_string_lossy())?;
+        Ok(())
+    }
+
     /// Sets a new value for the kernel parameter.
-    pub fn update<W: Write>(
+    pub fn update_value<W: Write>(
         &mut self,
         new_value: &str,
         config: &ColorConfig,
@@ -141,7 +158,7 @@ impl Parameter {
         let ctl = Ctl::new(&self.name)?;
         let new_value = ctl.set_value_string(new_value)?;
         self.value = new_value;
-        self.display(config, output)
+        self.display_value(config, output)
     }
 }
 
@@ -156,7 +173,8 @@ impl<'a> TryFrom<&'a Ctl> for Parameter {
                 .ok()
                 .and_then(|v| (v == "[N/A]").then(|| None)?),
             section: Section::from(ctl.name()?),
-            document: None,
+            docs_path: PathBuf::new(),
+            docs_title: None,
         })
     }
 }
@@ -228,7 +246,8 @@ impl Sysctl {
                         })
                     {
                         param.description = Some(paragraph.contents.to_owned());
-                        param.document = Some(document.clone());
+                        param.docs_title = Some(paragraph.title.to_owned());
+                        param.docs_path = document.path.clone();
                         continue;
                     }
                 }

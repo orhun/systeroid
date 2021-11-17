@@ -17,7 +17,7 @@ lazy_static! {
         },
         Parser {
             glob_path: "networking/*-sysctl.rst",
-            regex: RegexBuilder::new("^([a-zA-Z0-9_/-]+)[ ]-[ ][a-zA-Z].*$")
+            regex: RegexBuilder::new("^([a-zA-Z0-9_/-]+[ ]-[ ][a-zA-Z].*)$")
                 .multi_line(true)
                 .build()
                 .expect("failed to compile regex"),

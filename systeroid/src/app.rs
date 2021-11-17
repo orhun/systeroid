@@ -1,4 +1,4 @@
-use std::io::{self, Stdout, Write};
+use std::io::{self, Stdout};
 use systeroid_core::config::Config;
 use systeroid_core::error::Result;
 use systeroid_core::sysctl::Sysctl;
@@ -30,20 +30,13 @@ impl<'a> App<'a> {
         self.sysctl
             .parameters
             .iter()
-            .try_for_each(|parameter| parameter.display(&self.config.color, &mut self.stdout))
+            .try_for_each(|parameter| parameter.display_value(&self.config.color, &mut self.stdout))
     }
 
     /// Displays the documentation of a parameter.
     pub fn display_documentation(&mut self, param_name: &str) -> Result<()> {
         if let Some(parameter) = self.sysctl.get_parameter(param_name) {
-            writeln!(
-                self.stdout,
-                "{}",
-                parameter
-                    .description
-                    .as_deref()
-                    .unwrap_or("No documentation available")
-            )?;
+            parameter.display_documentation(&mut self.stdout)?;
         }
         Ok(())
     }
@@ -63,9 +56,9 @@ impl<'a> App<'a> {
         };
         if let Some(parameter) = self.sysctl.get_parameter(&param_name) {
             if let Some(new_value) = new_value {
-                parameter.update(&new_value, &self.config.color, &mut self.stdout)?;
+                parameter.update_value(&new_value, &self.config.color, &mut self.stdout)?;
             } else {
-                parameter.display(&self.config.color, &mut self.stdout)?;
+                parameter.display_value(&self.config.color, &mut self.stdout)?;
             }
         }
         Ok(())
