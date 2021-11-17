@@ -88,7 +88,7 @@ pub struct Parameter {
     /// Documentation path.
     pub docs_path: PathBuf,
     /// Title of the kernel parameter taken from the documentation.
-    pub docs_title: Option<String>,
+    pub docs_title: String,
 }
 
 impl Parameter {
@@ -132,19 +132,31 @@ impl Parameter {
         Ok(())
     }
 
+    /// Returns the parameter documentation if it exists.
+    pub fn get_documentation(&self) -> Option<String> {
+        self.description.as_ref().map(|description| {
+            let title = if let Some(absolute_name) = self.name.split('.').last() {
+                self.docs_title.replacen(absolute_name, &self.name, 1)
+            } else {
+                self.name.to_owned()
+            };
+            format!(
+                "{}\n{}\n{}\n-\nReference: {}",
+                title,
+                "=".repeat(title.len()),
+                description,
+                self.docs_path.to_string_lossy()
+            )
+        })
+    }
+
     /// Prints the description of the kernel parameter to the given output.
     pub fn display_documentation<W: Write>(&self, output: &mut W) -> Result<()> {
-        if let Some(title) = &self.docs_title {
-            writeln!(output, "{}", title)?;
+        if let Some(documentation) = self.get_documentation() {
+            writeln!(output, "{}", documentation)?;
+        } else {
+            writeln!(output, "No documentation available")?;
         }
-        writeln!(
-            output,
-            "\n{}\n",
-            self.description
-                .as_deref()
-                .unwrap_or("No documentation available")
-        )?;
-        writeln!(output, "Reference: {}", self.docs_path.to_string_lossy())?;
         Ok(())
     }
 
@@ -174,7 +186,7 @@ impl<'a> TryFrom<&'a Ctl> for Parameter {
                 .and_then(|v| (v == "[N/A]").then(|| None)?),
             section: Section::from(ctl.name()?),
             docs_path: PathBuf::new(),
-            docs_title: None,
+            docs_title: String::new(),
         })
     }
 }
@@ -246,7 +258,7 @@ impl Sysctl {
                         })
                     {
                         param.description = Some(paragraph.contents.to_owned());
-                        param.docs_title = Some(paragraph.title.to_owned());
+                        param.docs_title = paragraph.title.to_owned();
                         param.docs_path = document.path.clone();
                         continue;
                     }
