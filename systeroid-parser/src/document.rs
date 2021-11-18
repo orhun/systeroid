@@ -76,7 +76,7 @@ mod tests {
     fn test_paragraph() -> Result<(), Error> {
         let input =
             reader::read_to_string(PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("Cargo.toml"))?;
-        let captures = RegexBuilder::new(r#"^\[[a-zA-Z]+\]\n"#)
+        let captures = RegexBuilder::new(r#"^(\[[a-zA-Z]+\])\n"#)
             .multi_line(true)
             .build()?
             .captures_iter(&input)
