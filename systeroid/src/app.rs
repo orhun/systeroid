@@ -1,5 +1,6 @@
 use std::env;
 use std::io::{self, Stdout};
+use std::path::Path;
 use std::process::{Command, Stdio};
 use systeroid_core::config::Config;
 use systeroid_core::error::Result;
@@ -35,8 +36,20 @@ impl<'a> App<'a> {
             .try_for_each(|parameter| parameter.display_value(&self.config.color, &mut self.stdout))
     }
 
+    /// Updates the documentation for kernel parameters.
+    fn fetch_documentation(&mut self, kernel_docs: &Path) -> Result<()> {
+        if !kernel_docs.exists() {
+            eprintln!(
+                "WARN: Linux kernel documentation is not found in path: {:?}",
+                kernel_docs.to_string_lossy()
+            );
+        }
+        self.sysctl.update_docs(kernel_docs)
+    }
+
     /// Displays the documentation of a parameter.
-    pub fn display_documentation(&mut self, param_name: &str) -> Result<()> {
+    pub fn display_documentation(&mut self, param_name: &str, kernel_docs: &Path) -> Result<()> {
+        self.fetch_documentation(kernel_docs)?;
         if let Some(parameter) = self.sysctl.get_parameter(param_name) {
             let mut fallback_to_default = false;
             let pager = env::var("PAGER").unwrap_or_else(|_| String::from("less"));

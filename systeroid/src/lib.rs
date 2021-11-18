@@ -19,15 +19,10 @@ pub fn run(args: Args) -> Result<()> {
     let mut config = Config::default();
     config.color.no_color = env::var("NO_COLOR").is_ok();
     let mut sysctl = Sysctl::init()?;
-
-    if let Some(kernel_docs) = args.kernel_docs {
-        sysctl.update_docs(&kernel_docs)?;
-    }
-
     let mut app = App::new(&mut sysctl, &config);
 
     if let Some(param) = args.param_to_explain {
-        app.display_documentation(&param)?;
+        app.display_documentation(&param, &args.kernel_docs)?;
     } else if args.param_names.is_empty() {
         app.display_parameters()?;
     } else {

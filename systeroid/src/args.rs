@@ -16,7 +16,7 @@ For more details see {bin}(8)."#;
 #[derive(Debug, Default)]
 pub struct Args {
     /// Path of the Linux kernel documentation.
-    pub kernel_docs: Option<PathBuf>,
+    pub kernel_docs: PathBuf,
     /// Parameter to explain.
     pub param_to_explain: Option<String>,
     /// Parameter names.
@@ -41,7 +41,7 @@ impl Args {
         opts.optopt(
             "d",
             "docs",
-            "set the path of the kernel documentation",
+            "set the path of the kernel documentation\n(default: /usr/share/doc/linux/)",
             "<path>",
         );
 
@@ -69,7 +69,11 @@ impl Args {
             None
         } else {
             Some(Args {
-                kernel_docs: matches.opt_str("d").map(PathBuf::from),
+                kernel_docs: PathBuf::from(
+                    matches
+                        .opt_str("d")
+                        .unwrap_or_else(|| String::from("/usr/share/doc/linux/")),
+                ),
                 param_to_explain: matches.opt_str("explain"),
                 param_names: matches.free,
             })
