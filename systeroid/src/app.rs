@@ -1,4 +1,6 @@
+use std::env;
 use std::io::{self, Stdout};
+use std::process::{Command, Stdio};
 use systeroid_core::config::Config;
 use systeroid_core::error::Result;
 use systeroid_core::sysctl::Sysctl;
@@ -36,7 +38,25 @@ impl<'a> App<'a> {
     /// Displays the documentation of a parameter.
     pub fn display_documentation(&mut self, param_name: &str) -> Result<()> {
         if let Some(parameter) = self.sysctl.get_parameter(param_name) {
-            parameter.display_documentation(&mut self.stdout)?;
+            let mut fallback_to_default = false;
+            let pager = env::var("PAGER").unwrap_or_else(|_| String::from("less"));
+            match Command::new(pager).stdin(Stdio::piped()).spawn() {
+                Ok(mut process) => {
+                    if let Some(stdin) = process.stdin.as_mut() {
+                        parameter.display_documentation(stdin)?;
+                        process.wait()?;
+                    } else {
+                        fallback_to_default = true;
+                    }
+                }
+                Err(e) => {
+                    eprintln!("Pager error: {}", e);
+                    fallback_to_default = true;
+                }
+            }
+            if fallback_to_default {
+                parameter.display_documentation(&mut self.stdout)?;
+            }
         }
         Ok(())
     }
