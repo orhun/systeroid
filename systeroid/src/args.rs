@@ -17,8 +17,6 @@ For more details see {bin}(8)."#;
 pub struct Args {
     /// Path of the Linux kernel documentation.
     pub kernel_docs: Option<PathBuf>,
-    /// Disable colored output.
-    pub no_color: bool,
     /// Parameter to explain.
     pub param_to_explain: Option<String>,
     /// Parameter names.
@@ -34,7 +32,6 @@ impl Args {
         opts.optflag("a", "all", "display all variables");
         opts.optflag("A", "", "alias of -a");
         opts.optflag("X", "", "alias of -a");
-        opts.optflag("", "no-color", "disable colored output");
         opts.optopt(
             "",
             "explain",
@@ -73,7 +70,6 @@ impl Args {
         } else {
             Some(Args {
                 kernel_docs: matches.opt_str("d").map(PathBuf::from),
-                no_color: matches.opt_present("no-color"),
                 param_to_explain: matches.opt_str("explain"),
                 param_names: matches.free,
             })
