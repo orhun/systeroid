@@ -80,7 +80,7 @@ impl<'a> App<'a> {
             let fields = param_name
                 .split('=')
                 .take(2)
-                .map(String::from)
+                .map(|v| v.trim().to_string())
                 .collect::<Vec<String>>();
             param_name = fields[0].to_string();
             Some(fields[1].to_string())
