@@ -2,7 +2,7 @@ use std::env;
 use std::io::{self, Stdout};
 use std::path::Path;
 use std::process::{Command, Stdio};
-use systeroid_core::config::ColorConfig;
+use systeroid_core::config::AppConfig;
 use systeroid_core::error::Result;
 use systeroid_core::sysctl::Sysctl;
 
@@ -11,19 +11,19 @@ use systeroid_core::sysctl::Sysctl;
 pub struct App<'a> {
     /// Sysctl manager.
     sysctl: &'a mut Sysctl,
-    /// Color configuration.
-    color_config: &'a ColorConfig,
+    /// Configuration.
+    config: &'a AppConfig,
     /// Standard output.
     stdout: Stdout,
 }
 
 impl<'a> App<'a> {
     /// Constructs a new instance.
-    pub fn new(sysctl: &'a mut Sysctl, color_config: &'a ColorConfig) -> Self {
+    pub fn new(sysctl: &'a mut Sysctl, config: &'a AppConfig) -> Self {
         let stdout = io::stdout();
         Self {
             sysctl,
-            color_config,
+            config,
             stdout,
         }
     }
@@ -33,7 +33,7 @@ impl<'a> App<'a> {
         self.sysctl
             .parameters
             .iter()
-            .try_for_each(|parameter| parameter.display_value(self.color_config, &mut self.stdout))
+            .try_for_each(|parameter| parameter.display_value(self.config, &mut self.stdout))
     }
 
     /// Updates the documentation for kernel parameters.
@@ -89,9 +89,9 @@ impl<'a> App<'a> {
         };
         if let Some(parameter) = self.sysctl.get_parameter(&param_name) {
             if let Some(new_value) = new_value {
-                parameter.update_value(&new_value, self.color_config, &mut self.stdout)?;
+                parameter.update_value(&new_value, self.config, &mut self.stdout)?;
             } else {
-                parameter.display_value(self.color_config, &mut self.stdout)?;
+                parameter.display_value(self.config, &mut self.stdout)?;
             }
         }
         Ok(())

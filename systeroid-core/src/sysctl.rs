@@ -1,4 +1,4 @@
-use crate::config::{ColorConfig, SysctlConfig};
+use crate::config::{AppConfig, SysctlConfig};
 use crate::error::Result;
 use crate::parsers::parse_kernel_docs;
 use colored::*;
@@ -93,7 +93,7 @@ pub struct Parameter {
 
 impl Parameter {
     /// Returns the parameter name with corresponding section colors.
-    pub fn colored_name(&self, config: &ColorConfig) -> String {
+    pub fn colored_name(&self, config: &AppConfig) -> String {
         let fields = self.name.split('.').collect::<Vec<&str>>();
         fields
             .iter()
@@ -117,7 +117,7 @@ impl Parameter {
     }
 
     /// Prints the kernel parameter to given output.
-    pub fn display_value<W: Write>(&self, config: &ColorConfig, output: &mut W) -> Result<()> {
+    pub fn display_value<W: Write>(&self, config: &AppConfig, output: &mut W) -> Result<()> {
         if !config.no_color {
             writeln!(
                 output,
@@ -164,7 +164,7 @@ impl Parameter {
     pub fn update_value<W: Write>(
         &mut self,
         new_value: &str,
-        config: &ColorConfig,
+        config: &AppConfig,
         output: &mut W,
     ) -> Result<()> {
         let ctl = Ctl::new(&self.name)?;

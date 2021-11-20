@@ -16,8 +16,8 @@ macro_rules! map {
 pub struct Config {
     /// Sysctl configuration.
     pub sysctl: SysctlConfig,
-    /// Color configuration.
-    pub color: ColorConfig,
+    /// Application configuration.
+    pub color: AppConfig,
 }
 
 /// Sysctl configuration.
@@ -29,7 +29,7 @@ pub struct SysctlConfig {
 
 /// Sysctl configuration.
 #[derive(Debug)]
-pub struct ColorConfig {
+pub struct AppConfig {
     /// Whether if the colors are disabled.
     pub no_color: bool,
     /// Sections and the corresponding colors.
@@ -38,7 +38,7 @@ pub struct ColorConfig {
     pub default_color: Color,
 }
 
-impl Default for ColorConfig {
+impl Default for AppConfig {
     fn default() -> Self {
         Self {
             no_color: false,
