@@ -1,4 +1,4 @@
-use crate::config::ColorConfig;
+use crate::config::{ColorConfig, SysctlConfig};
 use crate::error::Result;
 use crate::parsers::parse_kernel_docs;
 use colored::*;
@@ -196,11 +196,13 @@ impl<'a> TryFrom<&'a Ctl> for Parameter {
 pub struct Sysctl {
     /// Available kernel parameters.
     pub parameters: Vec<Parameter>,
+    /// Configuration.
+    pub config: SysctlConfig,
 }
 
 impl Sysctl {
     /// Constructs a new instance by fetching the available kernel parameters.
-    pub fn init() -> Result<Self> {
+    pub fn init(config: SysctlConfig) -> Result<Self> {
         let mut parameters = Vec::new();
         for ctl in CtlIter::root().filter_map(StdResult::ok).filter(|ctl| {
             ctl.flags()
@@ -216,7 +218,7 @@ impl Sysctl {
                 }
             }
         }
-        Ok(Self { parameters })
+        Ok(Self { parameters, config })
     }
 
     /// Searches and returns the parameter if it exists.
@@ -225,7 +227,7 @@ impl Sysctl {
             .parameters
             .iter_mut()
             .find(|param| param.name == *param_name);
-        if parameter.is_none() {
+        if parameter.is_none() && !self.config.ignore_errors {
             eprintln!(
                 "{}: cannot stat /proc/{}: No such file or directory",
                 env!("CARGO_PKG_NAME").split('-').collect::<Vec<_>>()[0],

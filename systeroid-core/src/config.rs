@@ -14,8 +14,17 @@ macro_rules! map {
 /// General configuration.
 #[derive(Debug, Default)]
 pub struct Config {
+    /// Sysctl configuration.
+    pub sysctl: SysctlConfig,
     /// Color configuration.
     pub color: ColorConfig,
+}
+
+/// Sysctl configuration.
+#[derive(Debug, Default)]
+pub struct SysctlConfig {
+    /// Whether if the errors should be ignored.
+    pub ignore_errors: bool,
 }
 
 /// Sysctl configuration.

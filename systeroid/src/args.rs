@@ -17,6 +17,8 @@ For more details see {bin}(8)."#;
 pub struct Args {
     /// Path of the Linux kernel documentation.
     pub kernel_docs: PathBuf,
+    /// Whether if the unknown variable errors should be ignored.
+    pub ignore_errors: bool,
     /// Parameter to explain.
     pub param_to_explain: Option<String>,
     /// Parameter names.
@@ -32,6 +34,7 @@ impl Args {
         opts.optflag("a", "all", "display all variables");
         opts.optflag("A", "", "alias of -a");
         opts.optflag("X", "", "alias of -a");
+        opts.optflag("e", "ignore", "ignore unknown variables errors");
         opts.optopt(
             "",
             "explain",
@@ -74,6 +77,7 @@ impl Args {
                         .opt_str("d")
                         .unwrap_or_else(|| String::from("/usr/share/doc/linux/")),
                 ),
+                ignore_errors: matches.opt_present("e"),
                 param_to_explain: matches.opt_str("explain"),
                 param_names: matches.free,
             })

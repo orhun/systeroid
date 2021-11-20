@@ -17,9 +17,10 @@ use systeroid_core::sysctl::Sysctl;
 /// Runs `systeroid`.
 pub fn run(args: Args) -> Result<()> {
     let mut config = Config::default();
+    config.sysctl.ignore_errors = args.ignore_errors;
     config.color.no_color = env::var("NO_COLOR").is_ok();
-    let mut sysctl = Sysctl::init()?;
-    let mut app = App::new(&mut sysctl, &config);
+    let mut sysctl = Sysctl::init(config.sysctl)?;
+    let mut app = App::new(&mut sysctl, &config.color);
 
     if let Some(param) = args.param_to_explain {
         app.display_documentation(&param, &args.kernel_docs)?;
