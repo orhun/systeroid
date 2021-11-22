@@ -56,7 +56,7 @@ impl Args {
 
         let matches = opts
             .parse(&env::args().collect::<Vec<String>>()[1..])
-            .map_err(|e| eprintln!("error: {}", e))
+            .map_err(|e| eprintln!("error: `{}`", e))
             .ok()?;
 
         let required_args_present = matches.opt_present("a")

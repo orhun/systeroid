@@ -40,7 +40,7 @@ impl<'a> App<'a> {
     fn fetch_documentation(&mut self, kernel_docs: &Path) -> Result<()> {
         if !kernel_docs.exists() {
             eprintln!(
-                "WARN: Linux kernel documentation is not found in path: {:?}",
+                "warning: Linux kernel documentation is not found in path: {:?}",
                 kernel_docs.to_string_lossy()
             );
         }
@@ -63,7 +63,7 @@ impl<'a> App<'a> {
                     }
                 }
                 Err(e) => {
-                    eprintln!("Pager error: {}", e);
+                    eprintln!("error: `pager error: {}`", e);
                     fallback_to_default = true;
                 }
             }

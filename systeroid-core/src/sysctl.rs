@@ -241,7 +241,7 @@ impl Sysctl {
                     parameters.push(parameter);
                 }
                 Err(e) => {
-                    eprintln!("{} ({})", e, ctl.name()?);
+                    eprintln!("error: `{} ({})`", e, ctl.name()?);
                 }
             }
         }
