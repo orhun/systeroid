@@ -1,3 +1,4 @@
+use crate::display::DisplayType;
 use crate::sysctl::Section;
 use colored::Color;
 use std::collections::HashMap;
@@ -14,10 +15,10 @@ macro_rules! map {
 /// General configuration.
 #[derive(Debug, Default)]
 pub struct Config {
+    /// Application configuration.
+    pub app: AppConfig,
     /// Sysctl configuration.
     pub sysctl: SysctlConfig,
-    /// Application configuration.
-    pub color: AppConfig,
 }
 
 /// Sysctl configuration.
@@ -36,6 +37,8 @@ pub struct AppConfig {
     pub section_colors: HashMap<Section, Color>,
     /// Default color for the output
     pub default_color: Color,
+    /// Display type of the kernel parameters.
+    pub display_type: DisplayType,
 }
 
 impl Default for AppConfig {
@@ -53,6 +56,7 @@ impl Default for AppConfig {
                 Section::Unknown => Color::BrightBlack
             },
             default_color: Color::BrightBlack,
+            display_type: DisplayType::default(),
         }
     }
 }

@@ -1,6 +1,7 @@
 use getopts::Options;
 use std::env;
 use std::path::PathBuf;
+use systeroid_core::display::DisplayType;
 
 /// Help message for the arguments.
 const HELP_MESSAGE: &str = r#"
@@ -17,6 +18,8 @@ For more details see {bin}(8)."#;
 pub struct Args {
     /// Path of the Linux kernel documentation.
     pub kernel_docs: PathBuf,
+    /// Display type of the variables.
+    pub display_type: DisplayType,
     /// Whether if the unknown variable errors should be ignored.
     pub ignore_errors: bool,
     /// Parameter to explain.
@@ -29,12 +32,13 @@ impl Args {
     /// Parses the command-line arguments.
     pub fn parse() -> Option<Self> {
         let mut opts = Options::new();
-        opts.optflag("h", "help", "display this help and exit");
-        opts.optflag("V", "version", "output version information and exit");
         opts.optflag("a", "all", "display all variables");
         opts.optflag("A", "", "alias of -a");
         opts.optflag("X", "", "alias of -a");
+        opts.optflag("b", "binary", "print value without new line");
         opts.optflag("e", "ignore", "ignore unknown variables errors");
+        opts.optflag("N", "names", "print variable names without values");
+        opts.optflag("n", "values", "print only values of the given variable(s)");
         opts.optopt(
             "",
             "explain",
@@ -47,6 +51,8 @@ impl Args {
             "set the path of the kernel documentation\n(default: /usr/share/doc/linux/)",
             "<path>",
         );
+        opts.optflag("h", "help", "display this help and exit");
+        opts.optflag("V", "version", "output version information and exit");
 
         let matches = opts
             .parse(&env::args().collect::<Vec<String>>()[1..])
@@ -71,12 +77,22 @@ impl Args {
             println!("{} {}", env!("CARGO_PKG_NAME"), env!("CARGO_PKG_VERSION"));
             None
         } else {
+            let display_type = if matches.opt_present("N") {
+                DisplayType::Name
+            } else if matches.opt_present("n") {
+                DisplayType::Value
+            } else if matches.opt_present("b") {
+                DisplayType::Binary
+            } else {
+                DisplayType::Default
+            };
             Some(Args {
                 kernel_docs: PathBuf::from(
                     matches
                         .opt_str("d")
                         .unwrap_or_else(|| String::from("/usr/share/doc/linux/")),
                 ),
+                display_type,
                 ignore_errors: matches.opt_present("e"),
                 param_to_explain: matches.opt_str("explain"),
                 param_names: matches.free,

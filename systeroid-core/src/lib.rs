@@ -16,3 +16,6 @@ pub mod parsers;
 
 /// Configuration.
 pub mod config;
+
+/// Display options.
+pub mod display;

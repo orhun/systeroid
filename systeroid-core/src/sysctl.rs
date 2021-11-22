@@ -1,4 +1,5 @@
 use crate::config::{AppConfig, SysctlConfig};
+use crate::display::DisplayType;
 use crate::error::Result;
 use crate::parsers::parse_kernel_docs;
 use colored::*;
@@ -119,15 +120,41 @@ impl Parameter {
     /// Prints the kernel parameter to given output.
     pub fn display_value<W: Write>(&self, config: &AppConfig, output: &mut W) -> Result<()> {
         if !config.no_color {
-            writeln!(
-                output,
-                "{} {} {}",
-                self.colored_name(config),
-                "=".color(config.default_color),
-                self.value.bold(),
-            )?;
+            match config.display_type {
+                DisplayType::Name => {
+                    writeln!(output, "{}", self.colored_name(config))?;
+                }
+                DisplayType::Value => {
+                    writeln!(output, "{}", self.value.bold())?;
+                }
+                DisplayType::Binary => {
+                    write!(output, "{}", self.value.bold())?;
+                }
+                DisplayType::Default => {
+                    writeln!(
+                        output,
+                        "{} {} {}",
+                        self.colored_name(config),
+                        "=".color(config.default_color),
+                        self.value.bold(),
+                    )?;
+                }
+            }
         } else {
-            writeln!(output, "{} = {}", self.name, self.value)?;
+            match config.display_type {
+                DisplayType::Name => {
+                    writeln!(output, "{}", self.name)?;
+                }
+                DisplayType::Value => {
+                    writeln!(output, "{}", self.value)?;
+                }
+                DisplayType::Binary => {
+                    write!(output, "{}", self.value)?;
+                }
+                DisplayType::Default => {
+                    writeln!(output, "{} = {}", self.name, self.value)?;
+                }
+            }
         }
         Ok(())
     }
