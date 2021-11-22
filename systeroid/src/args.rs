@@ -6,7 +6,7 @@ use systeroid_core::display::DisplayType;
 /// Help message for the arguments.
 const HELP_MESSAGE: &str = r#"
 Usage:
-    {bin} [options]
+    {bin} [options] [variable[=value] ...]
 
 Options:
 {usage}
