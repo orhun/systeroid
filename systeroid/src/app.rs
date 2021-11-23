@@ -53,7 +53,7 @@ impl<'a> App<'a> {
         if let Some(parameter) = self.sysctl.get_parameter(param_name) {
             let mut fallback_to_default = false;
             let pager = env::var("PAGER").unwrap_or_else(|_| String::from("less"));
-            match Command::new(pager).stdin(Stdio::piped()).spawn() {
+            match Command::new(&pager).stdin(Stdio::piped()).spawn() {
                 Ok(mut process) => {
                     if let Some(stdin) = process.stdin.as_mut() {
                         parameter.display_documentation(stdin)?;
@@ -63,7 +63,9 @@ impl<'a> App<'a> {
                     }
                 }
                 Err(e) => {
-                    eprintln!("error: `pager error: {}`", e);
+                    if !pager.is_empty() {
+                        eprintln!("error: `pager error: {}`", e);
+                    }
                     fallback_to_default = true;
                 }
             }
