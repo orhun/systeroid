@@ -45,6 +45,9 @@ impl<'a> Parser<'a> {
         )?
         .filter_map(StdResult::ok)
         .collect::<Vec<DirEntry>>();
+        if glob_files.is_empty() {
+            return Err(Error::EmptyFileListError);
+        }
         self.required_files.iter().try_for_each(|file_name| {
             glob_files
                 .iter()
@@ -53,7 +56,6 @@ impl<'a> Parser<'a> {
                 .ok_or_else(|| Error::MissingFileError(file_name.to_string()))
         })?;
         for file in glob_files {
-            println!("{:?}", file);
             let input = reader::read_to_string(file.path())?;
             let capture_group = self
                 .regex

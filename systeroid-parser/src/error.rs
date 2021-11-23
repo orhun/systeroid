@@ -12,6 +12,9 @@ pub enum Error {
     /// Error that may occur when the capture group does not exist.
     #[error("capture group does not exist")]
     CaptureError,
+    /// Error that may occur when the glob pattern returns zero results.
+    #[error("glob pattern has yielded no results")]
+    EmptyFileListError,
     /// Error that may occur when a required file for parsing does not exist.
     #[error("required file missing: '{0}'")]
     MissingFileError(String),
