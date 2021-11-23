@@ -162,16 +162,12 @@ impl Parameter {
     /// Returns the parameter documentation if it exists.
     pub fn get_documentation(&self) -> Option<String> {
         self.description.as_ref().map(|description| {
-            let title = if let Some(absolute_name) = self.name.split('.').last() {
-                self.docs_title.replacen(absolute_name, &self.name, 1)
-            } else {
-                self.name.to_owned()
-            };
             format!(
-                "{}\n{}\n{}\n-\nReference: {}",
-                title,
-                "=".repeat(title.len()),
+                "{}\n{}\n{}\n-\nParameter: {}\nReference: {}",
+                self.docs_title,
+                "=".repeat(self.docs_title.len()),
                 description,
+                self.name,
                 self.docs_path.to_string_lossy()
             )
         })
