@@ -6,7 +6,7 @@ fn main() {
         match systeroid::run(args) {
             Ok(_) => process::exit(0),
             Err(e) => {
-                eprintln!("error: `{}`", e);
+                eprintln!("{}", e);
                 process::exit(1)
             }
         }

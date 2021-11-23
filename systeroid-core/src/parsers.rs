@@ -10,6 +10,7 @@ lazy_static! {
     pub static ref PARSERS: Vec<Parser<'static>> = vec![
         Parser {
             glob_path: "admin-guide/sysctl/*.rst",
+            required_files: &["kernel.rst"],
             regex: RegexBuilder::new("^\n([a-z].*)\n[=,-]{2,}+\n\n")
                 .multi_line(true)
                 .build()
@@ -17,6 +18,7 @@ lazy_static! {
         },
         Parser {
             glob_path: "networking/*-sysctl.rst",
+            required_files: &["ip-sysctl.rst"],
             regex: RegexBuilder::new("^([a-zA-Z0-9_/-]+[ ]-[ ][a-zA-Z].*)$")
                 .multi_line(true)
                 .build()
