@@ -76,7 +76,7 @@ mod tests {
     #[test]
     fn test_document_parser() -> Result<(), Error> {
         let base_path = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
-        let parser = Parser::new("Cargo.*", &["Cargo.toml"], r#"^(\[package\])\n"#)?;
+        let parser = Parser::new("Cargo.*", &[], r#"^(\[package\])\n"#)?;
         let mut documents = parser.parse(base_path.as_path())?;
 
         assert!(documents[0].paragraphs[0]
