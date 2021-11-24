@@ -28,7 +28,6 @@ jobs:
           - armv7-unknown-linux-gnueabihf
           - aarch64-unknown-linux-gnu
           - aarch64-unknown-linux-musl
-
     steps:
       - name: Checkout the repository
         uses: actions/checkout@v2
@@ -38,8 +37,8 @@ jobs:
         with:
           toolchain: ${{ matrix.TOOLCHAIN }}
           target: ${{ matrix.TARGET }}
+          profile: minimal
           override: true
-          components: rustfmt, clippy
 
       - name: Build
         uses: actions-rs/cargo@v1
@@ -48,13 +47,28 @@ jobs:
           command: build
           args: --target ${{ matrix.TARGET }}
 
+  lint:
+    name: Check lints
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v2
+
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          override: true
+          components: rustfmt, clippy
+
       - name: Check formatting
         uses: actions-rs/cargo@v1
         with:
           command: fmt
           args: --all -- --check
 
-      - name: Check lints
+      - name: Run clippy
         uses: actions-rs/cargo@v1
         with:
           command: clippy
