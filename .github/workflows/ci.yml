@@ -18,7 +18,7 @@ jobs:
       fail-fast: false
       matrix:
         OS: [ubuntu-latest]
-        TOOLCHAIN: [stable, nightly]
+        TOOLCHAIN: [stable]
         TARGET:
           - x86_64-unknown-linux-gnu
           - x86_64-unknown-linux-musl
@@ -42,7 +42,6 @@ jobs:
 
       - name: Build
         uses: actions-rs/cargo@v1
-        continue-on-error: ${{ matrix.TOOLCHAIN == 'nightly' }}
         with:
           use-cross: true
           command: build
