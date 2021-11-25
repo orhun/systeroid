@@ -42,6 +42,7 @@ jobs:
 
       - name: Build
         uses: actions-rs/cargo@v1
+        continue-on-error: ${{ matrix.TOOLCHAIN == 'nightly' }}
         with:
           use-cross: true
           command: build
