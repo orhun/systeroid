@@ -17,7 +17,7 @@ For more details see {bin}(8)."#;
 #[derive(Debug, Default)]
 pub struct Args {
     /// Path of the Linux kernel documentation.
-    pub kernel_docs: PathBuf,
+    pub kernel_docs: Option<PathBuf>,
     /// Display type of the variables.
     pub display_type: DisplayType,
     /// Whether if the unknown variable errors should be ignored.
@@ -48,7 +48,7 @@ impl Args {
         opts.optopt(
             "d",
             "docs",
-            "set the path of the kernel documentation\n(default: /usr/share/doc/linux/)",
+            "set the path of the kernel documentation",
             "<path>",
         );
         opts.optflag("h", "help", "display this help and exit");
@@ -87,11 +87,7 @@ impl Args {
                 DisplayType::Default
             };
             Some(Args {
-                kernel_docs: PathBuf::from(
-                    matches
-                        .opt_str("d")
-                        .unwrap_or_else(|| String::from("/usr/share/doc/linux/")),
-                ),
+                kernel_docs: matches.opt_str("d").map(PathBuf::from),
                 display_type,
                 ignore_errors: matches.opt_present("e"),
                 param_to_explain: matches.opt_str("explain"),

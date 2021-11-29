@@ -6,6 +6,12 @@ use systeroid_parser::parser::Parser;
 use systeroid_parser::regex::RegexBuilder;
 
 lazy_static! {
+    /// Possible locations for the Linux kernel documentation.
+    pub static ref KERNEL_DOCS_PATH: Vec<&'static Path> = vec![
+        Path::new("/usr/share/doc/linux/"),
+        Path::new("/usr/share/doc/linux-docs/")
+    ];
+
     /// Pre-defined parsers for parsing the kernel documentation.
     pub static ref PARSERS: Vec<Parser<'static>> = vec![
         Parser {

@@ -1,9 +1,10 @@
 use std::env;
 use std::io::{self, Stdout};
-use std::path::Path;
+use std::path::PathBuf;
 use std::process::{Command, Stdio};
 use systeroid_core::config::AppConfig;
 use systeroid_core::error::Result;
+use systeroid_core::parsers::KERNEL_DOCS_PATH;
 use systeroid_core::sysctl::Sysctl;
 
 /// Application controller.
@@ -37,19 +38,22 @@ impl<'a> App<'a> {
     }
 
     /// Updates the documentation for kernel parameters.
-    fn fetch_documentation(&mut self, kernel_docs: &Path) -> Result<()> {
-        if !kernel_docs.exists() {
-            eprintln!(
-                "warning: `linux kernel documentation is not found in path: {:?}`",
-                kernel_docs.to_string_lossy()
-            );
+    pub fn update_documentation(&mut self, kernel_docs: Option<&PathBuf>) -> Result<()> {
+        let mut kernel_docs_path = KERNEL_DOCS_PATH.clone();
+        if let Some(path) = kernel_docs {
+            kernel_docs_path.insert(0, path);
         }
-        self.sysctl.update_docs(kernel_docs)
+        for path in KERNEL_DOCS_PATH.iter() {
+            if path.exists() {
+                return self.sysctl.update_docs(path);
+            }
+        }
+        eprintln!("warning: `Linux kernel documentation cannot be found. Please specify a path via '-d' argument`",);
+        Ok(())
     }
 
     /// Displays the documentation of a parameter.
-    pub fn display_documentation(&mut self, param_name: &str, kernel_docs: &Path) -> Result<()> {
-        self.fetch_documentation(kernel_docs)?;
+    pub fn display_documentation(&mut self, param_name: &str) -> Result<()> {
         if let Some(parameter) = self.sysctl.get_parameter(param_name) {
             let mut fallback_to_default = false;
             let pager = env::var("PAGER").unwrap_or_else(|_| String::from("less"));
