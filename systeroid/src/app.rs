@@ -43,13 +43,12 @@ impl<'a> App<'a> {
         if let Some(path) = kernel_docs {
             kernel_docs_path.insert(0, path);
         }
-        for path in KERNEL_DOCS_PATH.iter() {
-            if path.exists() {
-                return self.sysctl.update_docs(path);
-            }
+        if let Some(path) = kernel_docs_path.iter().find(|path| path.exists()) {
+            self.sysctl.update_docs(path)
+        } else {
+            eprintln!("warning: `Linux kernel documentation cannot be found. Please specify a path via '-d' argument`",);
+            Ok(())
         }
-        eprintln!("warning: `Linux kernel documentation cannot be found. Please specify a path via '-d' argument`",);
-        Ok(())
     }
 
     /// Displays the documentation of a parameter.
