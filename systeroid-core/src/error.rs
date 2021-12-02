@@ -9,6 +9,12 @@ pub enum Error {
     /// Error that may occur whenever a lock is acquired.
     #[error("thread lock error: `{0}`")]
     ThreadLockError(String),
+    /// Error that may occur when accessing the cached data.
+    #[error("cache error: `{0}`")]
+    CacheError(String),
+    /// Error that may occur while de/serializing JSON data.
+    #[error("JSON de/serialization error: `{0}`")]
+    SerdeJsonError(#[from] serde_json::Error),
     /// Error that may occur while parsing documents.
     #[error("parser error: `{0}`")]
     ParseError(#[from] systeroid_parser::error::Error),

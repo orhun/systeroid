@@ -21,7 +21,7 @@ pub fn run(args: Args) -> Result<()> {
     config.app.display_type = args.display_type;
     config.app.no_color = env::var("NO_COLOR").is_ok();
     let mut sysctl = Sysctl::init(config.sysctl)?;
-    let mut app = App::new(&mut sysctl, &config.app);
+    let mut app = App::new(&mut sysctl, &config.app)?;
 
     if let Some(param) = args.param_to_explain {
         app.update_documentation(args.kernel_docs.as_ref())?;

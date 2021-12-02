@@ -4,6 +4,7 @@ use crate::error::Result;
 use crate::parsers::parse_kernel_docs;
 use colored::*;
 use rayon::prelude::*;
+use serde::{Deserialize, Serialize};
 use std::convert::TryFrom;
 use std::fmt::{self, Display, Formatter};
 use std::io::Write;
@@ -12,7 +13,7 @@ use std::result::Result as StdResult;
 use sysctl::{Ctl, CtlFlags, CtlIter, Sysctl as SysctlImpl};
 
 /// Sections of the sysctl documentation.
-#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 pub enum Section {
     /// Documentation for `/proc/sys/abi/*`
     Abi,
@@ -76,7 +77,7 @@ impl Section {
 }
 
 /// Representation of a kernel parameter.
-#[derive(Debug)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct Parameter {
     /// Name of the kernel parameter.
     pub name: String,
@@ -258,6 +259,22 @@ impl Sysctl {
             )
         }
         parameter
+    }
+
+    /// Updates the parameters using the given list.
+    ///
+    /// Keeps the original values.
+    pub fn update_params(&mut self, mut parameters: Vec<Parameter>) {
+        parameters.par_iter_mut().for_each(|parameter| {
+            if let Some(param) = self
+                .parameters
+                .par_iter()
+                .find_any(|param| param.name == parameter.name)
+            {
+                parameter.value = param.value.to_string();
+            }
+        });
+        self.parameters = parameters;
     }
 
     /// Updates the descriptions of the kernel parameters.

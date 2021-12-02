@@ -19,3 +19,6 @@ pub mod config;
 
 /// Display options.
 pub mod display;
+
+/// Cache manager.
+pub mod cache;
