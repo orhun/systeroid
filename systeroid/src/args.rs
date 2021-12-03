@@ -22,6 +22,8 @@ pub struct Args {
     pub display_type: DisplayType,
     /// Whether if the unknown variable errors should be ignored.
     pub ignore_errors: bool,
+    /// Do not pipe output into a pager.
+    pub no_pager: bool,
     /// Parameter to explain.
     pub param_to_explain: Option<String>,
     /// Parameter names.
@@ -51,6 +53,7 @@ impl Args {
             "set the path of the kernel documentation",
             "<path>",
         );
+        opts.optflag("P", "no-pager", "Do not pipe output into a pager");
         opts.optflag("h", "help", "display this help and exit");
         opts.optflag("V", "version", "output version information and exit");
 
@@ -90,6 +93,7 @@ impl Args {
                 kernel_docs: matches.opt_str("d").map(PathBuf::from),
                 display_type,
                 ignore_errors: matches.opt_present("e"),
+                no_pager: matches.opt_present("P"),
                 param_to_explain: matches.opt_str("explain"),
                 param_names: matches.free,
             })

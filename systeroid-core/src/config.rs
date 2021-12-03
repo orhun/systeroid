@@ -22,17 +22,12 @@ pub struct Config {
 }
 
 /// Sysctl configuration.
-#[derive(Debug, Default)]
-pub struct SysctlConfig {
-    /// Whether if the errors should be ignored.
-    pub ignore_errors: bool,
-}
-
-/// Sysctl configuration.
 #[derive(Debug)]
 pub struct AppConfig {
     /// Whether if the colors are disabled.
     pub no_color: bool,
+    /// Whether if the pager is disabled.
+    pub no_pager: bool,
     /// Sections and the corresponding colors.
     pub section_colors: HashMap<Section, Color>,
     /// Default color for the output
@@ -45,6 +40,7 @@ impl Default for AppConfig {
     fn default() -> Self {
         Self {
             no_color: false,
+            no_pager: false,
             section_colors: map! {
                 Section::Abi => Color::Red,
                 Section::Fs => Color::Green,
@@ -59,4 +55,10 @@ impl Default for AppConfig {
             display_type: DisplayType::default(),
         }
     }
+}
+/// Sysctl configuration.
+#[derive(Debug, Default)]
+pub struct SysctlConfig {
+    /// Whether if the errors should be ignored.
+    pub ignore_errors: bool,
 }

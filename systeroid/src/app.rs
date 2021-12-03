@@ -72,6 +72,10 @@ impl<'a> App<'a> {
     pub fn display_documentation(&mut self, param_name: &str) -> Result<()> {
         if let Some(parameter) = self.sysctl.get_parameter(param_name) {
             let mut fallback_to_default = false;
+            if self.config.no_pager {
+                parameter.display_documentation(&mut self.stdout)?;
+                return Ok(());
+            }
             let pager = env::var("PAGER").unwrap_or_else(|_| String::from("less"));
             match Command::new(&pager).stdin(Stdio::piped()).spawn() {
                 Ok(mut process) => {
