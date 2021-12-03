@@ -1,10 +1,38 @@
 use crate::error::{Error, Result};
 use serde::de::DeserializeOwned;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use std::fs::{self, File};
 use std::io::Write;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
+use std::time::SystemTime;
 use systeroid_parser::reader;
+
+/// Cache data to store on the file system.
+#[derive(Debug, Serialize, Deserialize)]
+pub struct CacheData<Data> {
+    /// Cache data.
+    pub data: Data,
+    /// Timestamp of the data.
+    pub timestamp: u64,
+}
+
+impl<Data> CacheData<Data> {
+    /// Constructs a new instance.
+    pub fn new(data: Data, path: &Path) -> Result<Self> {
+        Ok(Self {
+            data,
+            timestamp: Self::get_timestamp(path)?,
+        })
+    }
+
+    /// Returns the last modification date of given file as UNIX timestamp.
+    pub fn get_timestamp(path: &Path) -> Result<u64> {
+        Ok(fs::metadata(&path)?
+            .modified()?
+            .duration_since(SystemTime::UNIX_EPOCH)?
+            .as_secs())
+    }
+}
 
 /// Cache manager for handling the R/W operations of labeled data.
 #[derive(Debug)]
@@ -37,19 +65,19 @@ impl Cache {
     }
 
     /// Reads the given labeled data from the cache.
-    pub fn read<Data: DeserializeOwned>(&self, label: &str) -> Result<Data> {
+    pub fn read<T: DeserializeOwned>(&self, label: &str) -> Result<CacheData<T>> {
         let raw_data = reader::read_to_string(self.get_cache_path(label))?;
         Ok(serde_json::from_str(&raw_data)?)
     }
 
     /// Writes the given data to the cache.
-    pub fn write<Data: ?Sized + Serialize>(&self, data: &Data, label: &str) -> Result<()> {
+    pub fn write<T: Serialize>(&self, data: CacheData<T>, label: &str) -> Result<()> {
         let cache_path = self.get_cache_path(label);
         if !cache_path.exists() {
             fs::create_dir_all(self.cache_dir.join(env!("CARGO_PKG_NAME")))?;
         };
         let mut file = File::create(&cache_path)?;
-        file.write_all(serde_json::to_string(data)?.as_bytes())?;
+        file.write_all(serde_json::to_string(&data)?.as_bytes())?;
         Ok(())
     }
 }

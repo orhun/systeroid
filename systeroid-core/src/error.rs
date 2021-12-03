@@ -15,6 +15,9 @@ pub enum Error {
     /// Error that may occur while de/serializing JSON data.
     #[error("JSON de/serialization error: `{0}`")]
     SerdeJsonError(#[from] serde_json::Error),
+    /// Error that may occur due to system time related anomalies.
+    #[error("System time error: `{0}`")]
+    SystemTimeError(#[from] std::time::SystemTimeError),
     /// Error that may occur while parsing documents.
     #[error("parser error: `{0}`")]
     ParseError(#[from] systeroid_parser::error::Error),

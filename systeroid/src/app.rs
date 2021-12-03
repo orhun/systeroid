@@ -2,11 +2,11 @@ use std::env;
 use std::io::{self, Stdout};
 use std::path::PathBuf;
 use std::process::{Command, Stdio};
-use systeroid_core::cache::Cache;
+use systeroid_core::cache::{Cache, CacheData};
 use systeroid_core::config::AppConfig;
 use systeroid_core::error::Result;
 use systeroid_core::parsers::KERNEL_DOCS_PATH;
-use systeroid_core::sysctl::{Parameter, Sysctl};
+use systeroid_core::sysctl::Sysctl;
 
 /// Label for caching the kernel parameters.
 const PARAMETERS_CACHE_LABEL: &str = "parameters";
@@ -45,19 +45,23 @@ impl<'a> App<'a> {
 
     /// Updates the documentation for kernel parameters.
     pub fn update_documentation(&mut self, kernel_docs: Option<&PathBuf>) -> Result<()> {
-        if self.cache.exists(PARAMETERS_CACHE_LABEL) && kernel_docs.is_none() {
-            self.sysctl
-                .update_params(self.cache.read::<Vec<Parameter>>(PARAMETERS_CACHE_LABEL)?);
-            return Ok(());
-        }
         let mut kernel_docs_path = KERNEL_DOCS_PATH.clone();
         if let Some(path) = kernel_docs {
             kernel_docs_path.insert(0, path);
         }
         if let Some(path) = kernel_docs_path.iter().find(|path| path.exists()) {
+            if self.cache.exists(PARAMETERS_CACHE_LABEL) && kernel_docs.is_none() {
+                let cache_data = self.cache.read(PARAMETERS_CACHE_LABEL)?;
+                if cache_data.timestamp == CacheData::<()>::get_timestamp(path)? {
+                    self.sysctl.update_params(cache_data.data);
+                    return Ok(());
+                }
+            }
             self.sysctl.update_docs(path)?;
-            self.cache
-                .write(&self.sysctl.parameters, PARAMETERS_CACHE_LABEL)?;
+            self.cache.write(
+                CacheData::new(&self.sysctl.parameters, path)?,
+                PARAMETERS_CACHE_LABEL,
+            )?;
         } else {
             eprintln!("warning: `Linux kernel documentation cannot be found. Please specify a path via '-d' argument`",);
         }
