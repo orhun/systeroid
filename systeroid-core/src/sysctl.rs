@@ -82,6 +82,7 @@ pub struct Parameter {
     /// Name of the kernel parameter.
     pub name: String,
     /// Value of the kernel parameter.
+    #[serde(skip)]
     pub value: String,
     /// Description of the kernel parameter
     pub description: Option<String>,
