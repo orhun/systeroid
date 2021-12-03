@@ -40,7 +40,7 @@ impl Args {
         opts.optflag("N", "names", "print variable names without values");
         opts.optflag("n", "values", "print only values of the given variable(s)");
         opts.optopt(
-            "",
+            "E",
             "explain",
             "provide a detailed explanation for a variable",
             "<var>",
