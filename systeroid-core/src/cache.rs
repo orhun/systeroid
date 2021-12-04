@@ -81,3 +81,23 @@ impl Cache {
         Ok(())
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::env;
+
+    #[test]
+    fn test_cache() -> Result<()> {
+        let cache = Cache::init()?;
+        let data = String::from("cache_test");
+        let cache_data = CacheData::new(
+            &data,
+            &Path::new(env!("CARGO_MANIFEST_DIR")).join("Cargo.toml"),
+        )?;
+        cache.write(cache_data, "data")?;
+        assert!(cache.exists("data"));
+        assert_eq!(data, cache.read::<String>("data")?.data);
+        Ok(())
+    }
+}
