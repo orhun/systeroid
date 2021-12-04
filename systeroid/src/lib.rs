@@ -28,7 +28,7 @@ pub fn run(args: Args) -> Result<()> {
         app.update_documentation(args.kernel_docs.as_ref())?;
         app.display_documentation(&param)?;
     } else if args.param_names.is_empty() {
-        app.display_parameters()?;
+        app.display_parameters(args.pattern)?;
     } else {
         for param_name in args.param_names {
             app.process_parameter(param_name)?;

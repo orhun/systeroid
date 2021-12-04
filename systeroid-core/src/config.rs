@@ -56,6 +56,7 @@ impl Default for AppConfig {
         }
     }
 }
+
 /// Sysctl configuration.
 #[derive(Debug, Default)]
 pub struct SysctlConfig {

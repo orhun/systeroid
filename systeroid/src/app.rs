@@ -6,6 +6,7 @@ use systeroid_core::cache::{Cache, CacheData};
 use systeroid_core::config::AppConfig;
 use systeroid_core::error::Result;
 use systeroid_core::parsers::KERNEL_DOCS_PATH;
+use systeroid_core::regex::Regex;
 use systeroid_core::sysctl::Sysctl;
 
 /// Label for caching the kernel parameters.
@@ -35,11 +36,18 @@ impl<'a> App<'a> {
         })
     }
 
-    /// Displays all of the available kernel modules.
-    pub fn display_parameters(&mut self) -> Result<()> {
+    /// Displays all of the available kernel parameters.
+    pub fn display_parameters(&mut self, pattern: Option<Regex>) -> Result<()> {
         self.sysctl
             .parameters
             .iter()
+            .filter(|parameter| {
+                if let Some(pattern) = &pattern {
+                    pattern.is_match(&parameter.name)
+                } else {
+                    true
+                }
+            })
             .try_for_each(|parameter| parameter.display_value(self.config, &mut self.stdout))
     }
 

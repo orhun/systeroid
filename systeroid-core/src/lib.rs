@@ -5,6 +5,9 @@
 #[macro_use]
 extern crate lazy_static;
 
+/// Export regex crate.
+pub use systeroid_parser::regex;
+
 /// Kernel parameter handler.
 pub mod sysctl;
 

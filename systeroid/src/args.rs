@@ -2,6 +2,7 @@ use getopts::Options;
 use std::env;
 use std::path::PathBuf;
 use systeroid_core::display::DisplayType;
+use systeroid_core::regex::Regex;
 
 /// Help message for the arguments.
 const HELP_MESSAGE: &str = r#"
@@ -24,6 +25,8 @@ pub struct Args {
     pub ignore_errors: bool,
     /// Do not pipe output into a pager.
     pub no_pager: bool,
+    /// Pattern for matching the parameters.
+    pub pattern: Option<Regex>,
     /// Parameter to explain.
     pub param_to_explain: Option<String>,
     /// Parameter names.
@@ -41,6 +44,12 @@ impl Args {
         opts.optflag("e", "ignore", "ignore unknown variables errors");
         opts.optflag("N", "names", "print variable names without values");
         opts.optflag("n", "values", "print only values of the given variable(s)");
+        opts.optopt(
+            "r",
+            "pattern",
+            "select setting that match expression",
+            "<expression>",
+        );
         opts.optopt(
             "E",
             "explain",
@@ -94,7 +103,10 @@ impl Args {
                 display_type,
                 ignore_errors: matches.opt_present("e"),
                 no_pager: matches.opt_present("P"),
-                param_to_explain: matches.opt_str("explain"),
+                pattern: matches
+                    .opt_str("r")
+                    .map(|v| Regex::new(&v).expect("invalid regex")),
+                param_to_explain: matches.opt_str("E"),
                 param_names: matches.free,
             })
         }
