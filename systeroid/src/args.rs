@@ -66,8 +66,9 @@ impl Args {
         opts.optflag("h", "help", "display this help and exit");
         opts.optflag("V", "version", "output version information and exit");
 
+        let env_args = env::args().collect::<Vec<String>>();
         let matches = opts
-            .parse(&env::args().collect::<Vec<String>>()[1..])
+            .parse(&env_args[1..])
             .map_err(|e| eprintln!("error: `{}`", e))
             .ok()?;
 
@@ -77,13 +78,21 @@ impl Args {
             || !matches.free.is_empty()
             || matches.opt_str("explain").is_some();
 
-        if matches.opt_present("h") || !required_args_present {
+        if matches.opt_present("h") || env_args.len() == 1 {
             let usage = opts.usage_with_format(|opts| {
                 HELP_MESSAGE
                     .replace("{bin}", env!("CARGO_PKG_NAME"))
                     .replace("{usage}", &opts.collect::<Vec<String>>().join("\n"))
             });
             println!("{}", usage);
+            None
+        } else if !required_args_present {
+            println!(
+                "{}: no variables specified\n\
+                Try `{} --help' for more information.",
+                env!("CARGO_PKG_NAME"),
+                env!("CARGO_PKG_NAME")
+            );
             None
         } else if matches.opt_present("V") {
             println!("{} {}", env!("CARGO_PKG_NAME"), env!("CARGO_PKG_VERSION"));
