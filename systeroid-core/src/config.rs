@@ -1,5 +1,5 @@
-use crate::display::DisplayType;
-use crate::sysctl::Section;
+use crate::sysctl::display::DisplayType;
+use crate::sysctl::section::Section;
 use colored::Color;
 use std::collections::HashMap;
 

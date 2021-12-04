@@ -7,7 +7,7 @@ use systeroid_core::config::AppConfig;
 use systeroid_core::error::Result;
 use systeroid_core::parsers::KERNEL_DOCS_PATH;
 use systeroid_core::regex::Regex;
-use systeroid_core::sysctl::Sysctl;
+use systeroid_core::sysctl::controller::Sysctl;
 
 /// Label for caching the kernel parameters.
 const PARAMETERS_CACHE_LABEL: &str = "parameters";

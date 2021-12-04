@@ -12,7 +12,7 @@ use crate::args::Args;
 use std::env;
 use systeroid_core::config::Config;
 use systeroid_core::error::Result;
-use systeroid_core::sysctl::Sysctl;
+use systeroid_core::sysctl::controller::Sysctl;
 
 /// Runs `systeroid`.
 pub fn run(args: Args) -> Result<()> {

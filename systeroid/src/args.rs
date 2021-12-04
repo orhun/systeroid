@@ -1,8 +1,8 @@
 use getopts::Options;
 use std::env;
 use std::path::PathBuf;
-use systeroid_core::display::DisplayType;
 use systeroid_core::regex::Regex;
+use systeroid_core::sysctl::display::DisplayType;
 
 /// Help message for the arguments.
 const HELP_MESSAGE: &str = r#"

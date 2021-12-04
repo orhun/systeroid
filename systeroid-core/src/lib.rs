@@ -8,7 +8,7 @@ extern crate lazy_static;
 /// Export regex crate.
 pub use systeroid_parser::regex;
 
-/// Kernel parameter handler.
+/// Sysctl implementation.
 pub mod sysctl;
 
 /// Error implementation.
@@ -19,9 +19,6 @@ pub mod parsers;
 
 /// Configuration.
 pub mod config;
-
-/// Display options.
-pub mod display;
 
 /// Cache manager.
 pub mod cache;
