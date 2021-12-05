@@ -58,6 +58,40 @@ jobs:
           command: build
           args: --target ${{ matrix.TARGET }}
 
+  test:
+    name: Run tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v2
+
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          override: true
+
+      - name: Setup cargo-tarpaulin
+        run: |
+          curl -s https://api.github.com/repos/xd009642/tarpaulin/releases/latest | \
+            grep "browser_download_url.*tar.gz" | cut -d : -f 2,3 | tr -d \" | wget -qi -
+          tar -xzf cargo-tarpaulin-*.tar.gz
+          mv cargo-tarpaulin ~/.cargo/bin/
+
+      - name: Run tests
+        run: cargo tarpaulin --out Xml --verbose
+
+      - name: Upload reports to codecov
+        uses: codecov/codecov-action@v1
+        with:
+          name: code-coverage-report
+          file: cobertura.xml
+          flags: unit-tests
+          fail_ci_if_error: true
+          verbose: true
+          token: ${{ secrets.CODECOV_TOKEN }}
+
   lint:
     name: Check lints
     runs-on: ubuntu-latest
