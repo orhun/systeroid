@@ -44,7 +44,7 @@ impl Sysctl {
         let parameter = self
             .parameters
             .iter_mut()
-            .find(|param| param.name == *param_name);
+            .find(|param| param.name == *param_name.replace("/", "."));
         if parameter.is_none() && !self.config.ignore_errors {
             eprintln!(
                 "{}: cannot stat /proc/{}: No such file or directory",
