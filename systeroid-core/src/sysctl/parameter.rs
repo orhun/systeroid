@@ -144,6 +144,9 @@ impl Parameter {
         let ctl = Ctl::new(&self.name)?;
         let new_value = ctl.set_value_string(new_value)?;
         self.value = new_value;
-        self.display_value(config, output)
+        if !config.quiet {
+            self.display_value(config, output)?;
+        }
+        Ok(())
     }
 }

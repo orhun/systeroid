@@ -19,6 +19,8 @@ For more details see {bin}(8)."#;
 pub struct Args {
     /// Whether if the verbose logging is enabled.
     pub verbose: bool,
+    /// Whether if the quiet mode is enabled.
+    pub quiet: bool,
     /// Path of the Linux kernel documentation.
     pub kernel_docs: Option<PathBuf>,
     /// Display type of the variables.
@@ -52,6 +54,7 @@ impl Args {
             "select setting that match expression",
             "<expression>",
         );
+        opts.optflag("q", "quiet", "do not echo variable set");
         opts.optopt(
             "E",
             "explain",
@@ -112,6 +115,7 @@ impl Args {
             };
             Some(Args {
                 verbose: matches.opt_present("v"),
+                quiet: matches.opt_present("q"),
                 kernel_docs: matches.opt_str("d").map(PathBuf::from),
                 display_type,
                 ignore_errors: matches.opt_present("e"),

@@ -24,6 +24,8 @@ pub struct Config {
 /// Sysctl configuration.
 #[derive(Debug)]
 pub struct AppConfig {
+    /// Whether if the quiet mode is enabled.
+    pub quiet: bool,
     /// Whether if the colors are disabled.
     pub no_color: bool,
     /// Whether if the pager is disabled.
@@ -39,6 +41,7 @@ pub struct AppConfig {
 impl Default for AppConfig {
     fn default() -> Self {
         Self {
+            quiet: false,
             no_color: false,
             no_pager: false,
             section_colors: map! {
