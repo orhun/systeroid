@@ -17,6 +17,8 @@ For more details see {bin}(8)."#;
 /// Command-line arguments.
 #[derive(Debug, Default)]
 pub struct Args {
+    /// Whether if the verbose logging is enabled.
+    pub verbose: bool,
     /// Path of the Linux kernel documentation.
     pub kernel_docs: Option<PathBuf>,
     /// Display type of the variables.
@@ -62,7 +64,8 @@ impl Args {
             "set the path of the kernel documentation",
             "<path>",
         );
-        opts.optflag("P", "no-pager", "Do not pipe output into a pager");
+        opts.optflag("P", "no-pager", "do not pipe output into a pager");
+        opts.optflag("v", "verbose", "enable the verbose logging");
         opts.optflag("h", "help", "display this help and exit");
         opts.optflag("V", "version", "output version information and exit");
 
@@ -108,6 +111,7 @@ impl Args {
                 DisplayType::Default
             };
             Some(Args {
+                verbose: matches.opt_present("v"),
                 kernel_docs: matches.opt_str("d").map(PathBuf::from),
                 display_type,
                 ignore_errors: matches.opt_present("e"),

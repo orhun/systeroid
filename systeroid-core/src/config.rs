@@ -60,6 +60,8 @@ impl Default for AppConfig {
 /// Sysctl configuration.
 #[derive(Debug, Default)]
 pub struct SysctlConfig {
+    /// Whether if the verbose logging is enabled.
+    pub verbose: bool,
     /// Whether if the errors should be ignored.
     pub ignore_errors: bool,
 }

@@ -32,7 +32,9 @@ impl Sysctl {
                     parameters.push(parameter);
                 }
                 Err(e) => {
-                    eprintln!("error: `{} ({})`", e, ctl.name()?);
+                    if config.verbose {
+                        eprintln!("{} ({})", e, ctl.name()?);
+                    }
                 }
             }
         }

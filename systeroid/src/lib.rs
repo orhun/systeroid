@@ -17,6 +17,7 @@ use systeroid_core::sysctl::controller::Sysctl;
 /// Runs `systeroid`.
 pub fn run(args: Args) -> Result<()> {
     let mut config = Config::default();
+    config.sysctl.verbose = args.verbose;
     config.sysctl.ignore_errors = args.ignore_errors;
     config.app.display_type = args.display_type;
     config.app.no_color = env::var("NO_COLOR").is_ok();
