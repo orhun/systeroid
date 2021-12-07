@@ -121,12 +121,15 @@ impl<'a> App<'a> {
         } else {
             None
         };
-        if let Some(parameter) = self.sysctl.get_parameter(&param_name) {
-            if let Some(new_value) = new_value {
+        if let Some(new_value) = new_value {
+            if let Some(parameter) = self.sysctl.get_parameter(&param_name) {
                 parameter.update_value(&new_value, self.config, &mut self.stdout)?;
-            } else {
-                parameter.display_value(self.config, &mut self.stdout)?;
             }
+        } else {
+            self.sysctl
+                .get_parameters(&param_name)
+                .iter()
+                .try_for_each(|parameter| parameter.display_value(self.config, &mut self.stdout))?;
         }
         Ok(())
     }

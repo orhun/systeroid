@@ -57,6 +57,30 @@ impl Sysctl {
         parameter
     }
 
+    /// Returns the parameters that matches the given query.
+    pub fn get_parameters(&self, query: &str) -> Vec<&Parameter> {
+        let parameters = self
+            .parameters
+            .iter()
+            .filter(|param| {
+                param.name == query.replace("/", ".")
+                    || param.section.to_string() == query
+                    || match param.name.split('.').collect::<Vec<&str>>().last() {
+                        Some(absolute_name) => absolute_name == &query.replace("/", "."),
+                        _ => false,
+                    }
+            })
+            .collect::<Vec<&Parameter>>();
+        if parameters.is_empty() {
+            eprintln!(
+                "{}: cannot stat /proc/{}: No such file or directory",
+                env!("CARGO_PKG_NAME").split('-').collect::<Vec<_>>()[0],
+                query.replace(".", "/")
+            )
+        }
+        parameters
+    }
+
     /// Updates the parameters using the given list.
     ///
     /// Keeps the original values.
