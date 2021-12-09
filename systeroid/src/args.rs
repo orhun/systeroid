@@ -52,6 +52,7 @@ impl Args {
         opts.optflag("N", "names", "print variable names without values");
         opts.optflag("n", "values", "print only values of the given variable(s)");
         opts.optflag("p", "load", "read values from file");
+        opts.optflag("f", "", "alias of -p");
         opts.optopt(
             "r",
             "pattern",
@@ -59,6 +60,7 @@ impl Args {
             "<expression>",
         );
         opts.optflag("q", "quiet", "do not echo variable set");
+        opts.optflag("d", "", "alias of -h");
         opts.optopt(
             "E",
             "explain",
@@ -82,18 +84,26 @@ impl Args {
             .map_err(|e| eprintln!("error: `{}`", e))
             .ok()?;
 
+        let preload_files = matches.opt_present("p") || matches.opt_present("f");
+        let show_help = matches.opt_present("h") || matches.opt_present("d");
         let required_args_present = matches.opt_present("a")
             || matches.opt_present("A")
             || matches.opt_present("X")
             || !matches.free.is_empty()
             || matches.opt_str("explain").is_some()
-            || matches.opt_present("p");
+            || preload_files;
 
-        if matches.opt_present("h") || env_args.len() == 1 {
+        if show_help || env_args.len() == 1 {
             let usage = opts.usage_with_format(|opts| {
                 HELP_MESSAGE
                     .replace("{bin}", env!("CARGO_PKG_NAME"))
-                    .replace("{usage}", &opts.collect::<Vec<String>>().join("\n"))
+                    .replace(
+                        "{usage}",
+                        &opts
+                            .filter(|msg| !msg.contains("alias of"))
+                            .collect::<Vec<String>>()
+                            .join("\n"),
+                    )
             });
             println!("{}", usage);
             None
@@ -118,7 +128,7 @@ impl Args {
             } else {
                 DisplayType::Default
             };
-            if matches.opt_present("p") && matches.free.is_empty() {
+            if preload_files && matches.free.is_empty() {
                 matches.free = vec![DEFAULT_PRELOAD.to_string()];
             }
             Some(Args {
@@ -128,7 +138,7 @@ impl Args {
                 display_type,
                 ignore_errors: matches.opt_present("e"),
                 no_pager: matches.opt_present("P"),
-                preload_files: matches.opt_present("p"),
+                preload_files,
                 pattern: matches
                     .opt_str("r")
                     .map(|v| Regex::new(&v).expect("invalid regex")),
