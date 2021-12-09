@@ -8,6 +8,7 @@ use systeroid_core::error::Result;
 use systeroid_core::parsers::KERNEL_DOCS_PATH;
 use systeroid_core::regex::Regex;
 use systeroid_core::sysctl::controller::Sysctl;
+use systeroid_parser::reader;
 
 /// Label for caching the kernel parameters.
 const PARAMETERS_CACHE_LABEL: &str = "parameters";
@@ -109,27 +110,44 @@ impl<'a> App<'a> {
     }
 
     /// Updates the parameter if it has the format `name=value`, displays it otherwise.
-    pub fn process_parameter(&mut self, mut param_name: String) -> Result<()> {
-        let new_value = if param_name.contains('=') {
-            let fields = param_name
+    pub fn process_parameter(&mut self, mut parameter: String, display_value: bool) -> Result<()> {
+        let new_value = if parameter.contains('=') {
+            let fields = parameter
                 .split('=')
-                .take(2)
                 .map(|v| v.trim().to_string())
                 .collect::<Vec<String>>();
-            param_name = fields[0].to_string();
-            Some(fields[1].to_string())
+            parameter = fields[0].to_string();
+            Some(fields[1..].join("="))
         } else {
             None
         };
         if let Some(new_value) = new_value {
-            if let Some(parameter) = self.sysctl.get_parameter(&param_name) {
-                parameter.update_value(&new_value, self.config, &mut self.stdout)?;
+            if let Some(param) = self.sysctl.get_parameter(&parameter) {
+                param.update_value(&new_value, self.config, &mut self.stdout)?;
             }
-        } else {
+        } else if display_value {
             self.sysctl
-                .get_parameters(&param_name)
+                .get_parameters(&parameter)
                 .iter()
                 .try_for_each(|parameter| parameter.display_value(self.config, &mut self.stdout))?;
+        }
+        Ok(())
+    }
+
+    /// Processes the parameters in the given file.
+    pub fn preload_values(&mut self, file: String) -> Result<()> {
+        let path = PathBuf::from(file);
+        if !path.exists() {
+            eprintln!(
+                "{}: cannot open {:?}: No such file or directory",
+                env!("CARGO_PKG_NAME"),
+                path
+            );
+            return Ok(());
+        }
+        let contents = reader::read_to_string(path)?;
+        for parameter in contents.lines() {
+            self.process_parameter(parameter.to_string(), false)?;
         }
         Ok(())
     }

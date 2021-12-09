@@ -29,11 +29,15 @@ pub fn run(args: Args) -> Result<()> {
     if let Some(param) = args.param_to_explain {
         app.update_documentation(args.kernel_docs.as_ref())?;
         app.display_documentation(&param)?;
-    } else if args.param_names.is_empty() {
+    } else if args.values.is_empty() {
         app.display_parameters(args.pattern)?;
+    } else if args.preload_files {
+        for file in args.values {
+            app.preload_values(file)?;
+        }
     } else {
-        for param_name in args.param_names {
-            app.process_parameter(param_name)?;
+        for param_name in args.values {
+            app.process_parameter(param_name, true)?;
         }
     }
 

@@ -3,6 +3,7 @@ use std::env;
 use std::path::PathBuf;
 use systeroid_core::regex::Regex;
 use systeroid_core::sysctl::display::DisplayType;
+use systeroid_core::sysctl::DEFAULT_PRELOAD;
 
 /// Help message for the arguments.
 const HELP_MESSAGE: &str = r#"
@@ -29,12 +30,14 @@ pub struct Args {
     pub ignore_errors: bool,
     /// Do not pipe output into a pager.
     pub no_pager: bool,
+    /// Whether if files are given to preload values.
+    pub preload_files: bool,
     /// Pattern for matching the parameters.
     pub pattern: Option<Regex>,
     /// Parameter to explain.
     pub param_to_explain: Option<String>,
-    /// Parameter names.
-    pub param_names: Vec<String>,
+    /// Free string fragments.
+    pub values: Vec<String>,
 }
 
 impl Args {
@@ -48,6 +51,7 @@ impl Args {
         opts.optflag("e", "ignore", "ignore unknown variables errors");
         opts.optflag("N", "names", "print variable names without values");
         opts.optflag("n", "values", "print only values of the given variable(s)");
+        opts.optflag("p", "load", "read values from file");
         opts.optopt(
             "r",
             "pattern",
@@ -73,7 +77,7 @@ impl Args {
         opts.optflag("V", "version", "output version information and exit");
 
         let env_args = env::args().collect::<Vec<String>>();
-        let matches = opts
+        let mut matches = opts
             .parse(&env_args[1..])
             .map_err(|e| eprintln!("error: `{}`", e))
             .ok()?;
@@ -82,7 +86,8 @@ impl Args {
             || matches.opt_present("A")
             || matches.opt_present("X")
             || !matches.free.is_empty()
-            || matches.opt_str("explain").is_some();
+            || matches.opt_str("explain").is_some()
+            || matches.opt_present("p");
 
         if matches.opt_present("h") || env_args.len() == 1 {
             let usage = opts.usage_with_format(|opts| {
@@ -113,6 +118,9 @@ impl Args {
             } else {
                 DisplayType::Default
             };
+            if matches.opt_present("p") && matches.free.is_empty() {
+                matches.free = vec![DEFAULT_PRELOAD.to_string()];
+            }
             Some(Args {
                 verbose: matches.opt_present("v"),
                 quiet: matches.opt_present("q"),
@@ -120,11 +128,12 @@ impl Args {
                 display_type,
                 ignore_errors: matches.opt_present("e"),
                 no_pager: matches.opt_present("P"),
+                preload_files: matches.opt_present("p"),
                 pattern: matches
                     .opt_str("r")
                     .map(|v| Regex::new(&v).expect("invalid regex")),
                 param_to_explain: matches.opt_str("E"),
-                param_names: matches.free,
+                values: matches.free,
             })
         }
     }
