@@ -78,11 +78,11 @@ impl<'a> App<'a> {
     /// Displays the documentation of a parameter.
     pub fn display_documentation(&mut self, param_name: &str) -> Result<()> {
         let no_pager = self.sysctl.config.no_pager;
-        if let Some(parameter) = self.sysctl.get_parameter(param_name) {
+        for parameter in self.sysctl.get_parameters(param_name) {
             let mut fallback_to_default = false;
             if no_pager {
                 parameter.display_documentation(&mut self.stdout)?;
-                return Ok(());
+                continue;
             }
             let pager = env::var("PAGER").unwrap_or_else(|_| String::from("less"));
             match Command::new(&pager).stdin(Stdio::piped()).spawn() {

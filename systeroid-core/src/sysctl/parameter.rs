@@ -127,7 +127,7 @@ impl Parameter {
     /// Prints the description of the kernel parameter to the given output.
     pub fn display_documentation<W: Write>(&self, output: &mut W) -> Result<()> {
         if let Some(documentation) = self.get_documentation() {
-            writeln!(output, "{}", documentation)?;
+            writeln!(output, "{}\n", documentation)?;
         } else {
             writeln!(output, "No documentation available")?;
         }

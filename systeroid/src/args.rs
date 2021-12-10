@@ -34,8 +34,8 @@ pub struct Args {
     pub preload_files: bool,
     /// Pattern for matching the parameters.
     pub pattern: Option<Regex>,
-    /// Parameter to explain.
-    pub param_to_explain: Option<String>,
+    /// Whether if the documentation should be shown.
+    pub explain_params: bool,
     /// Free string fragments.
     pub values: Vec<String>,
 }
@@ -61,11 +61,10 @@ impl Args {
         );
         opts.optflag("q", "quiet", "do not echo variable set");
         opts.optflag("d", "", "alias of -h");
-        opts.optopt(
+        opts.optflag(
             "E",
             "explain",
             "provide a detailed explanation for a variable",
-            "<var>",
         );
         opts.optopt(
             "d",
@@ -90,7 +89,7 @@ impl Args {
             || matches.opt_present("A")
             || matches.opt_present("X")
             || !matches.free.is_empty()
-            || matches.opt_str("explain").is_some()
+            || matches.opt_present("E")
             || preload_files;
 
         if show_help || env_args.len() == 1 {
@@ -142,7 +141,7 @@ impl Args {
                 pattern: matches
                     .opt_str("r")
                     .map(|v| Regex::new(&v).expect("invalid regex")),
-                param_to_explain: matches.opt_str("E"),
+                explain_params: matches.opt_present("E"),
                 values: matches.free,
             })
         }

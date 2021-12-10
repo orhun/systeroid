@@ -28,18 +28,20 @@ pub fn run(args: Args) -> Result<()> {
     let mut sysctl = Sysctl::init(config)?;
     let mut app = App::new(&mut sysctl)?;
 
-    if let Some(param) = args.param_to_explain {
-        app.update_documentation(args.kernel_docs.as_ref())?;
-        app.display_documentation(&param)?;
-    } else if args.values.is_empty() {
+    if args.values.is_empty() {
         app.display_parameters(args.pattern)?;
+    } else if args.explain_params {
+        app.update_documentation(args.kernel_docs.as_ref())?;
+        for param in args.values {
+            app.display_documentation(&param)?;
+        }
     } else if args.preload_files {
         for file in args.values {
             app.preload_values(file)?;
         }
     } else {
-        for param_name in args.values {
-            app.process_parameter(param_name, true)?;
+        for param in args.values {
+            app.process_parameter(param, true)?;
         }
     }
 
