@@ -3,7 +3,6 @@ use std::io::{self, Stdout};
 use std::path::PathBuf;
 use std::process::{Command, Stdio};
 use systeroid_core::cache::{Cache, CacheData};
-use systeroid_core::config::AppConfig;
 use systeroid_core::error::Result;
 use systeroid_core::parsers::KERNEL_DOCS_PATH;
 use systeroid_core::regex::Regex;
@@ -16,11 +15,9 @@ const PARAMETERS_CACHE_LABEL: &str = "parameters";
 /// Application controller.
 #[derive(Debug)]
 pub struct App<'a> {
-    /// Sysctl manager.
+    /// Sysctl controller.
     sysctl: &'a mut Sysctl,
-    /// Configuration.
-    config: &'a AppConfig,
-    /// Cache.
+    /// Application cache.
     cache: Cache,
     /// Standard output.
     stdout: Stdout,
@@ -28,10 +25,9 @@ pub struct App<'a> {
 
 impl<'a> App<'a> {
     /// Constructs a new instance.
-    pub fn new(sysctl: &'a mut Sysctl, config: &'a AppConfig) -> Result<Self> {
+    pub fn new(sysctl: &'a mut Sysctl) -> Result<Self> {
         Ok(Self {
             sysctl,
-            config,
             cache: Cache::init()?,
             stdout: io::stdout(),
         })
@@ -49,7 +45,9 @@ impl<'a> App<'a> {
                     true
                 }
             })
-            .try_for_each(|parameter| parameter.display_value(self.config, &mut self.stdout))
+            .try_for_each(|parameter| {
+                parameter.display_value(&self.sysctl.config, &mut self.stdout)
+            })
     }
 
     /// Updates the documentation for kernel parameters.
@@ -79,9 +77,10 @@ impl<'a> App<'a> {
 
     /// Displays the documentation of a parameter.
     pub fn display_documentation(&mut self, param_name: &str) -> Result<()> {
+        let no_pager = self.sysctl.config.no_pager;
         if let Some(parameter) = self.sysctl.get_parameter(param_name) {
             let mut fallback_to_default = false;
-            if self.config.no_pager {
+            if no_pager {
                 parameter.display_documentation(&mut self.stdout)?;
                 return Ok(());
             }
@@ -122,14 +121,17 @@ impl<'a> App<'a> {
             None
         };
         if let Some(new_value) = new_value {
+            let config = self.sysctl.config.clone();
             if let Some(param) = self.sysctl.get_parameter(&parameter) {
-                param.update_value(&new_value, self.config, &mut self.stdout)?;
+                param.update_value(&new_value, &config, &mut self.stdout)?;
             }
         } else if display_value {
             self.sysctl
                 .get_parameters(&parameter)
                 .iter()
-                .try_for_each(|parameter| parameter.display_value(self.config, &mut self.stdout))?;
+                .try_for_each(|parameter| {
+                    parameter.display_value(&self.sysctl.config, &mut self.stdout)
+                })?;
         }
         Ok(())
     }

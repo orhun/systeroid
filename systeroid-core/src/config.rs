@@ -12,18 +12,13 @@ macro_rules! map {
     }}
 }
 
-/// General configuration.
-#[derive(Debug, Default)]
+/// Configuration.
+#[derive(Clone, Debug)]
 pub struct Config {
-    /// Application configuration.
-    pub app: AppConfig,
-    /// Sysctl configuration.
-    pub sysctl: SysctlConfig,
-}
-
-/// Sysctl configuration.
-#[derive(Debug)]
-pub struct AppConfig {
+    /// Whether if the verbose logging is enabled.
+    pub verbose: bool,
+    /// Whether if the errors should be ignored.
+    pub ignore_errors: bool,
     /// Whether if the quiet mode is enabled.
     pub quiet: bool,
     /// Whether if the colors are disabled.
@@ -38,9 +33,11 @@ pub struct AppConfig {
     pub display_type: DisplayType,
 }
 
-impl Default for AppConfig {
+impl Default for Config {
     fn default() -> Self {
         Self {
+            verbose: false,
+            ignore_errors: false,
             quiet: false,
             no_color: false,
             no_pager: false,
@@ -58,13 +55,4 @@ impl Default for AppConfig {
             display_type: DisplayType::default(),
         }
     }
-}
-
-/// Sysctl configuration.
-#[derive(Debug, Default)]
-pub struct SysctlConfig {
-    /// Whether if the verbose logging is enabled.
-    pub verbose: bool,
-    /// Whether if the errors should be ignored.
-    pub ignore_errors: bool,
 }

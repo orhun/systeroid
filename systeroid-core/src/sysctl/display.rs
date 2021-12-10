@@ -1,5 +1,5 @@
 /// Possible ways of displaying the kernel variables.
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub enum DisplayType {
     /// Print the kernel variable name along with its value.
     Default,

@@ -16,15 +16,17 @@ use systeroid_core::sysctl::controller::Sysctl;
 
 /// Runs `systeroid`.
 pub fn run(args: Args) -> Result<()> {
-    let mut config = Config::default();
-    config.sysctl.verbose = args.verbose;
-    config.sysctl.ignore_errors = args.ignore_errors;
-    config.app.quiet = args.quiet;
-    config.app.no_color = env::var("NO_COLOR").is_ok();
-    config.app.no_pager = args.no_pager;
-    config.app.display_type = args.display_type;
-    let mut sysctl = Sysctl::init(config.sysctl)?;
-    let mut app = App::new(&mut sysctl, &config.app)?;
+    let config = Config {
+        verbose: args.verbose,
+        ignore_errors: args.ignore_errors,
+        quiet: args.quiet,
+        no_pager: args.no_pager,
+        display_type: args.display_type,
+        no_color: env::var("NO_COLOR").is_ok(),
+        ..Default::default()
+    };
+    let mut sysctl = Sysctl::init(config)?;
+    let mut app = App::new(&mut sysctl)?;
 
     if let Some(param) = args.param_to_explain {
         app.update_documentation(args.kernel_docs.as_ref())?;

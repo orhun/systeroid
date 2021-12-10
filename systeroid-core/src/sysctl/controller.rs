@@ -1,4 +1,4 @@
-use crate::config::SysctlConfig;
+use crate::config::Config;
 use crate::error::Result;
 use crate::parsers::parse_kernel_docs;
 use crate::sysctl::parameter::Parameter;
@@ -15,12 +15,12 @@ pub struct Sysctl {
     /// Available kernel parameters.
     pub parameters: Vec<Parameter>,
     /// Configuration.
-    pub config: SysctlConfig,
+    pub config: Config,
 }
 
 impl Sysctl {
     /// Constructs a new instance by fetching the available kernel parameters.
-    pub fn init(config: SysctlConfig) -> Result<Self> {
+    pub fn init(config: Config) -> Result<Self> {
         let mut parameters = Vec::new();
         for ctl in CtlIter::root().filter_map(StdResult::ok).filter(|ctl| {
             ctl.flags()

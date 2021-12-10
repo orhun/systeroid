@@ -1,4 +1,4 @@
-use crate::config::AppConfig;
+use crate::config::Config;
 use crate::error::Result;
 use crate::sysctl::display::DisplayType;
 use crate::sysctl::section::Section;
@@ -45,7 +45,7 @@ impl<'a> TryFrom<&'a Ctl> for Parameter {
 
 impl Parameter {
     /// Returns the parameter name with corresponding section colors.
-    pub fn colored_name(&self, config: &AppConfig) -> String {
+    pub fn colored_name(&self, config: &Config) -> String {
         let fields = self.name.split('.').collect::<Vec<&str>>();
         fields
             .iter()
@@ -69,7 +69,7 @@ impl Parameter {
     }
 
     /// Prints the kernel parameter to given output.
-    pub fn display_value<W: Write>(&self, config: &AppConfig, output: &mut W) -> Result<()> {
+    pub fn display_value<W: Write>(&self, config: &Config, output: &mut W) -> Result<()> {
         if !config.no_color {
             match config.display_type {
                 DisplayType::Name => {
@@ -138,7 +138,7 @@ impl Parameter {
     pub fn update_value<W: Write>(
         &mut self,
         new_value: &str,
-        config: &AppConfig,
+        config: &Config,
         output: &mut W,
     ) -> Result<()> {
         let ctl = Ctl::new(&self.name)?;
