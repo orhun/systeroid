@@ -47,24 +47,24 @@ impl Args {
         opts.optflag("a", "all", "display all variables");
         opts.optflag("A", "", "alias of -a");
         opts.optflag("X", "", "alias of -a");
-        opts.optflag("b", "binary", "print value without new line");
-        opts.optflag("e", "ignore", "ignore unknown variables errors");
-        opts.optflag("N", "names", "print variable names without values");
-        opts.optflag("n", "values", "print only values of the given variable(s)");
+        opts.optflag("e", "ignore", "ignore unknown variable errors");
+        opts.optflag("N", "names", "print only variable names");
+        opts.optflag("n", "values", "print only variable values");
+        opts.optflag("b", "binary", "print only variable values without new line");
         opts.optflag("p", "load", "read values from file");
         opts.optflag("f", "", "alias of -p");
         opts.optopt(
             "r",
             "pattern",
-            "select setting that match expression",
-            "<expression>",
+            "use a regex for matching variable names",
+            "<expr>",
         );
-        opts.optflag("q", "quiet", "do not echo variable set");
+        opts.optflag("q", "quiet", "do not print variable after the value is set");
         opts.optflag("d", "", "alias of -h");
         opts.optflag(
             "E",
             "explain",
-            "provide a detailed explanation for a variable",
+            "provide a detailed explanation for variable",
         );
         opts.optopt(
             "d",
@@ -73,7 +73,7 @@ impl Args {
             "<path>",
         );
         opts.optflag("P", "no-pager", "do not pipe output into a pager");
-        opts.optflag("v", "verbose", "enable the verbose logging");
+        opts.optflag("v", "verbose", "enable verbose logging");
         opts.optflag("h", "help", "display this help and exit");
         opts.optflag("V", "version", "output version information and exit");
 
