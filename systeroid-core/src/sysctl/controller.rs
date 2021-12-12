@@ -46,12 +46,12 @@ impl Sysctl {
         let parameter = self
             .parameters
             .iter_mut()
-            .find(|param| param.name == *param_name.replace("/", "."));
+            .find(|param| param.name == *param_name.replace('/', "."));
         if parameter.is_none() && !self.config.ignore_errors {
             eprintln!(
                 "{}: cannot stat /proc/{}: No such file or directory",
                 env!("CARGO_PKG_NAME").split('-').collect::<Vec<_>>()[0],
-                param_name.replace(".", "/")
+                param_name.replace('.', "/")
             )
         }
         parameter
@@ -63,16 +63,16 @@ impl Sysctl {
             .parameters
             .iter()
             .filter(|param| {
-                param.name == query.replace("/", ".")
+                param.name == query.replace('/', ".")
                     || param.section.to_string() == query
-                    || param.absolute_name() == Some(&query.replace("/", "."))
+                    || param.absolute_name() == Some(&query.replace('/', "."))
             })
             .collect::<Vec<&Parameter>>();
         if parameters.is_empty() {
             eprintln!(
                 "{}: cannot stat /proc/{}: No such file or directory",
                 env!("CARGO_PKG_NAME").split('-').collect::<Vec<_>>()[0],
-                query.replace(".", "/")
+                query.replace('.', "/")
             )
         }
         parameters

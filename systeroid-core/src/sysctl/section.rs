@@ -37,7 +37,7 @@ impl From<String> for Section {
 impl<'a> From<&'a Path> for Section {
     fn from(value: &'a Path) -> Self {
         for section in Self::variants() {
-            if value.file_stem().map(|v| v.to_str()).flatten() == Some(&section.to_string()) {
+            if value.file_stem().and_then(|v| v.to_str()) == Some(&section.to_string()) {
                 return *section;
             }
         }
