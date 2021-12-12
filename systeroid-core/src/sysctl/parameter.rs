@@ -44,6 +44,11 @@ impl<'a> TryFrom<&'a Ctl> for Parameter {
 }
 
 impl Parameter {
+    /// Returns the absolute name of the parameter, without the sections.
+    pub fn absolute_name(&self) -> Option<&str> {
+        self.name.split('.').collect::<Vec<&str>>().last().copied()
+    }
+
     /// Returns the parameter name with corresponding section colors.
     pub fn colored_name(&self, config: &Config) -> String {
         let fields = self.name.split('.').collect::<Vec<&str>>();

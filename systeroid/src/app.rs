@@ -7,6 +7,7 @@ use systeroid_core::error::Result;
 use systeroid_core::parsers::KERNEL_DOCS_PATH;
 use systeroid_core::regex::Regex;
 use systeroid_core::sysctl::controller::Sysctl;
+use systeroid_core::sysctl::DEPRECATED_VARIABLES;
 use systeroid_parser::reader;
 
 /// Label for caching the kernel parameters.
@@ -34,16 +35,24 @@ impl<'a> App<'a> {
     }
 
     /// Displays all of the available kernel parameters.
-    pub fn display_parameters(&mut self, pattern: Option<Regex>) -> Result<()> {
+    pub fn display_parameters(
+        &mut self,
+        pattern: Option<Regex>,
+        display_deprecated: bool,
+    ) -> Result<()> {
         self.sysctl
             .parameters
             .iter()
             .filter(|parameter| {
                 if let Some(pattern) = &pattern {
-                    pattern.is_match(&parameter.name)
-                } else {
-                    true
+                    return pattern.is_match(&parameter.name);
                 }
+                if !display_deprecated {
+                    if let Some(param_name) = parameter.absolute_name() {
+                        return !DEPRECATED_VARIABLES.contains(&param_name);
+                    }
+                }
+                true
             })
             .try_for_each(|parameter| {
                 parameter.display_value(&self.sysctl.config, &mut self.stdout)

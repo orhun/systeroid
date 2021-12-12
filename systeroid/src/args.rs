@@ -26,13 +26,15 @@ pub struct Args {
     pub kernel_docs: Option<PathBuf>,
     /// Display type of the variables.
     pub display_type: DisplayType,
+    /// Whether if the deprecated variables should be included while listing.
+    pub display_deprecated: bool,
     /// Whether if the unknown variable errors should be ignored.
     pub ignore_errors: bool,
     /// Do not pipe output into a pager.
     pub no_pager: bool,
     /// Whether if files are given to preload values.
     pub preload_files: bool,
-    /// Pattern for matching the parameters.
+    /// Pattern for matching the variables.
     pub pattern: Option<Regex>,
     /// Whether if the documentation should be shown.
     pub explain_params: bool,
@@ -47,6 +49,11 @@ impl Args {
         opts.optflag("a", "all", "display all variables");
         opts.optflag("A", "", "alias of -a");
         opts.optflag("X", "", "alias of -a");
+        opts.optflag(
+            "D",
+            "deprecated",
+            "include deprecated variables while listing",
+        );
         opts.optflag("e", "ignore", "ignore unknown variable errors");
         opts.optflag("N", "names", "print only variable names");
         opts.optflag("n", "values", "print only variable values");
@@ -136,6 +143,7 @@ impl Args {
                 quiet: matches.opt_present("q"),
                 kernel_docs: matches.opt_str("d").map(PathBuf::from),
                 display_type,
+                display_deprecated: matches.opt_present("D"),
                 ignore_errors: matches.opt_present("e"),
                 no_pager: matches.opt_present("P"),
                 preload_files,
