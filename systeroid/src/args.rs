@@ -8,7 +8,7 @@ use systeroid_core::sysctl::DEFAULT_PRELOAD;
 /// Help message for the arguments.
 const HELP_MESSAGE: &str = r#"
 Usage:
-    {bin} [options] [variable[=value] ...]
+    {bin} [options] [variable[=value] ...] --load[=<file>]
 
 Options:
 {usage}
