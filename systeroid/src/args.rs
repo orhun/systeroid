@@ -41,7 +41,7 @@ pub struct Args {
     /// Pattern for matching the variables.
     pub pattern: Option<Regex>,
     /// Whether if the documentation should be shown.
-    pub explain_params: bool,
+    pub explain: bool,
     /// Free string fragments.
     pub values: Vec<String>,
 }
@@ -163,7 +163,7 @@ impl Args {
                 pattern: matches
                     .opt_str("r")
                     .map(|v| Regex::new(&v).expect("invalid regex")),
-                explain_params: matches.opt_present("E"),
+                explain: matches.opt_present("E"),
                 values: matches.free,
             })
         }

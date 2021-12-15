@@ -7,7 +7,7 @@ use systeroid_core::error::Result;
 use systeroid_core::parsers::KERNEL_DOCS_PATH;
 use systeroid_core::regex::Regex;
 use systeroid_core::sysctl::controller::Sysctl;
-use systeroid_core::sysctl::{DEPRECATED_VARIABLES, SYSTEM_PRELOAD};
+use systeroid_core::sysctl::{DEPRECATED_PARAMS, SYSTEM_PRELOAD};
 use systeroid_parser::globwalk;
 use systeroid_parser::reader;
 
@@ -50,7 +50,7 @@ impl<'a> App<'a> {
                 }
                 if !display_deprecated {
                     if let Some(param_name) = parameter.absolute_name() {
-                        return !DEPRECATED_VARIABLES.contains(&param_name);
+                        return !DEPRECATED_PARAMS.contains(&param_name);
                     }
                 }
                 true
@@ -138,7 +138,7 @@ impl<'a> App<'a> {
         if let Some(new_value) = new_value {
             let config = self.sysctl.config.clone();
             if let Some(param) = self.sysctl.get_parameter(&parameter) {
-                if DEPRECATED_VARIABLES.contains(&param.absolute_name().unwrap_or_default()) {
+                if DEPRECATED_PARAMS.contains(&param.absolute_name().unwrap_or_default()) {
                     eprintln!(
                         "{}: {} is deprecated, value not set",
                         env!("CARGO_PKG_NAME"),

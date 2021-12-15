@@ -1,13 +1,13 @@
-/// Possible ways of displaying the kernel variables.
+/// Possible ways of displaying the kernel parameters.
 #[derive(Clone, Debug)]
 pub enum DisplayType {
-    /// Print the kernel variable name along with its value.
+    /// Print the kernel parameter name along with its value.
     Default,
-    /// Print only the name of the variable.
+    /// Print only the name of the parameter.
     Name,
-    /// Print only the value of the variable.
+    /// Print only the value of the parameter.
     Value,
-    /// Print only the value of the variable without new line.
+    /// Print only the value of the parameter without new line.
     Binary,
 }
 

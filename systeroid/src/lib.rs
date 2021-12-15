@@ -32,7 +32,7 @@ pub fn run(args: Args) -> Result<()> {
         app.preload_from_system()?;
     } else if args.values.is_empty() {
         app.display_parameters(args.pattern, args.display_deprecated)?;
-    } else if args.explain_params {
+    } else if args.explain {
         app.update_documentation(args.kernel_docs.as_ref())?;
         for param in args.values {
             app.display_documentation(&param)?;
