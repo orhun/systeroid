@@ -132,7 +132,15 @@ impl<'a> App<'a> {
         if let Some(new_value) = new_value {
             let config = self.sysctl.config.clone();
             if let Some(param) = self.sysctl.get_parameter(&parameter) {
-                param.update_value(&new_value, &config, &mut self.stdout)?;
+                if DEPRECATED_VARIABLES.contains(&param.absolute_name().unwrap_or_default()) {
+                    eprintln!(
+                        "{}: {} is deprecated, value not set",
+                        env!("CARGO_PKG_NAME"),
+                        parameter
+                    );
+                } else {
+                    param.update_value(&new_value, &config, &mut self.stdout)?;
+                }
             }
         } else if display_value {
             self.sysctl
