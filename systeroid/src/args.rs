@@ -73,6 +73,8 @@ impl Args {
         );
         opts.optflag("q", "quiet", "do not print variable after the value is set");
         opts.optflag("w", "write", "only enable writing a value to variable");
+        opts.optflag("o", "", "does nothing");
+        opts.optflag("x", "", "does nothing");
         opts.optflag("d", "", "alias of -h");
         opts.optflag(
             "E",
@@ -114,7 +116,9 @@ impl Args {
                     .replace(
                         "{usage}",
                         &opts
-                            .filter(|msg| !msg.contains("alias of"))
+                            .filter(|msg| {
+                                !(msg.contains("alias of") || msg.contains("does nothing"))
+                            })
                             .collect::<Vec<String>>()
                             .join("\n"),
                     )
