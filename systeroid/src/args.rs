@@ -36,6 +36,8 @@ pub struct Args {
     pub no_pager: bool,
     /// Whether if files are given to preload values.
     pub preload_files: bool,
+    /// Whether if the values will be preloaded from system.
+    pub preload_system_files: bool,
     /// Pattern for matching the variables.
     pub pattern: Option<Regex>,
     /// Whether if the documentation should be shown.
@@ -62,6 +64,7 @@ impl Args {
         opts.optflag("b", "binary", "print only variable values without new line");
         opts.optflag("p", "load", "read values from file");
         opts.optflag("f", "", "alias of -p");
+        opts.optflag("S", "system", "read values from all system directories");
         opts.optopt(
             "r",
             "pattern",
@@ -100,6 +103,7 @@ impl Args {
         let required_args_present = !matches.free.is_empty()
             || display_all
             || preload_files
+            || matches.opt_present("S")
             || matches.opt_present("r")
             || matches.opt_present("E");
 
@@ -151,6 +155,7 @@ impl Args {
                 ignore_errors: matches.opt_present("e"),
                 no_pager: matches.opt_present("P"),
                 preload_files,
+                preload_system_files: matches.opt_present("S"),
                 pattern: matches
                     .opt_str("r")
                     .map(|v| Regex::new(&v).expect("invalid regex")),

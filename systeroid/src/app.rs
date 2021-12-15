@@ -7,7 +7,8 @@ use systeroid_core::error::Result;
 use systeroid_core::parsers::KERNEL_DOCS_PATH;
 use systeroid_core::regex::Regex;
 use systeroid_core::sysctl::controller::Sysctl;
-use systeroid_core::sysctl::DEPRECATED_VARIABLES;
+use systeroid_core::sysctl::{DEPRECATED_VARIABLES, SYSTEM_PRELOAD};
+use systeroid_parser::globwalk;
 use systeroid_parser::reader;
 
 /// Label for caching the kernel parameters.
@@ -179,6 +180,29 @@ impl<'a> App<'a> {
         for parameter in contents.lines() {
             self.process_parameter(parameter.to_string(), false, false)?;
         }
+        Ok(())
+    }
+
+    /// Processes the parameters in files that are in predefined system directories.
+    pub fn preload_from_system(&mut self) -> Result<()> {
+        for preload_path in SYSTEM_PRELOAD
+            .iter()
+            .map(|v| PathBuf::from(v).join("*.conf"))
+        {
+            if let Ok(glob_walker) = globwalk::glob(preload_path.to_string_lossy()) {
+                for file in glob_walker.filter_map(|v| v.ok()) {
+                    println!("* Applying {} ...", file.path().display());
+                    let contents = reader::read_to_string(file.path())?;
+                    for parameter in contents.lines() {
+                        if let Err(e) = self.process_parameter(parameter.to_string(), false, false)
+                        {
+                            eprintln!("{}: {}", env!("CARGO_PKG_NAME"), e);
+                        }
+                    }
+                }
+            }
+        }
+
         Ok(())
     }
 }

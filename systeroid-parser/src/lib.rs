@@ -5,6 +5,9 @@
 /// Export regex crate.
 pub use regex;
 
+/// Export globwalk crate.
+pub use globwalk;
+
 /// Document parser.
 pub mod parser;
 

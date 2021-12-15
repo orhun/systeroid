@@ -28,7 +28,9 @@ pub fn run(args: Args) -> Result<()> {
     let mut sysctl = Sysctl::init(config)?;
     let mut app = App::new(&mut sysctl)?;
 
-    if args.values.is_empty() {
+    if args.preload_system_files {
+        app.preload_from_system()?;
+    } else if args.values.is_empty() {
         app.display_parameters(args.pattern, args.display_deprecated)?;
     } else if args.explain_params {
         app.update_documentation(args.kernel_docs.as_ref())?;
