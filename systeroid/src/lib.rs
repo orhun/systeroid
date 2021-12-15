@@ -41,7 +41,7 @@ pub fn run(args: Args) -> Result<()> {
         }
     } else {
         for param in args.values {
-            app.process_parameter(param, true)?;
+            app.process_parameter(param, true, args.write)?;
         }
     }
 

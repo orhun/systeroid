@@ -22,6 +22,8 @@ pub struct Args {
     pub verbose: bool,
     /// Whether if the quiet mode is enabled.
     pub quiet: bool,
+    /// Whether if only the write mode is enabled.
+    pub write: bool,
     /// Path of the Linux kernel documentation.
     pub kernel_docs: Option<PathBuf>,
     /// Display type of the variables.
@@ -67,6 +69,7 @@ impl Args {
             "<expr>",
         );
         opts.optflag("q", "quiet", "do not print variable after the value is set");
+        opts.optflag("w", "write", "only enable writing a value to variable");
         opts.optflag("d", "", "alias of -h");
         opts.optflag(
             "E",
@@ -141,6 +144,7 @@ impl Args {
             Some(Args {
                 verbose: matches.opt_present("v"),
                 quiet: matches.opt_present("q"),
+                write: matches.opt_present("w"),
                 kernel_docs: matches.opt_str("d").map(PathBuf::from),
                 display_type,
                 display_deprecated: matches.opt_present("D"),

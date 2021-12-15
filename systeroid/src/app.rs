@@ -118,7 +118,12 @@ impl<'a> App<'a> {
     }
 
     /// Updates the parameter if it has the format `name=value`, displays it otherwise.
-    pub fn process_parameter(&mut self, mut parameter: String, display_value: bool) -> Result<()> {
+    pub fn process_parameter(
+        &mut self,
+        mut parameter: String,
+        display_value: bool,
+        write_mode: bool,
+    ) -> Result<()> {
         let new_value = if parameter.contains('=') {
             let fields = parameter
                 .split('=')
@@ -142,6 +147,12 @@ impl<'a> App<'a> {
                     param.update_value(&new_value, &config, &mut self.stdout)?;
                 }
             }
+        } else if write_mode {
+            eprintln!(
+                "{}: {:?} must be in the format: name=value",
+                env!("CARGO_PKG_NAME"),
+                parameter
+            );
         } else if display_value {
             self.sysctl
                 .get_parameters(&parameter)
@@ -166,7 +177,7 @@ impl<'a> App<'a> {
         }
         let contents = reader::read_to_string(path)?;
         for parameter in contents.lines() {
-            self.process_parameter(parameter.to_string(), false)?;
+            self.process_parameter(parameter.to_string(), false, false)?;
         }
         Ok(())
     }
