@@ -9,7 +9,6 @@ pub mod args;
 
 use crate::app::App;
 use crate::args::Args;
-use std::env;
 use systeroid_core::config::Config;
 use systeroid_core::error::Result;
 use systeroid_core::sysctl::controller::Sysctl;
@@ -22,7 +21,6 @@ pub fn run(args: Args) -> Result<()> {
         quiet: args.quiet,
         no_pager: args.no_pager,
         display_type: args.display_type,
-        no_color: env::var("NO_COLOR").is_ok(),
         ..Default::default()
     };
     let mut sysctl = Sysctl::init(config)?;

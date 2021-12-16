@@ -21,8 +21,6 @@ pub struct Config {
     pub ignore_errors: bool,
     /// Whether if the quiet mode is enabled.
     pub quiet: bool,
-    /// Whether if the colors are disabled.
-    pub no_color: bool,
     /// Whether if the pager is disabled.
     pub no_pager: bool,
     /// Sections and the corresponding colors.
@@ -39,7 +37,6 @@ impl Default for Config {
             verbose: false,
             ignore_errors: false,
             quiet: false,
-            no_color: false,
             no_pager: false,
             section_colors: map! {
                 Section::Abi => Color::Red,
