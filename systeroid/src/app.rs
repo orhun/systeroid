@@ -8,7 +8,7 @@ use systeroid_core::parsers::KERNEL_DOCS_PATH;
 use systeroid_core::regex::Regex;
 use systeroid_core::sysctl::controller::Sysctl;
 use systeroid_core::sysctl::{DEPRECATED_PARAMS, SYSTEM_PRELOAD};
-use systeroid_core::tree::Tree;
+use systeroid_core::tree::{Tree, TreeNode};
 use systeroid_parser::globwalk;
 use systeroid_parser::reader;
 
@@ -55,7 +55,23 @@ impl<'a> App<'a> {
             true
         });
         if tree_output {
-            Tree::new(&mut parameters, '.').print(&mut self.stdout)?;
+            let mut root_node = TreeNode::default();
+            parameters.for_each(|parameter| {
+                let mut components = parameter
+                    .name
+                    .split('.')
+                    .map(String::from)
+                    .collect::<Vec<String>>();
+                if let Some(last_component) = components.last_mut() {
+                    *last_component = format!(
+                        "{} = {}",
+                        last_component,
+                        parameter.value.replace('\n', " ")
+                    );
+                }
+                root_node.add(&mut components.iter().map(|v| v.as_ref()));
+            });
+            Tree::new(root_node.childs).print(&mut self.stdout)?;
         } else {
             parameters.try_for_each(|parameter| {
                 parameter.display_value(&self.sysctl.config, &mut self.stdout)

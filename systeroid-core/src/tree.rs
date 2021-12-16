@@ -14,12 +14,12 @@ pub struct TreeNode {
     /// Value of the node.
     value: String,
     /// Childs of the node.
-    childs: Vec<TreeNode>,
+    pub childs: Vec<TreeNode>,
 }
 
 impl TreeNode {
     /// Adds new child nodes to the tree node.
-    fn add<'a, I: Iterator<Item = &'a str>>(&mut self, values: &mut I) {
+    pub fn add<'a, I: Iterator<Item = &'a str>>(&mut self, values: &mut I) {
         if let Some(value) = values.next() {
             let mut found = false;
             for child in self.childs.iter_mut() {
@@ -88,7 +88,12 @@ pub struct Tree {
 
 impl Tree {
     /// Constructs a new instance.
-    pub fn new<I, O>(input: &mut I, seperator: char) -> Self
+    pub fn new(nodes: Vec<TreeNode>) -> Self {
+        Self { nodes }
+    }
+
+    /// Constructs a new instance from given input.
+    pub fn from_input<I, O>(input: &mut I, seperator: char) -> Self
     where
         I: Iterator<Item = O>,
         O: Display,
@@ -98,7 +103,7 @@ impl Tree {
             let mut components = line.split(seperator);
             root.add(&mut components);
         }
-        Self { nodes: root.childs }
+        Self::new(root.childs)
     }
 
     /// Prints the full tree to the given output.
@@ -115,7 +120,7 @@ mod tests {
     use super::*;
 
     fn test_single_tree_creation(lines: &[&str], seperator: char, expected_tree: TreeNode) {
-        let tree = Tree::new(&mut lines.iter(), seperator);
+        let tree = Tree::from_input(&mut lines.iter(), seperator);
         assert_eq!(1, tree.nodes.len());
         assert_eq!(expected_tree, tree.nodes[0]);
     }
@@ -194,7 +199,7 @@ mod tests {
             childs: vec![b],
         };
 
-        let tree = Tree::new(&mut lines.iter(), '/');
+        let tree = Tree::from_input(&mut lines.iter(), '/');
         assert_eq!(2, tree.nodes.len());
         assert_eq!(a, tree.nodes[0]);
         assert_eq!(c, tree.nodes[1]);
