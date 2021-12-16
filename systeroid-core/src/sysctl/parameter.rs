@@ -51,16 +51,16 @@ impl Parameter {
 
     /// Returns the parameter name with corresponding section colors.
     pub fn colored_name(&self, config: &Config) -> String {
+        let section_color = *(config
+            .section_colors
+            .get(&self.section)
+            .unwrap_or(&config.default_color));
         let fields = self.name.split('.').collect::<Vec<&str>>();
         fields
             .iter()
             .enumerate()
             .fold(String::new(), |mut result, (i, v)| {
                 if i != fields.len() - 1 {
-                    let section_color = *(config
-                        .section_colors
-                        .get(&self.section)
-                        .unwrap_or(&config.default_color));
                     result += &format!(
                         "{}{}",
                         v.color(section_color),
@@ -71,6 +71,38 @@ impl Parameter {
                 }
                 result
             })
+    }
+
+    /// Returns the components of the parameter to contruct a [`Tree`].
+    ///
+    /// [`Tree`]: crate::tree::Tree
+    pub fn get_tree_components(&self, config: &Config) -> Vec<String> {
+        let section_color = *(config
+            .section_colors
+            .get(&self.section)
+            .unwrap_or(&config.default_color));
+        let mut components = self
+            .name
+            .split('.')
+            .map(String::from)
+            .collect::<Vec<String>>();
+        let total_components = components.len();
+        components
+            .iter_mut()
+            .enumerate()
+            .for_each(|(i, component)| {
+                if i != total_components - 1 {
+                    *component = component.color(section_color).to_string();
+                } else {
+                    *component = format!(
+                        "{} {} {}",
+                        component,
+                        "=".color(config.default_color),
+                        self.value.replace('\n', " ").bold()
+                    );
+                }
+            });
+        components
     }
 
     /// Prints the kernel parameter to given output.

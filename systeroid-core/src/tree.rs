@@ -1,8 +1,9 @@
+use colored::*;
 use std::fmt::Display;
 use std::io::{Result as IoResult, Write};
 
-/// Vertical character for connecting sequential nodes.
-const VERTICAL_CHAR: char = '│';
+/// Vertical connector.
+const VERTICAL_STR: &str = "│";
 /// Horizontal connector.
 const HORIZONTAL_STR: &str = "├──";
 /// Horizontal connector for the last node.
@@ -47,8 +48,9 @@ impl TreeNode {
         &self,
         out: &mut Output,
         connectors: &mut Vec<bool>,
+        connector_color: Color,
     ) -> IoResult<()> {
-        self.print_line(out, &connectors[..])?;
+        self.print_line(out, &connectors[..], connector_color)?;
         connectors.push(false);
         for (i, child) in self.childs.iter().enumerate() {
             if self.childs.len() == i + 1 {
@@ -56,22 +58,31 @@ impl TreeNode {
                     *last_connector = true;
                 }
             }
-            child.print(out, connectors)?;
+            child.print(out, connectors, connector_color)?;
         }
         connectors.pop();
         Ok(())
     }
 
     /// Prints a single line with the given connectors.
-    fn print_line<Output: Write>(&self, output: &mut Output, connectors: &[bool]) -> IoResult<()> {
+    fn print_line<Output: Write>(
+        &self,
+        output: &mut Output,
+        connectors: &[bool],
+        connector_color: Color,
+    ) -> IoResult<()> {
         if let Some(last_connector) = connectors.last() {
             for last in &connectors[..connectors.len() - 1] {
-                write!(output, "{}   ", if *last { ' ' } else { VERTICAL_CHAR })?;
+                write!(
+                    output,
+                    "{}   ",
+                    if *last { " " } else { VERTICAL_STR }.color(connector_color)
+                )?;
             }
             if *last_connector {
-                write!(output, "{} ", LAST_HORIZONTAL_STR)?;
+                write!(output, "{} ", LAST_HORIZONTAL_STR.color(connector_color))?;
             } else {
-                write!(output, "{} ", HORIZONTAL_STR)?;
+                write!(output, "{} ", HORIZONTAL_STR.color(connector_color))?;
             }
         }
         writeln!(output, "{}", self.value)?;
@@ -107,9 +118,9 @@ impl Tree {
     }
 
     /// Prints the full tree to the given output.
-    pub fn print<Output: Write>(&self, out: &mut Output) -> IoResult<()> {
+    pub fn print<Output: Write>(&self, out: &mut Output, connector_color: Color) -> IoResult<()> {
         for node in &self.nodes {
-            node.print(out, &mut Vec::new())?;
+            node.print(out, &mut Vec::new(), connector_color)?;
         }
         Ok(())
     }
@@ -214,7 +225,7 @@ mod tests {
             value: value.to_string(),
             childs: Vec::new(),
         }
-        .print_line(&mut output, &[])
+        .print_line(&mut output, &[], Color::White)
         .unwrap();
         assert_eq!(b"abc\ndef\n", &*output);
 
@@ -223,7 +234,7 @@ mod tests {
             value: value.to_string(),
             childs: Vec::new(),
         }
-        .print_line(&mut output, &[true, false, true])
+        .print_line(&mut output, &[true, false, true], Color::White)
         .unwrap();
         assert_eq!("    │   └── abc\ndef\n".as_bytes(), &*output);
 
@@ -232,7 +243,7 @@ mod tests {
             value: value.to_string(),
             childs: Vec::new(),
         }
-        .print_line(&mut output, &[true, false, false])
+        .print_line(&mut output, &[true, false, false], Color::White)
         .unwrap();
         assert_eq!("    │   ├── abc\ndef\n".as_bytes(), &*output);
     }

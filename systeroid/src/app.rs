@@ -57,21 +57,15 @@ impl<'a> App<'a> {
         if tree_output {
             let mut root_node = TreeNode::default();
             parameters.for_each(|parameter| {
-                let mut components = parameter
-                    .name
-                    .split('.')
-                    .map(String::from)
-                    .collect::<Vec<String>>();
-                if let Some(last_component) = components.last_mut() {
-                    *last_component = format!(
-                        "{} = {}",
-                        last_component,
-                        parameter.value.replace('\n', " ")
-                    );
-                }
-                root_node.add(&mut components.iter().map(|v| v.as_ref()));
+                root_node.add(
+                    &mut parameter
+                        .get_tree_components(&self.sysctl.config)
+                        .iter()
+                        .map(|v| v.as_ref()),
+                );
             });
-            Tree::new(root_node.childs).print(&mut self.stdout)?;
+            Tree::new(root_node.childs)
+                .print(&mut self.stdout, self.sysctl.config.default_color)?;
         } else {
             parameters.try_for_each(|parameter| {
                 parameter.display_value(&self.sysctl.config, &mut self.stdout)
