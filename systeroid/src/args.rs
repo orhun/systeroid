@@ -42,6 +42,8 @@ pub struct Args {
     pub pattern: Option<Regex>,
     /// Whether if the documentation should be shown.
     pub explain: bool,
+    /// Whether if the output should be in tree format.
+    pub tree_output: bool,
     /// Free string fragments.
     pub values: Vec<String>,
 }
@@ -51,6 +53,7 @@ impl Args {
     pub fn parse() -> Option<Self> {
         let mut opts = Options::new();
         opts.optflag("a", "all", "display all variables");
+        opts.optflag("T", "tree", "display all variables in tree format");
         opts.optflag("A", "", "alias of -a");
         opts.optflag("X", "", "alias of -a");
         opts.optflag(
@@ -107,7 +110,8 @@ impl Args {
             || preload_files
             || matches.opt_present("S")
             || matches.opt_present("r")
-            || matches.opt_present("E");
+            || matches.opt_present("E")
+            || matches.opt_present("T");
 
         if show_help || env_args.len() == 1 {
             let usage = opts.usage_with_format(|opts| {
@@ -157,6 +161,7 @@ impl Args {
                 display_type,
                 display_deprecated: matches.opt_present("D"),
                 ignore_errors: matches.opt_present("e"),
+                tree_output: matches.opt_present("T"),
                 no_pager: matches.opt_present("P"),
                 preload_files,
                 preload_system_files: matches.opt_present("S"),

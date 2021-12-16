@@ -22,3 +22,6 @@ pub mod config;
 
 /// Cache manager.
 pub mod cache;
+
+/// Tree output generator.
+pub mod tree;

@@ -4,6 +4,7 @@ use crate::sysctl::display::DisplayType;
 use crate::sysctl::section::Section;
 use colored::*;
 use serde::{Deserialize, Serialize};
+use std::fmt::{self, Display, Formatter};
 use std::io::Write;
 use std::path::PathBuf;
 use sysctl::{Ctl, Sysctl as SysctlImpl};
@@ -40,6 +41,12 @@ impl<'a> TryFrom<&'a Ctl> for Parameter {
             docs_path: PathBuf::new(),
             docs_title: String::new(),
         })
+    }
+}
+
+impl Display for Parameter {
+    fn fmt(&self, f: &mut Formatter) -> fmt::Result {
+        write!(f, "{} = {}", self.name, self.value.replace('\n', " "))
     }
 }
 

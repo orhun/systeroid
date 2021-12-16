@@ -8,6 +8,7 @@ use systeroid_core::parsers::KERNEL_DOCS_PATH;
 use systeroid_core::regex::Regex;
 use systeroid_core::sysctl::controller::Sysctl;
 use systeroid_core::sysctl::{DEPRECATED_PARAMS, SYSTEM_PRELOAD};
+use systeroid_core::tree::Tree;
 use systeroid_parser::globwalk;
 use systeroid_parser::reader;
 
@@ -40,24 +41,27 @@ impl<'a> App<'a> {
         &mut self,
         pattern: Option<Regex>,
         display_deprecated: bool,
+        tree_output: bool,
     ) -> Result<()> {
-        self.sysctl
-            .parameters
-            .iter()
-            .filter(|parameter| {
-                if let Some(pattern) = &pattern {
-                    return pattern.is_match(&parameter.name);
+        let mut parameters = self.sysctl.parameters.iter().filter(|parameter| {
+            if let Some(pattern) = &pattern {
+                return pattern.is_match(&parameter.name);
+            }
+            if !display_deprecated {
+                if let Some(param_name) = parameter.absolute_name() {
+                    return !DEPRECATED_PARAMS.contains(&param_name);
                 }
-                if !display_deprecated {
-                    if let Some(param_name) = parameter.absolute_name() {
-                        return !DEPRECATED_PARAMS.contains(&param_name);
-                    }
-                }
-                true
-            })
-            .try_for_each(|parameter| {
+            }
+            true
+        });
+        if tree_output {
+            Tree::new(&mut parameters, '.').print(&mut self.stdout)?;
+        } else {
+            parameters.try_for_each(|parameter| {
                 parameter.display_value(&self.sysctl.config, &mut self.stdout)
-            })
+            })?;
+        }
+        Ok(())
     }
 
     /// Updates the documentation for kernel parameters.
