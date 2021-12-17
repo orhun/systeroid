@@ -20,7 +20,10 @@ pub struct TreeNode {
 
 impl TreeNode {
     /// Adds new child nodes to the tree node.
-    pub fn add<'a, I: Iterator<Item = &'a str>>(&mut self, values: &mut I) {
+    pub fn add<'a, I>(&mut self, values: &mut I)
+    where
+        I: Iterator<Item = &'a str>,
+    {
         if let Some(value) = values.next() {
             let mut found = false;
             for child in self.childs.iter_mut() {

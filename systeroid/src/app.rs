@@ -7,6 +7,7 @@ use systeroid_core::error::Result;
 use systeroid_core::parsers::KERNEL_DOCS_PATH;
 use systeroid_core::regex::Regex;
 use systeroid_core::sysctl::controller::Sysctl;
+use systeroid_core::sysctl::parameter::Parameter;
 use systeroid_core::sysctl::{DEPRECATED_PARAMS, SYSTEM_PRELOAD};
 use systeroid_core::tree::{Tree, TreeNode};
 use systeroid_parser::globwalk;
@@ -22,39 +23,29 @@ pub struct App<'a> {
     sysctl: &'a mut Sysctl,
     /// Application cache.
     cache: Cache,
+    /// Whether if the output will be in tree format.
+    tree_output: bool,
     /// Standard output.
     stdout: Stdout,
 }
 
 impl<'a> App<'a> {
     /// Constructs a new instance.
-    pub fn new(sysctl: &'a mut Sysctl) -> Result<Self> {
+    pub fn new(sysctl: &'a mut Sysctl, tree_output: bool) -> Result<Self> {
         Ok(Self {
             sysctl,
             cache: Cache::init()?,
+            tree_output,
             stdout: io::stdout(),
         })
     }
 
-    /// Displays all of the available kernel parameters.
-    pub fn display_parameters(
-        &mut self,
-        pattern: Option<Regex>,
-        display_deprecated: bool,
-        tree_output: bool,
-    ) -> Result<()> {
-        let mut parameters = self.sysctl.parameters.iter().filter(|parameter| {
-            if let Some(pattern) = &pattern {
-                return pattern.is_match(&parameter.name);
-            }
-            if !display_deprecated {
-                if let Some(param_name) = parameter.absolute_name() {
-                    return !DEPRECATED_PARAMS.contains(&param_name);
-                }
-            }
-            true
-        });
-        if tree_output {
+    /// Prints the given parameters to stdout.
+    fn print_parameters<'b, I>(&mut self, parameters: &mut I) -> Result<()>
+    where
+        I: Iterator<Item = &'b Parameter>,
+    {
+        if self.tree_output {
             let mut root_node = TreeNode::default();
             parameters.for_each(|parameter| {
                 root_node.add(
@@ -72,6 +63,27 @@ impl<'a> App<'a> {
             })?;
         }
         Ok(())
+    }
+
+    /// Displays all of the available kernel parameters.
+    pub fn display_parameters(
+        &mut self,
+        pattern: Option<Regex>,
+        display_deprecated: bool,
+    ) -> Result<()> {
+        let parameters = self.sysctl.parameters.clone();
+        let mut parameters = parameters.iter().filter(|parameter| {
+            if let Some(pattern) = &pattern {
+                return pattern.is_match(&parameter.name);
+            }
+            if !display_deprecated {
+                if let Some(param_name) = parameter.absolute_name() {
+                    return !DEPRECATED_PARAMS.contains(&param_name);
+                }
+            }
+            true
+        });
+        self.print_parameters(&mut parameters)
     }
 
     /// Updates the documentation for kernel parameters.
@@ -169,12 +181,9 @@ impl<'a> App<'a> {
                 parameter
             );
         } else if display_value {
-            self.sysctl
-                .get_parameters(&parameter)
-                .iter()
-                .try_for_each(|parameter| {
-                    parameter.display_value(&self.sysctl.config, &mut self.stdout)
-                })?;
+            let sysctl = self.sysctl.clone();
+            let parameters = sysctl.get_parameters(&parameter);
+            self.print_parameters(&mut parameters.into_iter())?;
         }
         Ok(())
     }
@@ -216,7 +225,6 @@ impl<'a> App<'a> {
                 }
             }
         }
-
         Ok(())
     }
 }

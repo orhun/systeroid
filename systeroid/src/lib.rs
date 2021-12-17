@@ -24,12 +24,12 @@ pub fn run(args: Args) -> Result<()> {
         ..Default::default()
     };
     let mut sysctl = Sysctl::init(config)?;
-    let mut app = App::new(&mut sysctl)?;
+    let mut app = App::new(&mut sysctl, args.tree_output)?;
 
     if args.preload_system_files {
         app.preload_from_system()?;
     } else if args.values.is_empty() {
-        app.display_parameters(args.pattern, args.display_deprecated, args.tree_output)?;
+        app.display_parameters(args.pattern, args.display_deprecated)?;
     } else if args.explain {
         app.update_documentation(args.kernel_docs.as_ref())?;
         for param in args.values {

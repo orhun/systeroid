@@ -10,7 +10,7 @@ use std::result::Result as StdResult;
 use sysctl::{CtlFlags, CtlIter, Sysctl as SysctlImpl};
 
 /// Sysctl wrapper for managing the kernel parameters.
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct Sysctl {
     /// Available kernel parameters.
     pub parameters: Vec<Parameter>,

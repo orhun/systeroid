@@ -9,7 +9,7 @@ use std::path::PathBuf;
 use sysctl::{Ctl, Sysctl as SysctlImpl};
 
 /// Representation of a kernel parameter.
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Parameter {
     /// Name of the kernel parameter.
     pub name: String,
