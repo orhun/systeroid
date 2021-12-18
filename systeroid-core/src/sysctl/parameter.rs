@@ -131,7 +131,7 @@ impl Parameter {
     }
 
     /// Returns the parameter documentation if it exists.
-    pub fn get_documentation(&self) -> Option<String> {
+    fn get_documentation(&self) -> Option<String> {
         self.description.as_ref().map(|description| {
             format!(
                 "{}\n{}\n{}\n-\nParameter: {}\nReference: {}",
@@ -167,6 +167,75 @@ impl Parameter {
         if !config.quiet {
             self.display_value(config, output)?;
         }
+        Ok(())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_sysctl_parameter() -> Result<()> {
+        let mut parameter = Parameter {
+            name: String::from("kernel.fictional.test_param"),
+            value: String::from("1"),
+            description: Some(String::from("This is a fictional parameter for testing")),
+            section: Section::Kernel,
+            docs_path: PathBuf::from("/etc/cosmos"),
+            docs_title: String::from("Test Parameter"),
+        };
+        assert_eq!(Some("test_param"), parameter.get_absolute_name());
+
+        let mut config = Config::default();
+        config.default_color = Color::White;
+        *(config.section_colors.get_mut(&Section::Kernel).unwrap()) = Color::Yellow;
+        assert_eq!(parameter.name, parameter.get_colored_name(&config));
+
+        assert_eq!(
+            vec![
+                String::from("kernel"),
+                String::from("fictional"),
+                String::from("test_param = 1")
+            ],
+            parameter.get_tree_components(&config)
+        );
+
+        let mut output = Vec::new();
+        parameter.display_value(&config, &mut output)?;
+        assert_eq!(
+            "kernel.fictional.test_param = 1\n",
+            String::from_utf8_lossy(&output)
+        );
+
+        let mut output = Vec::new();
+        parameter.display_documentation(&mut output)?;
+        assert_eq!(
+            "Test Parameter
+            ==============
+            This is a fictional parameter for testing
+            -
+            Parameter: kernel.fictional.test_param
+            Reference: /etc/cosmos\n\n\n"
+                .lines()
+                .map(|line| line.trim_start())
+                .collect::<Vec<&str>>()
+                .join("\n"),
+            String::from_utf8_lossy(&output)
+        );
+
+        parameter.description = None;
+        let mut output = Vec::new();
+        parameter.display_documentation(&mut output)?;
+        assert_eq!(
+            "No documentation available\n",
+            String::from_utf8_lossy(&output)
+        );
+
+        assert!(parameter
+            .update_value("0", &config, &mut Vec::new())
+            .is_err());
+
         Ok(())
     }
 }

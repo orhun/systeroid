@@ -132,7 +132,6 @@ impl Tree {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::env;
 
     fn test_single_tree_creation(lines: &[&str], seperator: char, expected_tree: TreeNode) {
         let tree = Tree::from_input(&mut lines.iter(), seperator);
@@ -222,7 +221,6 @@ mod tests {
 
     #[test]
     fn test_tree_output() {
-        env::set_var("NO_COLOR", "1");
         let lines = ["a", "a/b/e", "a/b", "a/b/c/d"];
 
         let tree = Tree::from_input(&mut lines.iter(), '/');
@@ -241,7 +239,6 @@ a
 
     #[test]
     fn test_print_line() {
-        env::set_var("NO_COLOR", "1");
         let value = String::from("abc\ndef");
 
         let mut output = Vec::new();
