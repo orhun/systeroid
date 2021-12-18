@@ -78,7 +78,7 @@ impl Sysctl {
         parameters
     }
 
-    /// Updates the parameters using the given list.
+    /// Updates the parameters internally using the given list.
     ///
     /// Keeps the original values.
     pub fn update_params(&mut self, mut parameters: Vec<Parameter>) {
@@ -123,6 +123,24 @@ impl Sysctl {
                     }
                 }
             });
+        Ok(())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_sysctl_controller() -> Result<()> {
+        let config = Config::default();
+        let mut sysctl = Sysctl::init(config)?;
+        assert!(sysctl.get_parameter("kernel.hostname").is_some());
+        assert_eq!(
+            "Linux",
+            sysctl.get_parameters("ostype").first().unwrap().value
+        );
+
         Ok(())
     }
 }
