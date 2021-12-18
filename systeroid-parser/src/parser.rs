@@ -12,8 +12,8 @@ use std::result::Result as StdResult;
 /// a glob pattern and parsing the contents of the files.
 #[derive(Clone, Debug)]
 pub struct Parser<'a> {
-    /// Glob pattern to specify the files to parse.
-    pub glob_path: &'a str,
+    /// Glob patterns to specify the files to parse.
+    pub glob_path: &'a [&'a str],
     /// Files to check during path traversal.
     pub required_files: &'a [&'a str],
     /// Regular expression to use for parsing.
@@ -23,7 +23,7 @@ pub struct Parser<'a> {
 impl<'a> Parser<'a> {
     /// Constructs a new instance.
     pub fn new(
-        glob_path: &'a str,
+        glob_path: &'a [&'a str],
         required_files: &'a [&'a str],
         regex: &'a str,
     ) -> Result<Self, Error> {
@@ -37,14 +37,14 @@ impl<'a> Parser<'a> {
     /// Parses the files in the given base path and returns the documents.
     pub fn parse(&self, base_path: &Path) -> Result<Vec<Document>, Error> {
         let mut documents = Vec::new();
-        let glob_files = globwalk::glob(
-            base_path
-                .join(self.glob_path)
-                .to_str()
-                .ok_or(Error::Utf8Error)?,
-        )?
-        .filter_map(StdResult::ok)
-        .collect::<Vec<DirEntry>>();
+        let mut glob_files = Vec::new();
+        for glob in self.glob_path {
+            glob_files.extend(
+                globwalk::glob(base_path.join(glob).to_str().ok_or(Error::Utf8Error)?)?
+                    .filter_map(StdResult::ok)
+                    .collect::<Vec<DirEntry>>(),
+            );
+        }
         if glob_files.is_empty() {
             return Err(Error::EmptyFileListError);
         }
@@ -56,7 +56,11 @@ impl<'a> Parser<'a> {
                 .ok_or_else(|| Error::MissingFileError(file_name.to_string()))
         })?;
         for file in glob_files {
-            let input = reader::read_to_string(file.path())?;
+            let input = if file.path().extension().and_then(|ext| ext.to_str()) == Some("gz") {
+                reader::read_gzip(file.path())?
+            } else {
+                reader::read_to_string(file.path())?
+            };
             let capture_group = self
                 .regex
                 .captures_iter(&input)
@@ -78,7 +82,7 @@ mod tests {
     #[test]
     fn test_document_parser() -> Result<(), Error> {
         let base_path = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
-        let parser = Parser::new("Cargo.*", &[], r#"^(\[package\])\n"#)?;
+        let parser = Parser::new(&["Cargo.*"], &[], r#"^(\[package\])\n"#)?;
         let mut documents = parser.parse(base_path.as_path())?;
 
         assert!(documents[0].paragraphs[0]
