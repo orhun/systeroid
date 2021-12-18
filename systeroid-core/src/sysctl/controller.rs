@@ -130,16 +130,61 @@ impl Sysctl {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::parsers::KERNEL_DOCS_PATH;
 
     #[test]
     fn test_sysctl_controller() -> Result<()> {
         let config = Config::default();
         let mut sysctl = Sysctl::init(config)?;
         assert!(sysctl.get_parameter("kernel.hostname").is_some());
+        assert!(sysctl.get_parameter("unexisting.param").is_none());
         assert_eq!(
             "Linux",
             sysctl.get_parameters("ostype").first().unwrap().value
         );
+        assert!(sysctl.get_parameters("---").is_empty());
+
+        for path in KERNEL_DOCS_PATH.iter() {
+            if path.exists() {
+                sysctl.update_docs(&path)?;
+            }
+        }
+
+        let parameter = sysctl.get_parameter("kernel.hostname").unwrap().clone();
+        let old_value = parameter.docs_title;
+        let parameters = sysctl.parameters.clone();
+        sysctl
+            .parameters
+            .iter_mut()
+            .find(|param| param.name == parameter.name)
+            .unwrap()
+            .docs_title = String::from("-");
+        sysctl.update_params(parameters);
+        assert_eq!(
+            old_value,
+            sysctl
+                .parameters
+                .iter_mut()
+                .find(|param| param.name == parameter.name)
+                .unwrap()
+                .docs_title
+        );
+
+        assert!(sysctl
+            .get_parameter("vm.zone_reclaim_mode")
+            .unwrap()
+            .description
+            .as_ref()
+            .unwrap()
+            .contains("zone_reclaim_mode is disabled by default."));
+
+        assert!(sysctl
+            .get_parameter("user.max_user_namespaces")
+            .unwrap()
+            .description
+            .as_ref()
+            .unwrap()
+            .contains("The maximum number of user namespaces"));
 
         Ok(())
     }
