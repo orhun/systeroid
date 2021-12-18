@@ -134,7 +134,7 @@ impl Args {
             println!("{}", usage);
             None
         } else if !required_args_present {
-            println!(
+            eprintln!(
                 "{}: no variables specified\n\
                 Try `{} --help' for more information.",
                 env!("CARGO_PKG_NAME"),
