@@ -208,6 +208,24 @@ mod tests {
             String::from_utf8_lossy(&output)
         );
 
+        output.clear();
+        config.display_type = DisplayType::Name;
+        parameter.display_value(&config, &mut output)?;
+        assert_eq!(
+            "kernel.fictional.test_param\n",
+            String::from_utf8_lossy(&output)
+        );
+
+        output.clear();
+        config.display_type = DisplayType::Value;
+        parameter.display_value(&config, &mut output)?;
+        assert_eq!("1\n", String::from_utf8_lossy(&output));
+
+        output.clear();
+        config.display_type = DisplayType::Binary;
+        parameter.display_value(&config, &mut output)?;
+        assert_eq!("1", String::from_utf8_lossy(&output));
+
         let mut output = Vec::new();
         parameter.display_documentation(&mut output)?;
         assert_eq!(
