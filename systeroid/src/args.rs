@@ -57,7 +57,7 @@ impl Args {
         opts.optflag("A", "", "alias of -a");
         opts.optflag("X", "", "alias of -a");
         opts.optflag(
-            "D",
+            "",
             "deprecated",
             "include deprecated variables while listing",
         );
@@ -85,7 +85,7 @@ impl Args {
             "provide a detailed explanation for variable",
         );
         opts.optopt(
-            "d",
+            "D",
             "docs",
             "set the path of the kernel documentation",
             "<path>",
@@ -157,9 +157,9 @@ impl Args {
                 verbose: matches.opt_present("v"),
                 quiet: matches.opt_present("q"),
                 write: matches.opt_present("w"),
-                kernel_docs: matches.opt_str("d").map(PathBuf::from),
+                kernel_docs: matches.opt_str("D").map(PathBuf::from),
                 display_type,
-                display_deprecated: matches.opt_present("D"),
+                display_deprecated: matches.opt_present("deprecated"),
                 ignore_errors: matches.opt_present("e"),
                 tree_output: matches.opt_present("T"),
                 no_pager: matches.opt_present("P"),
