@@ -9,22 +9,23 @@ lazy_static! {
     /// Possible locations for the Linux kernel documentation.
     pub static ref KERNEL_DOCS_PATH: Vec<&'static Path> = vec![
         Path::new("/usr/share/doc/linux/"),
+        Path::new("/usr/share/doc/linux-doc/"),
         Path::new("/usr/share/doc/linux-docs/")
     ];
 
     /// Pre-defined parsers for parsing the kernel documentation.
     pub static ref PARSERS: Vec<Parser<'static>> = vec![
         Parser {
-            glob_path: "admin-guide/sysctl/*.rst",
-            required_files: &["kernel.rst"],
+            glob_path: &["admin-guide/sysctl/*.rst*"],
+            required_files: &["index.rst"],
             regex: RegexBuilder::new("^\n([a-z].*)\n[=,-]{2,}+\n\n")
                 .multi_line(true)
                 .build()
                 .expect("failed to compile regex"),
         },
         Parser {
-            glob_path: "networking/*-sysctl.rst",
-            required_files: &["ip-sysctl.rst"],
+            glob_path: &["networking/*-sysctl.rst", "networking/*-sysctl.txt*"],
+            required_files: &[],
             regex: RegexBuilder::new("^([a-zA-Z0-9_/-]+[ ]-[ ][a-zA-Z].*)$")
                 .multi_line(true)
                 .build()
