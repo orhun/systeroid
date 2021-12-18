@@ -221,9 +221,28 @@ mod tests {
     }
 
     #[test]
-    fn test_print_line() {
-        let value = String::from("abc\ndef");
+    fn test_tree_output() {
         env::set_var("NO_COLOR", "1");
+        let lines = ["a", "a/b/e", "a/b", "a/b/c/d"];
+
+        let tree = Tree::from_input(&mut lines.iter(), '/');
+        let mut output = Vec::new();
+        tree.print(&mut output, Color::White).unwrap();
+
+        let expected_output = "\
+a
+└── b
+    ├── e
+    └── c
+        └── d\n";
+
+        assert_eq!(expected_output, String::from_utf8_lossy(&output));
+    }
+
+    #[test]
+    fn test_print_line() {
+        env::set_var("NO_COLOR", "1");
+        let value = String::from("abc\ndef");
 
         let mut output = Vec::new();
         TreeNode {
