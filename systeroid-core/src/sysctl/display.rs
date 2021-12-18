@@ -1,5 +1,5 @@
 /// Possible ways of displaying the kernel parameters.
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub enum DisplayType {
     /// Print the kernel parameter name along with its value.
     Default,

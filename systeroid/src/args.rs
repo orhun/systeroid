@@ -49,8 +49,8 @@ pub struct Args {
 }
 
 impl Args {
-    /// Parses the command-line arguments.
-    pub fn parse() -> Option<Self> {
+    /// Returns the available options.
+    fn get_options() -> Options {
         let mut opts = Options::new();
         opts.optflag("a", "all", "display all variables");
         opts.optflag("T", "tree", "display all variables in tree format");
@@ -94,8 +94,12 @@ impl Args {
         opts.optflag("v", "verbose", "enable verbose logging");
         opts.optflag("h", "help", "display this help and exit");
         opts.optflag("V", "version", "output version information and exit");
+        opts
+    }
 
-        let env_args = env::args().collect::<Vec<String>>();
+    /// Parses the command-line arguments.
+    pub fn parse(env_args: Vec<String>) -> Option<Self> {
+        let opts = Self::get_options();
         let mut matches = opts
             .parse(&env_args[1..])
             .map_err(|e| eprintln!("error: `{}`", e))
@@ -172,5 +176,45 @@ impl Args {
                 values: matches.free,
             })
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_args() {
+        for env_args in [
+            vec![String::new()],
+            vec![String::new(), String::from("-r")],
+            vec![String::new(), String::from("-V")],
+        ] {
+            assert!(Args::parse(env_args).is_none());
+        }
+
+        let args = Args::parse(vec![
+            String::new(),
+            String::from("-v"),
+            String::from("-w"),
+            String::from("-A"),
+            String::from("-T"),
+        ])
+        .unwrap();
+        assert!(args.verbose);
+        assert!(args.write);
+        assert!(args.tree_output);
+
+        assert!(!Args::parse(vec![String::new(), String::from("-p")])
+            .unwrap()
+            .values
+            .is_empty());
+
+        assert_eq!(
+            DisplayType::Binary,
+            Args::parse(vec![String::new(), String::from("-A"), String::from("-b")])
+                .unwrap()
+                .display_type
+        );
     }
 }
