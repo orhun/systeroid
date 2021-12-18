@@ -48,13 +48,16 @@ impl<'a> Parser<'a> {
         if glob_files.is_empty() {
             return Err(Error::EmptyFileListError);
         }
-        self.required_files.iter().try_for_each(|file_name| {
-            glob_files
-                .iter()
-                .find(|file| file.file_name().to_str() == Some(file_name))
-                .map(drop)
-                .ok_or_else(|| Error::MissingFileError(file_name.to_string()))
-        })?;
+        self.required_files
+            .iter()
+            .filter(|file_name| !file_name.is_empty())
+            .try_for_each(|file_name| {
+                glob_files
+                    .iter()
+                    .find(|file| file.file_name().to_str() == Some(file_name))
+                    .map(drop)
+                    .ok_or_else(|| Error::MissingFileError(file_name.to_string()))
+            })?;
         for file in glob_files {
             let input = if file.path().extension().and_then(|ext| ext.to_str()) == Some("gz") {
                 reader::read_gzip(file.path())?
