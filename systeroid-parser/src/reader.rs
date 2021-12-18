@@ -1,7 +1,12 @@
+use flate2::read::GzDecoder;
 use std::fs::File;
-use std::io::{BufRead, BufReader as IoBufReader, Result as IoResult};
+use std::io::{
+    BufRead, BufReader as IoBufReader, Error as IoError, ErrorKind as IoErrorKind, Read,
+    Result as IoResult,
+};
 use std::path::Path;
 use std::rc::Rc;
+use std::str;
 
 /// Default buffer size of the reader.
 const DEFAULT_BUFFER_SIZE: usize = 1024;
@@ -11,7 +16,7 @@ pub struct BufReader {
     /// Inner type.
     reader: IoBufReader<File>,
     /// Buffer.
-    buffer: Rc<String>,
+    buffer: Rc<Vec<u8>>,
 }
 
 impl BufReader {
@@ -24,15 +29,15 @@ impl BufReader {
     }
 
     /// Creates a new buffer with the given size.
-    fn new_buffer(buffer_size: Option<usize>) -> Rc<String> {
-        Rc::new(String::with_capacity(
+    fn new_buffer(buffer_size: Option<usize>) -> Rc<Vec<u8>> {
+        Rc::new(Vec::with_capacity(
             buffer_size.unwrap_or(DEFAULT_BUFFER_SIZE),
         ))
     }
 }
 
 impl Iterator for BufReader {
-    type Item = IoResult<Rc<String>>;
+    type Item = IoResult<Rc<Vec<u8>>>;
     fn next(&mut self) -> Option<Self::Item> {
         let buffer = match Rc::get_mut(&mut self.buffer) {
             Some(rc_buffer) => {
@@ -45,7 +50,7 @@ impl Iterator for BufReader {
             }
         };
         self.reader
-            .read_line(buffer)
+            .read_until(b'\n', buffer)
             .map(|u| {
                 if u == 0 {
                     None
@@ -63,9 +68,27 @@ impl Iterator for BufReader {
 pub fn read_to_string<P: AsRef<Path>>(path: P) -> IoResult<String> {
     let mut lines = Vec::<String>::new();
     for line in BufReader::open(path, None)? {
-        lines.push(line?.to_string());
+        lines.push(
+            str::from_utf8(&line?)
+                .map_err(|e| IoError::new(IoErrorKind::Other, e))?
+                .to_string(),
+        );
     }
     Ok(lines.join(""))
+}
+
+/// Reads (decodes) the given gzip file into a string.
+///
+/// Uses [`BufReader`] under the hood.
+pub fn read_gzip<P: AsRef<Path>>(path: P) -> IoResult<String> {
+    let mut bytes = Vec::<u8>::new();
+    for read_bytes in BufReader::open(path, None)? {
+        bytes.extend(read_bytes?.to_vec());
+    }
+    let mut gz = GzDecoder::new(&bytes[..]);
+    let mut data = String::new();
+    gz.read_to_string(&mut data)?;
+    Ok(data)
 }
 
 #[cfg(test)]
