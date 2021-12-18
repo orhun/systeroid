@@ -37,8 +37,10 @@ impl From<String> for Section {
 impl<'a> From<&'a Path> for Section {
     fn from(value: &'a Path) -> Self {
         for section in Self::variants() {
-            if value.file_stem().and_then(|v| v.to_str()) == Some(&section.to_string()) {
-                return *section;
+            if let Some(file_stem) = value.file_stem().and_then(|v| v.to_str()) {
+                if file_stem.starts_with(&section.to_string().to_lowercase()) {
+                    return *section;
+                }
             }
         }
         Self::Net
@@ -63,5 +65,22 @@ impl Section {
             Self::User,
             Self::Vm,
         ]
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_sysctl_section() {
+        assert_eq!(Section::Net, Section::from(String::from("net.xyz")));
+        assert_eq!(Section::User, Section::from(String::from("user.aaa.bbb")));
+        assert_eq!(Section::Unknown, Section::from(String::from("test")));
+        assert_eq!(Section::Vm, Section::from(Path::new("/etc/vm.txt")));
+        assert_eq!(
+            Section::Kernel,
+            Section::from(Path::new("/etc/kernel.tar.gz"))
+        );
     }
 }
