@@ -188,7 +188,7 @@ impl<'a, Output: Write> App<'a, Output> {
     }
 
     /// Processes the parameters in the given file.
-    pub fn preload_values(&mut self, file: String) -> Result<()> {
+    pub fn preload_from_file(&mut self, file: String) -> Result<()> {
         let path = PathBuf::from(file);
         if !path.exists() {
             eprintln!(

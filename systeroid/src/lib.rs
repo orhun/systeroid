@@ -39,7 +39,7 @@ pub fn run(args: Args) -> Result<()> {
         }
     } else if args.preload_files {
         for file in args.values {
-            app.preload_values(file)?;
+            app.preload_from_file(file)?;
         }
     } else {
         for param in args.values {
