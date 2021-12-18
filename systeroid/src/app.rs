@@ -76,7 +76,7 @@ impl<'a, Output: Write> App<'a, Output> {
                 return pattern.is_match(&parameter.name);
             }
             if !display_deprecated {
-                if let Some(param_name) = parameter.absolute_name() {
+                if let Some(param_name) = parameter.get_absolute_name() {
                     return !DEPRECATED_PARAMS.contains(&param_name);
                 }
             }
@@ -163,7 +163,7 @@ impl<'a, Output: Write> App<'a, Output> {
         if let Some(new_value) = new_value {
             let config = self.sysctl.config.clone();
             if let Some(param) = self.sysctl.get_parameter(&parameter) {
-                if DEPRECATED_PARAMS.contains(&param.absolute_name().unwrap_or_default()) {
+                if DEPRECATED_PARAMS.contains(&param.get_absolute_name().unwrap_or_default()) {
                     eprintln!(
                         "{}: {} is deprecated, value not set",
                         env!("CARGO_PKG_NAME"),

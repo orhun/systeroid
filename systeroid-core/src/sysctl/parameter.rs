@@ -45,12 +45,12 @@ impl<'a> TryFrom<&'a Ctl> for Parameter {
 
 impl Parameter {
     /// Returns the absolute name of the parameter, without the sections.
-    pub fn absolute_name(&self) -> Option<&str> {
+    pub fn get_absolute_name(&self) -> Option<&str> {
         self.name.split('.').collect::<Vec<&str>>().last().copied()
     }
 
     /// Returns the parameter name with corresponding section colors.
-    pub fn colored_name(&self, config: &Config) -> String {
+    pub fn get_colored_name(&self, config: &Config) -> String {
         let section_color = *(config
             .section_colors
             .get(&self.section)
@@ -109,7 +109,7 @@ impl Parameter {
     pub fn display_value<Output: Write>(&self, config: &Config, output: &mut Output) -> Result<()> {
         match config.display_type {
             DisplayType::Name => {
-                writeln!(output, "{}", self.colored_name(config))?;
+                writeln!(output, "{}", self.get_colored_name(config))?;
             }
             DisplayType::Value => {
                 writeln!(output, "{}", self.value.bold())?;
@@ -121,7 +121,7 @@ impl Parameter {
                 writeln!(
                     output,
                     "{} {} {}",
-                    self.colored_name(config),
+                    self.get_colored_name(config),
                     "=".color(config.default_color),
                     self.value.bold(),
                 )?;

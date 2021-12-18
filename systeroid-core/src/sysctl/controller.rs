@@ -65,7 +65,7 @@ impl Sysctl {
             .filter(|param| {
                 param.name == query.replace('/', ".")
                     || param.section.to_string() == query
-                    || param.absolute_name() == Some(&query.replace('/', "."))
+                    || param.get_absolute_name() == Some(&query.replace('/', "."))
             })
             .collect::<Vec<&Parameter>>();
         if parameters.is_empty() {
@@ -107,7 +107,7 @@ impl Sysctl {
                 {
                     if let Some(paragraph) =
                         document.paragraphs.par_iter().find_first(|paragraph| {
-                            match param.absolute_name() {
+                            match param.get_absolute_name() {
                                 Some(absolute_name) => {
                                     absolute_name.len() > 2
                                         && paragraph.title.contains(absolute_name)
