@@ -1,5 +1,5 @@
 use std::env;
-use std::io::{self, Stdout};
+use std::io::Write;
 use std::path::PathBuf;
 use std::process::{Command, Stdio};
 use systeroid_core::cache::{Cache, CacheData};
@@ -18,25 +18,25 @@ const PARAMETERS_CACHE_LABEL: &str = "parameters";
 
 /// Application controller.
 #[derive(Debug)]
-pub struct App<'a> {
+pub struct App<'a, Output: Write> {
     /// Sysctl controller.
     sysctl: &'a mut Sysctl,
     /// Application cache.
     cache: Cache,
+    /// Standard output.
+    output: &'a mut Output,
     /// Whether if the output will be in tree format.
     tree_output: bool,
-    /// Standard output.
-    stdout: Stdout,
 }
 
-impl<'a> App<'a> {
+impl<'a, Output: Write> App<'a, Output> {
     /// Constructs a new instance.
-    pub fn new(sysctl: &'a mut Sysctl, tree_output: bool) -> Result<Self> {
+    pub fn new(sysctl: &'a mut Sysctl, output: &'a mut Output, tree_output: bool) -> Result<Self> {
         Ok(Self {
             sysctl,
             cache: Cache::init()?,
+            output,
             tree_output,
-            stdout: io::stdout(),
         })
     }
 
@@ -55,11 +55,10 @@ impl<'a> App<'a> {
                         .map(|v| v.as_ref()),
                 );
             });
-            Tree::new(root_node.childs)
-                .print(&mut self.stdout, self.sysctl.config.default_color)?;
+            Tree::new(root_node.childs).print(self.output, self.sysctl.config.default_color)?;
         } else {
             parameters.try_for_each(|parameter| {
-                parameter.display_value(&self.sysctl.config, &mut self.stdout)
+                parameter.display_value(&self.sysctl.config, self.output)
             })?;
         }
         Ok(())
@@ -117,7 +116,7 @@ impl<'a> App<'a> {
         for parameter in self.sysctl.get_parameters(param_name) {
             let mut fallback_to_default = false;
             if no_pager {
-                parameter.display_documentation(&mut self.stdout)?;
+                parameter.display_documentation(self.output)?;
                 continue;
             }
             let pager = env::var("PAGER").unwrap_or_else(|_| String::from("less"));
@@ -138,7 +137,7 @@ impl<'a> App<'a> {
                 }
             }
             if fallback_to_default {
-                parameter.display_documentation(&mut self.stdout)?;
+                parameter.display_documentation(self.output)?;
             }
         }
         Ok(())
@@ -171,7 +170,7 @@ impl<'a> App<'a> {
                         parameter
                     );
                 } else {
-                    param.update_value(&new_value, &config, &mut self.stdout)?;
+                    param.update_value(&new_value, &config, self.output)?;
                 }
             }
         } else if write_mode {

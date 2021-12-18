@@ -106,7 +106,7 @@ impl Parameter {
     }
 
     /// Prints the kernel parameter to given output.
-    pub fn display_value<W: Write>(&self, config: &Config, output: &mut W) -> Result<()> {
+    pub fn display_value<Output: Write>(&self, config: &Config, output: &mut Output) -> Result<()> {
         match config.display_type {
             DisplayType::Name => {
                 writeln!(output, "{}", self.colored_name(config))?;
@@ -145,7 +145,7 @@ impl Parameter {
     }
 
     /// Prints the description of the kernel parameter to the given output.
-    pub fn display_documentation<W: Write>(&self, output: &mut W) -> Result<()> {
+    pub fn display_documentation<Output: Write>(&self, output: &mut Output) -> Result<()> {
         if let Some(documentation) = self.get_documentation() {
             writeln!(output, "{}\n", documentation)?;
         } else {
@@ -155,11 +155,11 @@ impl Parameter {
     }
 
     /// Sets a new value for the kernel parameter.
-    pub fn update_value<W: Write>(
+    pub fn update_value<Output: Write>(
         &mut self,
         new_value: &str,
         config: &Config,
-        output: &mut W,
+        output: &mut Output,
     ) -> Result<()> {
         let ctl = Ctl::new(&self.name)?;
         let new_value = ctl.set_value_string(new_value)?;
