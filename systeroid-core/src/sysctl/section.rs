@@ -36,6 +36,9 @@ impl From<String> for Section {
 
 impl<'a> From<&'a Path> for Section {
     fn from(value: &'a Path) -> Self {
+        if value.components().any(|v| v.as_os_str() == "networking") {
+            return Self::Net;
+        }
         for section in Self::variants() {
             if let Some(file_stem) = value.file_stem().and_then(|v| v.to_str()) {
                 if file_stem.starts_with(&section.to_string().to_lowercase()) {
@@ -43,7 +46,7 @@ impl<'a> From<&'a Path> for Section {
                 }
             }
         }
-        Self::Net
+        Section::Unknown
     }
 }
 
@@ -82,5 +85,7 @@ mod tests {
             Section::Kernel,
             Section::from(Path::new("/etc/kernel.tar.gz"))
         );
+        assert_eq!(Section::Net, Section::from(Path::new("/networking/abc")));
+        assert_eq!(Section::Unknown, Section::from(Path::new("test")));
     }
 }
