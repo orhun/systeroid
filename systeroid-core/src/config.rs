@@ -46,7 +46,7 @@ impl Default for Config {
                 Section::Sunrpc => Color::Yellow,
                 Section::User => Color::Cyan,
                 Section::Vm => Color::BrightRed,
-                Section::Unknown => Color::BrightBlack
+                Section::Unknown => Color::White
             },
             default_color: Color::BrightBlack,
             display_type: DisplayType::default(),
