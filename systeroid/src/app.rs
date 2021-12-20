@@ -199,7 +199,10 @@ impl<'a, Output: Write> App<'a, Output> {
             return Ok(());
         }
         let contents = reader::read_to_string(path)?;
-        for parameter in contents.lines() {
+        for parameter in contents
+            .lines()
+            .filter(|v| !(v.starts_with('#') || v.is_empty()))
+        {
             self.process_parameter(parameter.to_string(), false, false)?;
         }
         Ok(())
@@ -215,7 +218,10 @@ impl<'a, Output: Write> App<'a, Output> {
                 for file in glob_walker.filter_map(|v| v.ok()) {
                     println!("* Applying {} ...", file.path().display());
                     let contents = reader::read_to_string(file.path())?;
-                    for parameter in contents.lines() {
+                    for parameter in contents
+                        .lines()
+                        .filter(|v| !(v.starts_with('#') || v.is_empty()))
+                    {
                         if let Err(e) = self.process_parameter(parameter.to_string(), false, false)
                         {
                             eprintln!("{}: {}", env!("CARGO_PKG_NAME"), e);
