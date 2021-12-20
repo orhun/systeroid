@@ -3,6 +3,7 @@ use crate::error::Result;
 use crate::parsers::parse_kernel_docs;
 use crate::sysctl::parameter::Parameter;
 use crate::sysctl::section::Section;
+use crate::sysctl::PROC_PATH;
 use rayon::prelude::*;
 use std::convert::TryFrom;
 use std::path::Path;
@@ -49,8 +50,9 @@ impl Sysctl {
             .find(|param| param.name == *param_name.replace('/', "."));
         if parameter.is_none() && !self.config.ignore_errors {
             eprintln!(
-                "{}: cannot stat /proc/{}: No such file or directory",
+                "{}: cannot stat {}{}: No such file or directory",
                 env!("CARGO_PKG_NAME").split('-').collect::<Vec<_>>()[0],
+                PROC_PATH,
                 param_name.replace('.', "/")
             )
         }
@@ -70,8 +72,9 @@ impl Sysctl {
             .collect::<Vec<&Parameter>>();
         if parameters.is_empty() {
             eprintln!(
-                "{}: cannot stat /proc/{}: No such file or directory",
+                "{}: cannot stat {}{}: No such file or directory",
                 env!("CARGO_PKG_NAME").split('-').collect::<Vec<_>>()[0],
+                PROC_PATH,
                 query.replace('.', "/")
             )
         }

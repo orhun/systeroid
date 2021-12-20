@@ -10,6 +10,9 @@ pub mod display;
 /// Kernel parameter.
 pub mod parameter;
 
+/// Path of the kernel parameters.
+pub const PROC_PATH: &str = "/proc/sys/";
+
 /// Default configuration file to preload values from.
 pub const DEFAULT_PRELOAD: &str = "/etc/sysctl.conf";
 
