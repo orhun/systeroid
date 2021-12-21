@@ -99,7 +99,7 @@ jobs:
 
       - name: Run tests
         run: |
-          sudo -H env "PATH=$PATH" NO_COLOR=1 \
+          sudo env "PATH=$PATH" "HOME=$HOME" NO_COLOR=1 \
             cargo tarpaulin --features live-tests --out Xml --verbose
 
       - name: Upload reports to codecov
