@@ -4,6 +4,10 @@ version = "0.1.0"
 authors = ["Orhun Parmaksız <orhunparmaksiz@gmail.com>"]
 edition = "2021"
 
+[features]
+# tests that affect the system state
+live-tests = []
+
 [dependencies]
 getopts = "0.2.21"
 

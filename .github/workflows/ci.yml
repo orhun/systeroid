@@ -98,7 +98,7 @@ jobs:
           mv cargo-tarpaulin ~/.cargo/bin/
 
       - name: Run tests
-        run: NO_COLOR=1 cargo tarpaulin --out Xml --verbose
+        run: NO_COLOR=1 sudo -E cargo tarpaulin --features live-tests --out Xml --verbose
 
       - name: Upload reports to codecov
         uses: codecov/codecov-action@v1

@@ -9,13 +9,13 @@ pub mod args;
 
 use crate::app::App;
 use crate::args::Args;
-use std::io;
+use std::io::Write;
 use systeroid_core::config::Config;
 use systeroid_core::error::Result;
 use systeroid_core::sysctl::controller::Sysctl;
 
 /// Runs `systeroid`.
-pub fn run(args: Args) -> Result<()> {
+pub fn run<Output: Write>(args: Args, output: &mut Output) -> Result<()> {
     let config = Config {
         verbose: args.verbose,
         ignore_errors: args.ignore_errors,
@@ -24,9 +24,8 @@ pub fn run(args: Args) -> Result<()> {
         display_type: args.display_type,
         ..Default::default()
     };
-    let mut stdout = io::stdout();
     let mut sysctl = Sysctl::init(config)?;
-    let mut app = App::new(&mut sysctl, &mut stdout, args.tree_output)?;
+    let mut app = App::new(&mut sysctl, output, args.tree_output)?;
 
     if args.preload_system_files {
         app.preload_from_system()?;
