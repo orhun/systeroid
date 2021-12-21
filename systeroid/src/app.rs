@@ -105,7 +105,7 @@ impl<'a, Output: Write> App<'a, Output> {
                 PARAMETERS_CACHE_LABEL,
             )?;
         } else {
-            eprintln!("warning: `Linux kernel documentation cannot be found. Please specify a path via '-d' argument`",);
+            eprintln!("warning: `Linux kernel documentation cannot be found. Please specify a path via '-D' argument`",);
         }
         Ok(())
     }
