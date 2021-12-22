@@ -104,7 +104,7 @@ jobs:
 
       - name: Run tests [live]
         run: |
-          cp .github/fixtures/sysctl.conf .
+          cp .github/fixtures/sysctl.conf systeroid/
           sudo env "PATH=$PATH" "HOME=$HOME" NO_COLOR=1 \
             cargo tarpaulin \
               --features live-tests \
