@@ -110,8 +110,8 @@ jobs:
               --features live-tests \
               --out Xml --verbose \
               -- "test_systeroid"
-          mv cobertura.xml live-test-output.xml
           ./.github/fixtures/test.sh
+          mv cobertura.xml live-test-output.xml
 
       - name: Upload reports to codecov
         uses: codecov/codecov-action@v2
