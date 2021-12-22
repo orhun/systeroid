@@ -105,9 +105,9 @@ jobs:
       - name: Run tests [live]
       - run: |
           sudo env "PATH=$PATH" "HOME=$HOME" NO_COLOR=1 \
-            cargo tarpaulin
-              --features live-tests
-              --out Xml --verbose
+            cargo tarpaulin \
+              --features live-tests \
+              --out Xml --verbose \
               -- "test_systeroid"
           mv cobertura.xml live-test-output.xml
 
