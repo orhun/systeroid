@@ -26,5 +26,12 @@ fn test_systeroid() -> Result<()> {
     };
     systeroid::run(args, &mut Vec::new())?;
 
+    let args = Args {
+        preload_files: true,
+        values: vec![String::from("sysctl.conf")],
+        ..Args::default()
+    };
+    systeroid::run(args, &mut Vec::new())?;
+
     Ok(())
 }

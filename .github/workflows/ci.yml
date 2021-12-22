@@ -104,12 +104,14 @@ jobs:
 
       - name: Run tests [live]
         run: |
+          cp .github/fixtures/sysctl.conf .
           sudo env "PATH=$PATH" "HOME=$HOME" NO_COLOR=1 \
             cargo tarpaulin \
               --features live-tests \
               --out Xml --verbose \
               -- "test_systeroid"
           mv cobertura.xml live-test-output.xml
+          ./.github/fixtures/test.sh
 
       - name: Upload reports to codecov
         uses: codecov/codecov-action@v2
