@@ -110,7 +110,7 @@ jobs:
               --features live-tests \
               --out Xml --verbose \
               -- "test_systeroid"
-          ./.github/fixtures/test.sh
+          ./.github/fixtures/check_vars.sh systeroid/sysctl.conf
           mv cobertura.xml live-test-output.xml
 
       - name: Upload reports to codecov
