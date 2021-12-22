@@ -103,7 +103,7 @@ jobs:
           mv cobertura.xml test-output.xml
 
       - name: Run tests [live]
-      - run: |
+        run: |
           sudo env "PATH=$PATH" "HOME=$HOME" NO_COLOR=1 \
             cargo tarpaulin \
               --features live-tests \
