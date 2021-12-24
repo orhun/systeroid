@@ -133,6 +133,9 @@ impl Args {
             });
             println!("{}", usage);
             None
+        } else if matches.opt_present("V") {
+            println!("{} {}", env!("CARGO_PKG_NAME"), env!("CARGO_PKG_VERSION"));
+            None
         } else if !required_args_present {
             eprintln!(
                 "{}: no variables specified\n\
@@ -140,9 +143,6 @@ impl Args {
                 env!("CARGO_PKG_NAME"),
                 env!("CARGO_PKG_NAME")
             );
-            None
-        } else if matches.opt_present("V") {
-            println!("{} {}", env!("CARGO_PKG_NAME"), env!("CARGO_PKG_VERSION"));
             None
         } else {
             let display_type = if matches.opt_present("N") {
