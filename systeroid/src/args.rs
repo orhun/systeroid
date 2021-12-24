@@ -52,7 +52,7 @@ impl Args {
     /// Returns the available options.
     fn get_options() -> Options {
         let mut opts = Options::new();
-        opts.optflag("a", "all", "display all variables");
+        opts.optflag("a", "all", "display all variables (-A,-X)");
         opts.optflag("T", "tree", "display all variables in tree format");
         opts.optflag("A", "", "alias of -a");
         opts.optflag("X", "", "alias of -a");
@@ -65,7 +65,7 @@ impl Args {
         opts.optflag("N", "names", "print only variable names");
         opts.optflag("n", "values", "print only variable values");
         opts.optflag("b", "binary", "print only variable values without new line");
-        opts.optflag("p", "load", "read values from file");
+        opts.optflag("p", "load", "read values from file (-f)");
         opts.optflag("f", "", "alias of -p");
         opts.optflag("S", "system", "read values from all system directories");
         opts.optopt(
@@ -92,7 +92,7 @@ impl Args {
         );
         opts.optflag("P", "no-pager", "do not pipe output into a pager");
         opts.optflag("v", "verbose", "enable verbose logging");
-        opts.optflag("h", "help", "display this help and exit");
+        opts.optflag("h", "help", "display this help and exit (-d)");
         opts.optflag("V", "version", "output version information and exit");
         opts
     }
