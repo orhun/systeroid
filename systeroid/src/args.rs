@@ -107,8 +107,12 @@ impl Args {
 
         let preload_files = matches.opt_present("p") || matches.opt_present("f");
         let show_help = matches.opt_present("h") || matches.opt_present("d");
-        let display_all =
-            matches.opt_present("a") || matches.opt_present("A") || matches.opt_present("X");
+        let display_all = matches.opt_present("a")
+            || matches.opt_present("A")
+            || matches.opt_present("X")
+            || matches.opt_present("N")
+            || matches.opt_present("n")
+            || matches.opt_present("b");
         let required_args_present = !matches.free.is_empty()
             || display_all
             || preload_files
