@@ -3,6 +3,7 @@ name = "systeroid"
 version = "0.1.0"
 authors = ["Orhun Parmaksız <orhunparmaksiz@gmail.com>"]
 edition = "2021"
+default-run="systeroid"
 
 [features]
 # tests that affect the system state

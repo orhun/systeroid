@@ -499,6 +499,10 @@ dependencies = [
 ]
 
 [[package]]
+name = "systeroid-tui"
+version = "0.1.0"
+
+[[package]]
 name = "thiserror"
 version = "1.0.29"
 source = "registry+https://github.com/rust-lang/crates.io-index"

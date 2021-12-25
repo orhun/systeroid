@@ -1,6 +1,8 @@
 [workspace]
 members = [
-    "systeroid-core",
     "systeroid-parser",
+    "systeroid-core",
+    "systeroid-tui",
     "systeroid"
 ]
+default-members = ["systeroid", "systeroid-tui"]
