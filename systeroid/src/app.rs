@@ -1,3 +1,4 @@
+use crate::output::OutputType;
 use std::env;
 use std::io::Write;
 use std::path::PathBuf;
@@ -25,18 +26,22 @@ pub struct App<'a, Output: Write> {
     cache: Cache,
     /// Standard output.
     output: &'a mut Output,
-    /// Whether if the output will be in tree format.
-    tree_output: bool,
+    /// Output type.
+    output_type: OutputType,
 }
 
 impl<'a, Output: Write> App<'a, Output> {
     /// Constructs a new instance.
-    pub fn new(sysctl: &'a mut Sysctl, output: &'a mut Output, tree_output: bool) -> Result<Self> {
+    pub fn new(
+        sysctl: &'a mut Sysctl,
+        output: &'a mut Output,
+        output_type: OutputType,
+    ) -> Result<Self> {
         Ok(Self {
             sysctl,
             cache: Cache::init()?,
             output,
-            tree_output,
+            output_type,
         })
     }
 
@@ -45,21 +50,27 @@ impl<'a, Output: Write> App<'a, Output> {
     where
         I: Iterator<Item = &'b Parameter>,
     {
-        if self.tree_output {
-            let mut root_node = TreeNode::default();
-            parameters.for_each(|parameter| {
-                root_node.add(
-                    &mut parameter
-                        .get_tree_components(&self.sysctl.config)
-                        .iter()
-                        .map(|v| v.as_ref()),
-                );
-            });
-            Tree::new(root_node.childs).print(self.output, self.sysctl.config.default_color)?;
-        } else {
-            parameters.try_for_each(|parameter| {
-                parameter.display_value(&self.sysctl.config, self.output)
-            })?;
+        match self.output_type {
+            OutputType::Default => {
+                parameters.try_for_each(|parameter| {
+                    parameter.display_value(&self.sysctl.config, self.output)
+                })?;
+            }
+            OutputType::Tree => {
+                let mut root_node = TreeNode::default();
+                parameters.for_each(|parameter| {
+                    root_node.add(
+                        &mut parameter
+                            .get_tree_components(&self.sysctl.config)
+                            .iter()
+                            .map(|v| v.as_ref()),
+                    );
+                });
+                Tree::new(root_node.childs).print(self.output, self.sysctl.config.default_color)?;
+            }
+            OutputType::Json => {
+                Parameter::display_bulk_json(parameters.collect(), self.output)?;
+            }
         }
         Ok(())
     }
@@ -246,7 +257,7 @@ mod tests {
             no_pager: true,
             ..Config::default()
         })?;
-        let mut app = App::new(&mut sysctl, &mut output, false)?;
+        let mut app = App::new(&mut sysctl, &mut output, OutputType::Default)?;
 
         app.display_parameters(Regex::new("kernel|vm").ok(), false)?;
         let result = String::from_utf8_lossy(&app.output);
@@ -254,7 +265,7 @@ mod tests {
         assert!(result.contains("kernel.version ="));
         app.output.clear();
 
-        app.tree_output = true;
+        app.output_type = OutputType::Tree;
         app.display_parameters(None, true)?;
         assert!(String::from_utf8_lossy(&app.output).contains("─ osrelease ="));
         app.output.clear();
@@ -265,12 +276,19 @@ mod tests {
         app.output.clear();
 
         let param_name = String::from("kernel.version");
-        app.tree_output = false;
+        app.output_type = OutputType::Default;
         app.process_parameter(param_name.clone(), true, false)?;
         let result = String::from_utf8_lossy(&app.output);
         assert_eq!(1, result.lines().count());
         assert!(result.contains(&param_name));
         app.output.clear();
+
+        let param_name = String::from("kernel.version");
+        app.output_type = OutputType::Json;
+        app.process_parameter(param_name.clone(), true, false)?;
+        let result = String::from_utf8_lossy(&app.output);
+        assert!(result.contains("\"section\":\"kernel\""));
+        assert!(result.contains(&format!("\"name\":\"{}\"", param_name)));
 
         Ok(())
     }

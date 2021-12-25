@@ -132,6 +132,25 @@ impl Parameter {
         Ok(())
     }
 
+    /// Prints the given parameters in JSON format.
+    pub fn display_bulk_json<Output: Write>(
+        parameters: Vec<&Self>,
+        output: &mut Output,
+    ) -> Result<()> {
+        let parameters = parameters
+            .iter()
+            .map(|p| {
+                serde_json::json!({
+                    "name": p.name,
+                    "value": p.value,
+                    "section": p.section.to_string(),
+                })
+            })
+            .collect::<Vec<_>>();
+        writeln!(output, "{}", serde_json::to_string(&parameters)?)?;
+        Ok(())
+    }
+
     /// Returns the parameter documentation if it exists.
     fn get_documentation(&self) -> Option<String> {
         self.description.as_ref().map(|description| {

@@ -1,3 +1,4 @@
+use crate::output::OutputType;
 use getopts::Options;
 use std::env;
 use std::path::PathBuf;
@@ -42,8 +43,8 @@ pub struct Args {
     pub pattern: Option<Regex>,
     /// Whether if the documentation should be shown.
     pub explain: bool,
-    /// Whether if the output should be in tree format.
-    pub tree_output: bool,
+    /// Output type of the application.
+    pub output_type: OutputType,
     /// Free string fragments.
     pub values: Vec<String>,
 }
@@ -53,7 +54,8 @@ impl Args {
     fn get_options() -> Options {
         let mut opts = Options::new();
         opts.optflag("a", "all", "display all variables (-A,-X)");
-        opts.optflag("T", "tree", "display all variables in tree format");
+        opts.optflag("T", "tree", "display the variables in a tree-like format");
+        opts.optflag("J", "json", "display the variables in JSON format");
         opts.optflag("A", "", "alias of -a");
         opts.optflag("X", "", "alias of -a");
         opts.optflag(
@@ -119,7 +121,8 @@ impl Args {
             || matches.opt_present("S")
             || matches.opt_present("r")
             || matches.opt_present("E")
-            || matches.opt_present("T");
+            || matches.opt_present("T")
+            || matches.opt_present("J");
 
         if show_help || env_args.len() == 1 {
             let usage = opts.usage_with_format(|opts| {
@@ -158,6 +161,13 @@ impl Args {
             } else {
                 DisplayType::Default
             };
+            let output_type = if matches.opt_present("T") {
+                OutputType::Tree
+            } else if matches.opt_present("J") {
+                OutputType::Json
+            } else {
+                OutputType::Default
+            };
             if preload_files && matches.free.is_empty() {
                 matches.free = vec![DEFAULT_PRELOAD.to_string()];
             }
@@ -169,7 +179,6 @@ impl Args {
                 display_type,
                 display_deprecated: matches.opt_present("deprecated"),
                 ignore_errors: matches.opt_present("e"),
-                tree_output: matches.opt_present("T"),
                 no_pager: matches.opt_present("P"),
                 preload_files,
                 preload_system_files: matches.opt_present("S"),
@@ -177,6 +186,7 @@ impl Args {
                     .opt_str("r")
                     .map(|v| Regex::new(&v).expect("invalid regex")),
                 explain: matches.opt_present("E"),
+                output_type,
                 values: matches.free,
             })
         }
@@ -207,7 +217,7 @@ mod tests {
         .unwrap();
         assert!(args.verbose);
         assert!(args.write);
-        assert!(args.tree_output);
+        assert_eq!(OutputType::Tree, args.output_type);
 
         assert!(!Args::parse(vec![String::new(), String::from("-p")])
             .unwrap()

@@ -6,6 +6,8 @@
 pub mod app;
 /// Command-line argument parser.
 pub mod args;
+/// Application output types.
+pub mod output;
 
 use crate::app::App;
 use crate::args::Args;
@@ -25,7 +27,7 @@ pub fn run<Output: Write>(args: Args, output: &mut Output) -> Result<()> {
         ..Default::default()
     };
     let mut sysctl = Sysctl::init(config)?;
-    let mut app = App::new(&mut sysctl, output, args.tree_output)?;
+    let mut app = App::new(&mut sysctl, output, args.output_type)?;
 
     if args.preload_system_files {
         app.preload_from_system()?;
