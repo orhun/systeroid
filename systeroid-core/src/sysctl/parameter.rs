@@ -118,13 +118,15 @@ impl Parameter {
                 write!(output, "{}", self.value.bold())?;
             }
             DisplayType::Default => {
-                writeln!(
-                    output,
-                    "{} {} {}",
-                    self.get_colored_name(config),
-                    "=".color(config.default_color),
-                    self.value.bold(),
-                )?;
+                for value in self.value.lines() {
+                    writeln!(
+                        output,
+                        "{} {} {}",
+                        self.get_colored_name(config),
+                        "=".color(config.default_color),
+                        value.bold(),
+                    )?;
+                }
             }
         }
         Ok(())
