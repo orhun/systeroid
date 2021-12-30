@@ -5,7 +5,14 @@ authors = ["Orhun Parmaksız <orhunparmaksiz@gmail.com>"]
 edition = "2021"
 
 [dependencies]
+termion = "1.5.6"
+thiserror = "1.0.30"
 
 [dependencies.systeroid-core]
 version = "0.1.0"
 path = "../systeroid-core"
+
+[dependencies.tui]
+version = "0.16.0"
+default-features = false
+features = ["termion"]
