@@ -34,7 +34,7 @@ pub fn run<Output: Write>(output: Output) -> Result<()> {
     terminal.hide_cursor()?;
     terminal.clear()?;
 
-    let event_handler = EventHandler::default();
+    let event_handler = EventHandler::new(250);
     let mut app = App::default();
     while app.running {
         terminal.draw(|frame| ui::render(frame))?;
@@ -43,6 +43,7 @@ pub fn run<Output: Write>(output: Output) -> Result<()> {
                 let command = Command::from(key);
                 app.run_command(command);
             }
+            Event::Tick => {}
         }
     }
 
