@@ -37,10 +37,10 @@ pub fn run<Output: Write>(output: Output) -> Result<()> {
     let event_handler = EventHandler::new(250);
     let mut app = App::default();
     while app.running {
-        terminal.draw(|frame| ui::render(frame))?;
+        terminal.draw(|frame| ui::render(frame, &mut app))?;
         match event_handler.next()? {
             Event::KeyPress(key) => {
-                let command = Command::from(key);
+                let command = Command::parse(key, app.input.is_some());
                 app.run_command(command);
             }
             Event::Tick => {}

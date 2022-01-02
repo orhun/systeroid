@@ -527,6 +527,7 @@ dependencies = [
  "termion",
  "thiserror",
  "tui",
+ "unicode-width",
 ]
 
 [[package]]
