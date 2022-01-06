@@ -3,6 +3,10 @@ use termion::event::Key;
 /// Possible application commands.
 #[derive(Debug)]
 pub enum Command {
+    /// Scroll up on the widget.
+    ScrollUp,
+    /// Scroll down on the widget.
+    ScrollDown,
     /// Update the input buffer.
     UpdateInput(char),
     /// Clear the input buffer.
@@ -25,6 +29,8 @@ impl Command {
             }
         } else {
             match key {
+                Key::Up => Command::ScrollUp,
+                Key::Down => Command::ScrollDown,
                 Key::Char(':') => Command::UpdateInput(' '),
                 Key::Esc => Command::Exit,
                 _ => Command::None,

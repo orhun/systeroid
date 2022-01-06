@@ -1,4 +1,5 @@
 use crate::command::Command;
+use crate::widgets::StatefulList;
 
 /// Application controller.
 #[derive(Debug)]
@@ -7,6 +8,8 @@ pub struct App {
     pub running: bool,
     /// Input buffer.
     pub input: Option<String>,
+    /// List of sysctl variables.
+    pub variable_list: StatefulList<String>,
 }
 
 impl Default for App {
@@ -14,6 +17,10 @@ impl Default for App {
         Self {
             running: true,
             input: None,
+            variable_list: StatefulList::with_items(vec![
+                String::from("data1"),
+                String::from("data2"),
+            ]),
         }
     }
 }
@@ -22,6 +29,12 @@ impl App {
     /// Runs the given command and updates the application.
     pub fn run_command(&mut self, command: Command) {
         match command {
+            Command::ScrollUp => {
+                self.variable_list.previous();
+            }
+            Command::ScrollDown => {
+                self.variable_list.next();
+            }
             Command::UpdateInput(v) => match self.input.as_mut() {
                 Some(input) => {
                     input.push(v);

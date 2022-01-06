@@ -12,6 +12,8 @@ pub mod error;
 pub mod event;
 /// User interface renderer.
 pub mod ui;
+/// Custom widgets.
+pub mod widgets;
 
 use crate::app::App;
 use crate::command::Command;
