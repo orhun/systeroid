@@ -62,19 +62,19 @@ impl<'a> App<'a> {
                     }
                 }
             }
-            Command::UpdateInput(v) => {
-                if self.input_time.is_some() {
-                    return;
-                }
-                match self.input.as_mut() {
-                    Some(input) => {
+            Command::UpdateInput(v) => match self.input.as_mut() {
+                Some(input) => {
+                    if self.input_time.is_some() {
+                        self.input_time = None;
+                        self.input = Some(String::new());
+                    } else {
                         input.push(v);
                     }
-                    None => {
-                        self.input = Some(String::new());
-                    }
                 }
-            }
+                None => {
+                    self.input = Some(String::new());
+                }
+            },
             Command::ClearInput(cancel) => {
                 if self.input_time.is_some() {
                     return;
