@@ -1,4 +1,5 @@
 use crate::command::Command;
+use crate::error::Result;
 use crate::widgets::StatefulList;
 use std::str::FromStr;
 use std::time::Instant;
@@ -41,7 +42,7 @@ impl<'a> App<'a> {
     }
 
     /// Runs the given command and updates the application.
-    pub fn run_command(&mut self, command: Command) {
+    pub fn run_command(&mut self, command: Command) -> Result<()> {
         match command {
             Command::ScrollUp => {
                 self.variable_list.previous();
@@ -51,11 +52,10 @@ impl<'a> App<'a> {
             }
             Command::ProcessInput => {
                 if self.input_time.is_some() {
-                    return;
-                }
-                if let Some(input) = &self.input {
+                    return Ok(());
+                } else if let Some(input) = &self.input {
                     if let Ok(command) = Command::from_str(input) {
-                        self.run_command(command)
+                        self.run_command(command)?;
                     } else {
                         self.input = Some(String::from("Unknown command"));
                         self.input_time = Some(Instant::now());
@@ -77,9 +77,8 @@ impl<'a> App<'a> {
             },
             Command::ClearInput(cancel) => {
                 if self.input_time.is_some() {
-                    return;
-                }
-                if cancel {
+                    return Ok(());
+                } else if cancel {
                     self.input = None
                 } else if let Some(input) = self.input.as_mut() {
                     if input.pop().is_none() {
@@ -89,6 +88,7 @@ impl<'a> App<'a> {
             }
             Command::Refresh => {
                 self.input = None;
+                *self.sysctl = Sysctl::init(self.sysctl.config.clone())?;
                 self.variable_list = StatefulList::with_items(self.sysctl.parameters.clone());
             }
             Command::Exit => {
@@ -96,6 +96,7 @@ impl<'a> App<'a> {
             }
             Command::None => {}
         }
+        Ok(())
     }
 
     /// Handles the terminal tick event.

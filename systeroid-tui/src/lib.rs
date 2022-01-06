@@ -45,7 +45,7 @@ pub fn run<Output: Write>(output: Output) -> Result<()> {
         match event_handler.next()? {
             Event::KeyPress(key) => {
                 let command = Command::parse(key, app.is_input_mode());
-                app.run_command(command);
+                app.run_command(command)?;
             }
             Event::Tick => {
                 app.tick();
