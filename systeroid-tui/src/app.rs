@@ -1,31 +1,32 @@
 use crate::command::Command;
 use crate::widgets::StatefulList;
+use systeroid_core::sysctl::controller::Sysctl;
+use systeroid_core::sysctl::parameter::Parameter;
 
 /// Application controller.
 #[derive(Debug)]
-pub struct App {
+pub struct App<'a> {
     /// Whether if the application is running.
     pub running: bool,
     /// Input buffer.
     pub input: Option<String>,
     /// List of sysctl variables.
-    pub variable_list: StatefulList<String>,
+    pub variable_list: StatefulList<Parameter>,
+    /// Sysctl controller.
+    sysctl: &'a mut Sysctl,
 }
 
-impl Default for App {
-    fn default() -> Self {
+impl<'a> App<'a> {
+    /// Constructs a new instance.
+    pub fn new(sysctl: &'a mut Sysctl) -> Self {
         Self {
             running: true,
             input: None,
-            variable_list: StatefulList::with_items(vec![
-                String::from("data1"),
-                String::from("data2"),
-            ]),
+            variable_list: StatefulList::with_items(sysctl.parameters.clone()),
+            sysctl,
         }
     }
-}
 
-impl App {
     /// Runs the given command and updates the application.
     pub fn run_command(&mut self, command: Command) {
         match command {

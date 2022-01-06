@@ -9,6 +9,9 @@ pub enum Error {
     /// Error that may occur while receiving messages from the channel.
     #[error("Channel receive error: `{0}`")]
     ReceiveError(#[from] std::sync::mpsc::RecvError),
+    /// Error that may occur in the core library.
+    #[error("{0}")]
+    SysctlError(#[from] systeroid_core::error::Error),
 }
 
 /// Type alias for the standard [`Result`] type.

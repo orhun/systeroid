@@ -25,7 +25,9 @@ fn render_variable_list<B: Backend>(frame: &mut Frame<'_, B>, rect: Rect, app: &
             app.variable_list
                 .items
                 .iter()
-                .map(|text| ListItem::new(Span::raw(text)))
+                .map(|variable| {
+                    ListItem::new(Span::raw(format!("{} = {}", variable.name, variable.value)))
+                })
                 .collect::<Vec<ListItem<'_>>>(),
         )
         .block(
