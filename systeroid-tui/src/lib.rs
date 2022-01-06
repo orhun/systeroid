@@ -44,10 +44,12 @@ pub fn run<Output: Write>(output: Output) -> Result<()> {
         terminal.draw(|frame| ui::render(frame, &mut app))?;
         match event_handler.next()? {
             Event::KeyPress(key) => {
-                let command = Command::parse(key, app.input.is_some());
+                let command = Command::parse(key, app.is_input_mode());
                 app.run_command(command);
             }
-            Event::Tick => {}
+            Event::Tick => {
+                app.tick();
+            }
         }
     }
 

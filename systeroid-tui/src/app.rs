@@ -1,8 +1,12 @@
 use crate::command::Command;
 use crate::widgets::StatefulList;
 use std::str::FromStr;
+use std::time::Instant;
 use systeroid_core::sysctl::controller::Sysctl;
 use systeroid_core::sysctl::parameter::Parameter;
+
+/// Duration of prompt messages.
+const MESSAGE_DURATION: u128 = 1750;
 
 /// Application controller.
 #[derive(Debug)]
@@ -11,6 +15,8 @@ pub struct App<'a> {
     pub running: bool,
     /// Input buffer.
     pub input: Option<String>,
+    /// Time tracker for measuring the time for clearing the input.
+    pub input_time: Option<Instant>,
     /// List of sysctl variables.
     pub variable_list: StatefulList<Parameter>,
     /// Sysctl controller.
@@ -23,9 +29,15 @@ impl<'a> App<'a> {
         Self {
             running: true,
             input: None,
+            input_time: None,
             variable_list: StatefulList::with_items(sysctl.parameters.clone()),
             sysctl,
         }
+    }
+
+    /// Returns true if the app is in input mode.
+    pub fn is_input_mode(&self) -> bool {
+        self.input.is_some() && self.input_time.is_none()
     }
 
     /// Runs the given command and updates the application.
@@ -38,23 +50,35 @@ impl<'a> App<'a> {
                 self.variable_list.next();
             }
             Command::ProcessInput => {
+                if self.input_time.is_some() {
+                    return;
+                }
                 if let Some(input) = &self.input {
                     if let Ok(command) = Command::from_str(input) {
                         self.run_command(command)
                     } else {
-                        self.input = None;
+                        self.input = Some(String::from("Unknown command"));
+                        self.input_time = Some(Instant::now());
                     }
                 }
             }
-            Command::UpdateInput(v) => match self.input.as_mut() {
-                Some(input) => {
-                    input.push(v);
+            Command::UpdateInput(v) => {
+                if self.input_time.is_some() {
+                    return;
                 }
-                None => {
-                    self.input = Some(String::new());
+                match self.input.as_mut() {
+                    Some(input) => {
+                        input.push(v);
+                    }
+                    None => {
+                        self.input = Some(String::new());
+                    }
                 }
-            },
+            }
             Command::ClearInput(cancel) => {
+                if self.input_time.is_some() {
+                    return;
+                }
                 if cancel {
                     self.input = None
                 } else if let Some(input) = self.input.as_mut() {
@@ -71,6 +95,16 @@ impl<'a> App<'a> {
                 self.running = false;
             }
             Command::None => {}
+        }
+    }
+
+    /// Handles the terminal tick event.
+    pub fn tick(&mut self) {
+        if let Some(instant) = self.input_time {
+            if instant.elapsed().as_millis() > MESSAGE_DURATION {
+                self.input = None;
+                self.input_time = None;
+            }
         }
     }
 }

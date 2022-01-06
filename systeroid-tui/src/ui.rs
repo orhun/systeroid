@@ -50,15 +50,21 @@ fn render_input_prompt<B: Backend>(
     cursor_y: u16,
     app: &mut App,
 ) {
-    if let Some(input) = &app.input {
-        frame.set_cursor(input.width() as u16 + 2, cursor_y);
-    }
+    let text = match &app.input {
+        Some(input) => format!(
+            "{}{}",
+            if app.input_time.is_some() {
+                "MSG: "
+            } else {
+                frame.set_cursor(input.width() as u16 + 2, cursor_y);
+                ":"
+            },
+            input,
+        ),
+        None => String::new(),
+    };
     frame.render_widget(
-        Paragraph::new(match &app.input {
-            Some(input) => format!(":{}", input),
-            None => String::new(),
-        })
-        .block(
+        Paragraph::new(text).block(
             Block::default()
                 .borders(Borders::all())
                 .border_style(Style::default().fg(Color::White))

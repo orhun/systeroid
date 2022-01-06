@@ -260,25 +260,25 @@ mod tests {
         let mut app = App::new(&mut sysctl, &mut output, OutputType::Default)?;
 
         app.display_parameters(Regex::new("kernel|vm").ok(), false)?;
-        let result = String::from_utf8_lossy(&app.output);
+        let result = String::from_utf8_lossy(app.output);
         assert!(result.contains("vm.zone_reclaim_mode ="));
         assert!(result.contains("kernel.version ="));
         app.output.clear();
 
         app.output_type = OutputType::Tree;
         app.display_parameters(None, true)?;
-        assert!(String::from_utf8_lossy(&app.output).contains("─ osrelease ="));
+        assert!(String::from_utf8_lossy(app.output).contains("─ osrelease ="));
         app.output.clear();
 
         app.update_documentation(None)?;
         app.display_documentation("kernel.acct")?;
-        assert!(String::from_utf8_lossy(&app.output).contains("highwater lowwater frequency"));
+        assert!(String::from_utf8_lossy(app.output).contains("highwater lowwater frequency"));
         app.output.clear();
 
         let param_name = String::from("kernel.version");
         app.output_type = OutputType::Default;
         app.process_parameter(param_name.clone(), true, false)?;
-        let result = String::from_utf8_lossy(&app.output);
+        let result = String::from_utf8_lossy(app.output);
         assert_eq!(1, result.lines().count());
         assert!(result.contains(&param_name));
         app.output.clear();
@@ -286,7 +286,7 @@ mod tests {
         let param_name = String::from("kernel.version");
         app.output_type = OutputType::Json;
         app.process_parameter(param_name.clone(), true, false)?;
-        let result = String::from_utf8_lossy(&app.output);
+        let result = String::from_utf8_lossy(app.output);
         assert!(result.contains("\"section\":\"kernel\""));
         assert!(result.contains(&format!("\"name\":\"{}\"", param_name)));
 
