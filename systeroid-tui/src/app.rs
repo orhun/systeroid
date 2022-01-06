@@ -1,5 +1,6 @@
 use crate::command::Command;
 use crate::widgets::StatefulList;
+use std::str::FromStr;
 use systeroid_core::sysctl::controller::Sysctl;
 use systeroid_core::sysctl::parameter::Parameter;
 
@@ -36,6 +37,15 @@ impl<'a> App<'a> {
             Command::ScrollDown => {
                 self.variable_list.next();
             }
+            Command::ProcessInput => {
+                if let Some(input) = &self.input {
+                    if let Ok(command) = Command::from_str(input) {
+                        self.run_command(command)
+                    } else {
+                        self.input = None;
+                    }
+                }
+            }
             Command::UpdateInput(v) => match self.input.as_mut() {
                 Some(input) => {
                     input.push(v);
@@ -52,6 +62,10 @@ impl<'a> App<'a> {
                         self.input = None;
                     }
                 }
+            }
+            Command::Refresh => {
+                self.input = None;
+                self.variable_list = StatefulList::with_items(self.sysctl.parameters.clone());
             }
             Command::Exit => {
                 self.running = false;
