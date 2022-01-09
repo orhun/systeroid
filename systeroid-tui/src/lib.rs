@@ -4,6 +4,8 @@
 
 /// Main application.
 pub mod app;
+/// Command-line argument parser.
+pub mod args;
 /// Application commands.
 pub mod command;
 /// Error implementation.
@@ -16,6 +18,7 @@ pub mod ui;
 pub mod widgets;
 
 use crate::app::App;
+use crate::args::Args;
 use crate::command::Command;
 use crate::error::Result;
 use crate::event::{Event, EventHandler};
@@ -29,7 +32,7 @@ use tui::backend::TermionBackend;
 use tui::terminal::Terminal;
 
 /// Runs `systeroid-tui`.
-pub fn run<Output: Write>(output: Output) -> Result<()> {
+pub fn run<Output: Write>(args: Args, output: Output) -> Result<()> {
     let output = output.into_raw_mode()?;
     let output = MouseTerminal::from(output);
     let output = AlternateScreen::from(output);
@@ -37,7 +40,7 @@ pub fn run<Output: Write>(output: Output) -> Result<()> {
     let mut terminal = Terminal::new(backend)?;
     terminal.hide_cursor()?;
     terminal.clear()?;
-    let event_handler = EventHandler::new(250);
+    let event_handler = EventHandler::new(args.tick_rate);
     let mut sysctl = Sysctl::init(Config::default())?;
     let mut app = App::new(&mut sysctl);
     while app.running {

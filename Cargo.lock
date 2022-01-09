@@ -523,6 +523,7 @@ dependencies = [
 name = "systeroid-tui"
 version = "0.1.0"
 dependencies = [
+ "getopts",
  "systeroid-core",
  "termion",
  "thiserror",

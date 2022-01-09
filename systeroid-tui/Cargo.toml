@@ -8,6 +8,7 @@ edition = "2021"
 termion = "1.5.6"
 unicode-width = "0.1.9"
 thiserror = "1.0.30"
+getopts = "0.2.21"
 
 [dependencies.systeroid-core]
 version = "0.1.0"
