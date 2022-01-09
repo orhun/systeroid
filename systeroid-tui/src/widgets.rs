@@ -1,24 +1,24 @@
-use tui::widgets::ListState;
+use tui::widgets::TableState;
 
 /// List widget with TUI controlled states.
 #[derive(Debug)]
-pub struct StatefulList<T> {
+pub struct StatefulTable<T> {
     /// List items (states).
     pub items: Vec<T>,
     /// State that can be modified by TUI.
-    pub state: ListState,
+    pub state: TableState,
 }
 
-impl<T> StatefulList<T> {
-    /// Constructs a new instance of `StatefulList`.
-    pub fn new(items: Vec<T>, mut state: ListState) -> StatefulList<T> {
+impl<T> StatefulTable<T> {
+    /// Constructs a new instance of `StatefulTable`.
+    pub fn new(items: Vec<T>, mut state: TableState) -> StatefulTable<T> {
         state.select(Some(0));
         Self { items, state }
     }
 
-    /// Construct a new `StatefulList` with given items.
-    pub fn with_items(items: Vec<T>) -> StatefulList<T> {
-        Self::new(items, ListState::default())
+    /// Construct a new `StatefulTable` with given items.
+    pub fn with_items(items: Vec<T>) -> StatefulTable<T> {
+        Self::new(items, TableState::default())
     }
 
     /// Returns the selected item.
@@ -62,8 +62,8 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_stateful_list() {
-        let mut list = StatefulList::with_items(vec!["data1", "data2", "data3"]);
+    fn test_stateful_table() {
+        let mut list = StatefulTable::with_items(vec!["data1", "data2", "data3"]);
         list.state.select(Some(1));
         assert_eq!(Some(&"data2"), list.selected());
         list.next();

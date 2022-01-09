@@ -1,6 +1,6 @@
 use crate::command::Command;
 use crate::error::Result;
-use crate::widgets::StatefulList;
+use crate::widgets::StatefulTable;
 use std::str::FromStr;
 use std::time::Instant;
 use systeroid_core::sysctl::controller::Sysctl;
@@ -19,7 +19,7 @@ pub struct App<'a> {
     /// Time tracker for measuring the time for clearing the input.
     pub input_time: Option<Instant>,
     /// List of sysctl variables.
-    pub variable_list: StatefulList<Parameter>,
+    pub variable_list: StatefulTable<Parameter>,
     /// Sysctl controller.
     sysctl: &'a mut Sysctl,
 }
@@ -31,7 +31,7 @@ impl<'a> App<'a> {
             running: true,
             input: None,
             input_time: None,
-            variable_list: StatefulList::with_items(sysctl.parameters.clone()),
+            variable_list: StatefulTable::with_items(sysctl.parameters.clone()),
             sysctl,
         }
     }
@@ -89,7 +89,7 @@ impl<'a> App<'a> {
             Command::Refresh => {
                 self.input = None;
                 *self.sysctl = Sysctl::init(self.sysctl.config.clone())?;
-                self.variable_list = StatefulList::with_items(self.sysctl.parameters.clone());
+                self.variable_list = StatefulTable::with_items(self.sysctl.parameters.clone());
             }
             Command::Exit => {
                 self.running = false;
