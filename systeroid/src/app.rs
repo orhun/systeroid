@@ -3,9 +3,8 @@ use std::env;
 use std::io::Write;
 use std::path::PathBuf;
 use std::process::{Command, Stdio};
-use systeroid_core::cache::{Cache, CacheData};
+use systeroid_core::cache::Cache;
 use systeroid_core::error::Result;
-use systeroid_core::parsers::KERNEL_DOCS_PATH;
 use systeroid_core::regex::Regex;
 use systeroid_core::sysctl::controller::Sysctl;
 use systeroid_core::sysctl::parameter::Parameter;
@@ -13,9 +12,6 @@ use systeroid_core::sysctl::{DEPRECATED_PARAMS, SYSTEM_PRELOAD};
 use systeroid_core::tree::{Tree, TreeNode};
 use systeroid_parser::globwalk;
 use systeroid_parser::reader;
-
-/// Label for caching the kernel parameters.
-const PARAMETERS_CACHE_LABEL: &str = "parameters";
 
 /// Application controller.
 #[derive(Debug)]
@@ -96,33 +92,14 @@ impl<'a, Output: Write> App<'a, Output> {
         self.print_parameters(&mut parameters)
     }
 
-    /// Updates the documentation for kernel parameters.
-    pub fn update_documentation(&mut self, kernel_docs: Option<&PathBuf>) -> Result<()> {
-        let mut kernel_docs_path = KERNEL_DOCS_PATH.clone();
-        if let Some(path) = kernel_docs {
-            kernel_docs_path.insert(0, path);
-        }
-        if let Some(path) = kernel_docs_path.iter().find(|path| path.exists()) {
-            if self.cache.exists(PARAMETERS_CACHE_LABEL) && kernel_docs.is_none() {
-                let cache_data = self.cache.read(PARAMETERS_CACHE_LABEL)?;
-                if cache_data.timestamp == CacheData::<()>::get_timestamp(path)? {
-                    self.sysctl.update_params(cache_data.data);
-                    return Ok(());
-                }
-            }
-            self.sysctl.update_docs(path)?;
-            self.cache.write(
-                CacheData::new(&self.sysctl.parameters, path)?,
-                PARAMETERS_CACHE_LABEL,
-            )?;
-        } else {
-            eprintln!("warning: `Linux kernel documentation cannot be found. Please specify a path via '-D' argument`",);
-        }
-        Ok(())
-    }
-
     /// Displays the documentation of a parameter.
-    pub fn display_documentation(&mut self, param_name: &str) -> Result<()> {
+    pub fn display_documentation(
+        &mut self,
+        param_name: &str,
+        kernel_docs: Option<&PathBuf>,
+    ) -> Result<()> {
+        self.sysctl
+            .update_docs_from_cache(kernel_docs, &self.cache)?;
         let no_pager = self.sysctl.config.no_pager;
         for parameter in self.sysctl.get_parameters(param_name) {
             let mut fallback_to_default = false;
@@ -270,8 +247,7 @@ mod tests {
         assert!(String::from_utf8_lossy(app.output).contains("─ osrelease ="));
         app.output.clear();
 
-        app.update_documentation(None)?;
-        app.display_documentation("kernel.acct")?;
+        app.display_documentation("kernel.acct", None)?;
         assert!(String::from_utf8_lossy(app.output).contains("highwater lowwater frequency"));
         app.output.clear();
 

@@ -34,9 +34,8 @@ pub fn run<Output: Write>(args: Args, output: &mut Output) -> Result<()> {
     } else if args.values.is_empty() {
         app.display_parameters(args.pattern, args.display_deprecated)?;
     } else if args.explain {
-        app.update_documentation(args.kernel_docs.as_ref())?;
         for param in args.values {
-            app.display_documentation(&param)?;
+            app.display_documentation(&param, args.kernel_docs.as_ref())?;
         }
     } else if args.preload_files {
         for file in args.values {

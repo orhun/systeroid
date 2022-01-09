@@ -1,12 +1,13 @@
+use crate::cache::{Cache, CacheData};
 use crate::config::Config;
 use crate::error::Result;
-use crate::parsers::parse_kernel_docs;
-use crate::sysctl::parameter::Parameter;
+use crate::parsers::{parse_kernel_docs, KERNEL_DOCS_PATH};
+use crate::sysctl::parameter::{Parameter, PARAMETERS_CACHE_LABEL};
 use crate::sysctl::section::Section;
 use crate::sysctl::PROC_PATH;
 use rayon::prelude::*;
 use std::convert::TryFrom;
-use std::path::Path;
+use std::path::{Path, PathBuf};
 use std::result::Result as StdResult;
 use sysctl::{CtlFlags, CtlIter, Sysctl as SysctlImpl};
 
@@ -81,10 +82,39 @@ impl Sysctl {
         parameters
     }
 
+    /// Updates the descriptions of the kernel parameters using the given cached data.
+    pub fn update_docs_from_cache(
+        &mut self,
+        kernel_docs: Option<&PathBuf>,
+        cache: &Cache,
+    ) -> Result<()> {
+        let mut kernel_docs_path = KERNEL_DOCS_PATH.clone();
+        if let Some(path) = kernel_docs {
+            kernel_docs_path.insert(0, path);
+        }
+        if let Some(path) = kernel_docs_path.iter().find(|path| path.exists()) {
+            if cache.exists(PARAMETERS_CACHE_LABEL) && kernel_docs.is_none() {
+                let cache_data = cache.read(PARAMETERS_CACHE_LABEL)?;
+                if cache_data.timestamp == CacheData::<()>::get_timestamp(path)? {
+                    self.update_params(cache_data.data);
+                    return Ok(());
+                }
+            }
+            self.update_docs(path)?;
+            cache.write(
+                CacheData::new(&self.parameters, path)?,
+                PARAMETERS_CACHE_LABEL,
+            )?;
+        } else {
+            eprintln!("warning: `Linux kernel documentation cannot be found. Please specify a path via '-D' argument`");
+        }
+        Ok(())
+    }
+
     /// Updates the parameters internally using the given list.
     ///
     /// Keeps the original values.
-    pub fn update_params(&mut self, mut parameters: Vec<Parameter>) {
+    fn update_params(&mut self, mut parameters: Vec<Parameter>) {
         parameters.par_iter_mut().for_each(|parameter| {
             if let Some(param) = self
                 .parameters
@@ -98,7 +128,7 @@ impl Sysctl {
     }
 
     /// Updates the descriptions of the kernel parameters.
-    pub fn update_docs(&mut self, kernel_docs: &Path) -> Result<()> {
+    fn update_docs(&mut self, kernel_docs: &Path) -> Result<()> {
         let documents = parse_kernel_docs(kernel_docs)?;
         self.parameters
             .par_iter_mut()
