@@ -15,7 +15,7 @@ pub mod sysctl;
 pub mod error;
 
 /// Parsers for the kernel documentation.
-pub mod parsers;
+pub(crate) mod parsers;
 
 /// Configuration.
 pub mod config;

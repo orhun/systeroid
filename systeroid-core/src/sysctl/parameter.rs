@@ -155,7 +155,7 @@ impl Parameter {
     }
 
     /// Returns the parameter documentation if it exists.
-    fn get_documentation(&self) -> Option<String> {
+    pub fn get_documentation(&self) -> Option<String> {
         self.description.as_ref().map(|description| {
             format!(
                 "{}\n{}\n{}\n-\nParameter: {}\nReference: {}",
