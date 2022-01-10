@@ -18,16 +18,16 @@ pub fn render<B: Backend>(frame: &mut Frame<'_, B>, app: &mut App) {
             .direction(Direction::Vertical)
             .constraints([Constraint::Min(rect.height - 3), Constraint::Min(3)].as_ref())
             .split(chunks[0]);
-        render_variable_list(frame, chunks[0], app);
+        render_parameter_list(frame, chunks[0], app);
         render_input_prompt(frame, chunks[1], rect.height - 2, app);
     }
-    render_variable_documentation(frame, chunks[1], app);
+    render_parameter_documentation(frame, chunks[1], app);
 }
 
-/// Renders the list that contains the sysctl variables.
-fn render_variable_list<B: Backend>(frame: &mut Frame<'_, B>, rect: Rect, app: &mut App) {
+/// Renders the list that contains the sysctl parameters.
+fn render_parameter_list<B: Backend>(frame: &mut Frame<'_, B>, rect: Rect, app: &mut App) {
     let max_width = app
-        .variable_list
+        .parameter_list
         .items
         .iter()
         .map(|p| p.name.len())
@@ -35,7 +35,7 @@ fn render_variable_list<B: Backend>(frame: &mut Frame<'_, B>, rect: Rect, app: &
         .and_then(|v| u16::try_from(v).ok())
         .unwrap_or(1);
     let minimize_rows = rect.width < max_width + 10;
-    let rows = app.variable_list.items.iter().map(|item| {
+    let rows = app.parameter_list.items.iter().map(|item| {
         Row::new(if minimize_rows {
             vec![Cell::from(format!("{} = {}", item.name, item.value))]
         } else {
@@ -63,17 +63,17 @@ fn render_variable_list<B: Backend>(frame: &mut Frame<'_, B>, rect: Rect, app: &
                 [Constraint::Min(max_width), Constraint::Percentage(100)]
             }),
         rect,
-        &mut app.variable_list.state,
+        &mut app.parameter_list.state,
     );
 }
 
-/// Renders the documentation of the selected sysctl variable.
-fn render_variable_documentation<B: Backend>(frame: &mut Frame<'_, B>, rect: Rect, app: &mut App) {
+/// Renders the documentation of the selected sysctl parameter.
+fn render_parameter_documentation<B: Backend>(frame: &mut Frame<'_, B>, rect: Rect, app: &mut App) {
     frame.render_widget(
         Paragraph::new(
-            app.variable_list
+            app.parameter_list
                 .selected()
-                .and_then(|variable| variable.get_documentation())
+                .and_then(|parameter| parameter.get_documentation())
                 .unwrap_or_else(|| String::from("No documentation available")),
         )
         .block(

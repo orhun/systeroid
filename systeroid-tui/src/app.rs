@@ -18,8 +18,8 @@ pub struct App<'a> {
     pub input: Option<String>,
     /// Time tracker for measuring the time for clearing the input.
     pub input_time: Option<Instant>,
-    /// List of sysctl variables.
-    pub variable_list: StatefulTable<Parameter>,
+    /// List of sysctl parameters.
+    pub parameter_list: StatefulTable<Parameter>,
     /// Sysctl controller.
     sysctl: &'a mut Sysctl,
 }
@@ -31,7 +31,7 @@ impl<'a> App<'a> {
             running: true,
             input: None,
             input_time: None,
-            variable_list: StatefulTable::with_items(sysctl.parameters.clone()),
+            parameter_list: StatefulTable::with_items(sysctl.parameters.clone()),
             sysctl,
         }
     }
@@ -45,10 +45,10 @@ impl<'a> App<'a> {
     pub fn run_command(&mut self, command: Command) -> Result<()> {
         match command {
             Command::ScrollUp => {
-                self.variable_list.previous();
+                self.parameter_list.previous();
             }
             Command::ScrollDown => {
-                self.variable_list.next();
+                self.parameter_list.next();
             }
             Command::ProcessInput => {
                 if self.input_time.is_some() {
@@ -89,7 +89,7 @@ impl<'a> App<'a> {
             Command::Refresh => {
                 self.input = None;
                 *self.sysctl = Sysctl::init(self.sysctl.config.clone())?;
-                self.variable_list = StatefulTable::with_items(self.sysctl.parameters.clone());
+                self.parameter_list = StatefulTable::with_items(self.sysctl.parameters.clone());
             }
             Command::Exit => {
                 self.running = false;
