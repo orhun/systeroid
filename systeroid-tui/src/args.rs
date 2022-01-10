@@ -1,4 +1,5 @@
 use getopts::Options;
+use std::path::PathBuf;
 
 /// Help message for the arguments.
 const HELP_MESSAGE: &str = r#"
@@ -15,6 +16,8 @@ For more details see {bin}(8)."#;
 pub struct Args {
     /// Refresh rate of the terminal.
     pub tick_rate: u64,
+    /// Path of the Linux kernel documentation.
+    pub kernel_docs: Option<PathBuf>,
 }
 
 impl Args {
@@ -26,6 +29,12 @@ impl Args {
             "tick-rate",
             "set the tick rate of the terminal [default: 250]",
             "<ms>",
+        );
+        opts.optopt(
+            "D",
+            "docs",
+            "set the path of the kernel documentation",
+            "<path>",
         );
         opts.optflag("h", "help", "display this help and exit");
         opts.optflag("V", "version", "output version information and exit");
@@ -57,6 +66,7 @@ impl Args {
                     .map_err(|e| eprintln!("error: `{}`", e))
                     .ok()?
                     .unwrap_or(250),
+                kernel_docs: matches.opt_str("D").map(PathBuf::from),
             })
         }
     }

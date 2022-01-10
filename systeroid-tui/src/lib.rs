@@ -23,6 +23,7 @@ use crate::command::Command;
 use crate::error::Result;
 use crate::event::{Event, EventHandler};
 use std::io::Write;
+use systeroid_core::cache::Cache;
 use systeroid_core::config::Config;
 use systeroid_core::sysctl::controller::Sysctl;
 use termion::input::MouseTerminal;
@@ -42,6 +43,7 @@ pub fn run<Output: Write>(args: Args, output: Output) -> Result<()> {
     terminal.clear()?;
     let event_handler = EventHandler::new(args.tick_rate);
     let mut sysctl = Sysctl::init(Config::default())?;
+    sysctl.update_docs_from_cache(args.kernel_docs.as_ref(), &Cache::init()?)?;
     let mut app = App::new(&mut sysctl);
     while app.running {
         terminal.draw(|frame| ui::render(frame, &mut app))?;

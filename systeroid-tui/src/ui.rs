@@ -21,6 +21,7 @@ pub fn render<B: Backend>(frame: &mut Frame<'_, B>, app: &mut App) {
         render_variable_list(frame, chunks[0], app);
         render_input_prompt(frame, chunks[1], rect.height - 2, app);
     }
+    render_variable_documentation(frame, chunks[1], app);
 }
 
 /// Renders the list that contains the sysctl variables.
@@ -63,6 +64,26 @@ fn render_variable_list<B: Backend>(frame: &mut Frame<'_, B>, rect: Rect, app: &
             }),
         rect,
         &mut app.variable_list.state,
+    );
+}
+
+/// Renders the documentation of the selected sysctl variable.
+fn render_variable_documentation<B: Backend>(frame: &mut Frame<'_, B>, rect: Rect, app: &mut App) {
+    frame.render_widget(
+        Paragraph::new(
+            app.variable_list
+                .selected()
+                .and_then(|variable| variable.get_documentation())
+                .unwrap_or_else(|| String::from("No documentation available")),
+        )
+        .block(
+            Block::default()
+                .borders(Borders::all())
+                .border_style(Style::default().fg(Color::White))
+                .border_type(BorderType::Rounded)
+                .style(Style::default().bg(Color::Black)),
+        ),
+        rect,
     );
 }
 
