@@ -8,6 +8,8 @@ pub enum Command {
     ScrollUp,
     /// Scroll down on the widget.
     ScrollDown,
+    /// Enable the search mode.
+    EnableSearch,
     /// Process the input.
     ProcessInput,
     /// Update the input buffer.
@@ -51,6 +53,7 @@ impl Command {
                 Key::Up => Command::ScrollUp,
                 Key::Down => Command::ScrollDown,
                 Key::Char(':') => Command::UpdateInput(' '),
+                Key::Char('/') => Command::EnableSearch,
                 Key::Char('r') => Command::Refresh,
                 Key::Esc => Command::Exit,
                 _ => Command::None,

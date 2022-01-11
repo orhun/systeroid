@@ -187,7 +187,11 @@ fn render_input_prompt<B: Backend>(
                 "MSG: "
             } else {
                 frame.set_cursor(input.width() as u16 + 2, cursor_y);
-                ":"
+                if app.search_mode {
+                    "/"
+                } else {
+                    ":"
+                }
             },
             input,
         ),

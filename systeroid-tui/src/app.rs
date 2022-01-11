@@ -18,6 +18,8 @@ pub struct App<'a> {
     pub input: Option<String>,
     /// Time tracker for measuring the time for clearing the input.
     pub input_time: Option<Instant>,
+    /// Whether if the search mode is enabled.
+    pub search_mode: bool,
     /// List of sysctl parameters.
     pub parameter_list: StatefulTable<Parameter>,
     /// Sysctl controller.
@@ -31,6 +33,7 @@ impl<'a> App<'a> {
             running: true,
             input: None,
             input_time: None,
+            search_mode: false,
             parameter_list: StatefulTable::with_items(sysctl.parameters.clone()),
             sysctl,
         }
@@ -39,6 +42,26 @@ impl<'a> App<'a> {
     /// Returns true if the app is in input mode.
     pub fn is_input_mode(&self) -> bool {
         self.input.is_some() && self.input_time.is_none()
+    }
+
+    /// Performs a search operation in the kernel parameter list.
+    fn search(&mut self) {
+        if let Some(query) = &self.input {
+            self.parameter_list.items = self
+                .sysctl
+                .parameters
+                .clone()
+                .into_iter()
+                .filter(|param| param.name.contains(query))
+                .collect();
+            if self.parameter_list.items.is_empty() {
+                self.parameter_list.state.select(None);
+            } else {
+                self.parameter_list.state.select(Some(0));
+            }
+        } else {
+            self.parameter_list = StatefulTable::with_items(self.sysctl.parameters.clone());
+        }
     }
 
     /// Runs the given command and updates the application.
@@ -50,9 +73,20 @@ impl<'a> App<'a> {
             Command::ScrollDown => {
                 self.parameter_list.next();
             }
+            Command::EnableSearch => {
+                if self.input_time.is_some() {
+                    self.input_time = None;
+                }
+                self.search_mode = true;
+                self.search();
+                self.input = Some(String::new());
+            }
             Command::ProcessInput => {
                 if self.input_time.is_some() {
                     return Ok(());
+                } else if self.search_mode {
+                    self.input = None;
+                    self.search_mode = false;
                 } else if let Some(input) = &self.input {
                     if let Ok(command) = Command::from_str(input) {
                         self.run_command(command)?;
@@ -62,19 +96,25 @@ impl<'a> App<'a> {
                     }
                 }
             }
-            Command::UpdateInput(v) => match self.input.as_mut() {
-                Some(input) => {
-                    if self.input_time.is_some() {
-                        self.input_time = None;
+            Command::UpdateInput(v) => {
+                match self.input.as_mut() {
+                    Some(input) => {
+                        if self.input_time.is_some() {
+                            self.input_time = None;
+                            self.input = Some(String::new());
+                        } else {
+                            input.push(v);
+                        }
+                    }
+                    None => {
                         self.input = Some(String::new());
-                    } else {
-                        input.push(v);
+                        self.search_mode = false;
                     }
                 }
-                None => {
-                    self.input = Some(String::new());
+                if self.search_mode {
+                    self.search();
                 }
-            },
+            }
             Command::ClearInput(cancel) => {
                 if self.input_time.is_some() {
                     return Ok(());
@@ -84,6 +124,9 @@ impl<'a> App<'a> {
                     if input.pop().is_none() {
                         self.input = None;
                     }
+                }
+                if self.search_mode {
+                    self.search();
                 }
             }
             Command::Refresh => {
