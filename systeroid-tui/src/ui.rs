@@ -63,7 +63,7 @@ fn render_parameter_list<B: Backend>(frame: &mut Frame<'_, B>, rect: Rect, app: 
             ]
         })
         .height(1)
-        .bottom_margin(1)
+        .bottom_margin(0)
     });
     frame.render_stateful_widget(
         Table::new(rows)
