@@ -8,7 +8,10 @@ pub enum Error {
     IoError(#[from] std::io::Error),
     /// Error that may occur while receiving messages from the channel.
     #[error("Channel receive error: `{0}`")]
-    ReceiveError(#[from] std::sync::mpsc::RecvError),
+    ChannelReceiveError(#[from] std::sync::mpsc::RecvError),
+    /// Error that may occur while getting/setting the contents of the clipboard.
+    #[error("Clipboard error: `{0}`")]
+    ClipboardError(String),
     /// Error that may occur in the core library.
     #[error("{0}")]
     SysctlError(#[from] systeroid_core::error::Error),

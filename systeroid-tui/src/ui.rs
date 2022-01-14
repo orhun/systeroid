@@ -1,4 +1,5 @@
 use crate::app::App;
+use crate::widgets::StatefulTable;
 use tui::backend::Backend;
 use tui::layout::{Alignment, Constraint, Direction, Layout, Rect};
 use tui::style::{Color, Style};
@@ -100,6 +101,9 @@ fn render_parameter_list<B: Backend>(frame: &mut Frame<'_, B>, rect: Rect, app: 
             app.parameter_list.items.len()
         ),
     );
+    if let Some(options) = app.options.as_mut() {
+        render_options_menu(frame, rect, options);
+    }
 }
 
 /// Renders the text for displaying the selected index.
@@ -148,6 +152,68 @@ fn render_selection_text<B: Backend>(frame: &mut Frame<'_, B>, rect: Rect, selec
             horizontal_area[2],
         );
     }
+}
+
+/// Renders a list as a popup for showing options.
+fn render_options_menu<B: Backend>(
+    frame: &mut Frame<'_, B>,
+    rect: Rect,
+    options: &mut StatefulTable<&str>,
+) {
+    let (length_x, length_y) = (
+        25,
+        u16::try_from(options.items.len()).unwrap_or_default() + 2,
+    );
+    let popup_layout = Layout::default()
+        .direction(Direction::Vertical)
+        .constraints(
+            [
+                Constraint::Length((rect.height.checked_sub(length_y)).unwrap_or_default() / 2),
+                Constraint::Min(length_y),
+                Constraint::Length((rect.height.checked_sub(length_y)).unwrap_or_default() / 2),
+            ]
+            .as_ref(),
+        )
+        .split(rect);
+    let rect = Layout::default()
+        .direction(Direction::Horizontal)
+        .constraints(
+            [
+                Constraint::Length(
+                    (popup_layout[1].width.checked_sub(length_x)).unwrap_or_default() / 2,
+                ),
+                Constraint::Min(length_x),
+                Constraint::Length(
+                    (popup_layout[1].width.checked_sub(length_x)).unwrap_or_default() / 2,
+                ),
+            ]
+            .as_ref(),
+        )
+        .split(popup_layout[1])[1];
+    frame.render_widget(Clear, rect);
+    frame.render_stateful_widget(
+        Table::new(options.items.iter().map(|item| {
+            Row::new(vec![Cell::from(item.to_string())])
+                .height(1)
+                .bottom_margin(0)
+        }))
+        .block(
+            Block::default()
+                .title(Span::styled(
+                    "Copy to clipboard",
+                    Style::default().fg(Color::White),
+                ))
+                .title_alignment(Alignment::Center)
+                .borders(Borders::all())
+                .border_style(Style::default().fg(Color::White))
+                .border_type(BorderType::Rounded)
+                .style(Style::default().bg(Color::Black)),
+        )
+        .highlight_style(Style::default().bg(Color::White).fg(Color::Black))
+        .widths(&[Constraint::Percentage(100)]),
+        rect,
+        &mut options.state,
+    );
 }
 
 /// Renders the documentation of the selected sysctl parameter.

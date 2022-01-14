@@ -1,6 +1,8 @@
 use crate::command::Command;
-use crate::error::Result;
+use crate::error::{Error, Result};
+use crate::options::CopyOption;
 use crate::widgets::StatefulTable;
+use copypasta_ext::prelude::ClipboardProvider;
 use std::str::FromStr;
 use std::time::Instant;
 use systeroid_core::sysctl::controller::Sysctl;
@@ -10,7 +12,6 @@ use systeroid_core::sysctl::parameter::Parameter;
 const MESSAGE_DURATION: u128 = 1750;
 
 /// Application controller.
-#[derive(Debug)]
 pub struct App<'a> {
     /// Whether if the application is running.
     pub running: bool,
@@ -20,21 +21,27 @@ pub struct App<'a> {
     pub input_time: Option<Instant>,
     /// Whether if the search mode is enabled.
     pub search_mode: bool,
+    /// Entries of the options menu.
+    pub options: Option<StatefulTable<&'a str>>,
     /// List of sysctl parameters.
     pub parameter_list: StatefulTable<Parameter>,
+    /// Clipboard context.
+    clipboard: Option<Box<dyn ClipboardProvider>>,
     /// Sysctl controller.
     sysctl: &'a mut Sysctl,
 }
 
 impl<'a> App<'a> {
     /// Constructs a new instance.
-    pub fn new(sysctl: &'a mut Sysctl) -> Self {
+    pub fn new(sysctl: &'a mut Sysctl, clipboard: Option<Box<dyn ClipboardProvider>>) -> Self {
         Self {
             running: true,
             input: None,
             input_time: None,
             search_mode: false,
+            options: None,
             parameter_list: StatefulTable::with_items(sysctl.parameters.clone()),
+            clipboard,
             sysctl,
         }
     }
@@ -64,14 +71,56 @@ impl<'a> App<'a> {
         }
     }
 
+    /// Copies the selected entry to the clipboard.
+    fn copy_to_clipboard(&mut self, copy_option: CopyOption) -> Result<()> {
+        self.input = Some(if let Some(clipboard) = self.clipboard.as_mut() {
+            if let Some(parameter) = self.parameter_list.selected() {
+                match copy_option {
+                    CopyOption::Name => clipboard.set_contents(parameter.name.clone()),
+                    CopyOption::Value => clipboard.set_contents(parameter.value.clone()),
+                    CopyOption::Documentation => {
+                        clipboard.set_contents(parameter.get_documentation().unwrap_or_default())
+                    }
+                }
+                .map_err(|e| Error::ClipboardError(e.to_string()))?;
+                String::from("Copied to clipboard!")
+            } else {
+                String::from("No parameter is selected")
+            }
+        } else {
+            String::from("Clipboard is not initialized")
+        });
+        self.input_time = Some(Instant::now());
+        Ok(())
+    }
+
     /// Runs the given command and updates the application.
     pub fn run_command(&mut self, command: Command) -> Result<()> {
         match command {
+            Command::Select => {
+                if let Some(copy_option) = self
+                    .options
+                    .as_ref()
+                    .and_then(|v| v.selected())
+                    .and_then(|v| CopyOption::try_from(*v).ok())
+                {
+                    self.copy_to_clipboard(copy_option)?;
+                }
+                self.options = None;
+            }
             Command::ScrollUp => {
-                self.parameter_list.previous();
+                if let Some(options) = self.options.as_mut() {
+                    options.previous();
+                } else {
+                    self.parameter_list.previous();
+                }
             }
             Command::ScrollDown => {
-                self.parameter_list.next();
+                if let Some(options) = self.options.as_mut() {
+                    options.next();
+                } else {
+                    self.parameter_list.next();
+                }
             }
             Command::EnableSearch => {
                 if self.input_time.is_some() {
@@ -129,6 +178,25 @@ impl<'a> App<'a> {
                     self.search();
                 }
             }
+            Command::Copy => {
+                if self.parameter_list.selected().is_some() {
+                    let mut copy_options = CopyOption::variants().to_vec();
+                    if self
+                        .parameter_list
+                        .selected()
+                        .and_then(|parameter| parameter.get_documentation())
+                        .is_none()
+                    {
+                        copy_options.retain(|v| v != &CopyOption::Documentation)
+                    }
+                    self.options = Some(StatefulTable::with_items(
+                        copy_options.iter().map(|v| v.as_str()).collect(),
+                    ));
+                } else {
+                    self.input = Some(String::from("No parameter is selected"));
+                    self.input_time = Some(Instant::now());
+                }
+            }
             Command::Refresh => {
                 self.input = None;
                 let parameters = Sysctl::init(self.sysctl.config.clone())?.parameters;
@@ -142,7 +210,11 @@ impl<'a> App<'a> {
                 self.parameter_list = StatefulTable::with_items(self.sysctl.parameters.clone());
             }
             Command::Exit => {
-                self.running = false;
+                if self.options.is_some() {
+                    self.options = None;
+                } else {
+                    self.running = false;
+                }
             }
             Command::None => {}
         }

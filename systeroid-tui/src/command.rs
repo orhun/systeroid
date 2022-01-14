@@ -4,6 +4,8 @@ use termion::event::Key;
 /// Possible application commands.
 #[derive(Debug)]
 pub enum Command {
+    /// Perform an action based on the selected entry.
+    Select,
     /// Scroll up on the widget.
     ScrollUp,
     /// Scroll down on the widget.
@@ -16,6 +18,8 @@ pub enum Command {
     UpdateInput(char),
     /// Clear the input buffer.
     ClearInput(bool),
+    /// Copy selected value to clipboard.
+    Copy,
     /// Refresh the application.
     Refresh,
     /// Exit the application.
@@ -31,6 +35,7 @@ impl FromStr for Command {
             "search" => Ok(Command::EnableSearch),
             "up" => Ok(Command::ScrollUp),
             "down" => Ok(Command::ScrollDown),
+            "copy" => Ok(Command::Copy),
             "refresh" => Ok(Command::Refresh),
             "exit" | "quit" | "q" | "q!" => Ok(Command::Exit),
             _ => Err(()),
@@ -55,6 +60,8 @@ impl Command {
                 Key::Down => Command::ScrollDown,
                 Key::Char(':') => Command::UpdateInput(' '),
                 Key::Char('/') => Command::EnableSearch,
+                Key::Char('\n') => Command::Select,
+                Key::Char('c') => Command::Copy,
                 Key::Char('r') => Command::Refresh,
                 Key::Esc => Command::Exit,
                 _ => Command::None,
