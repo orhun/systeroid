@@ -1,9 +1,9 @@
 use tui::widgets::TableState;
 
-/// List widget with TUI controlled states.
+/// Table widget with TUI controlled states.
 #[derive(Debug)]
 pub struct StatefulTable<T> {
-    /// List items (states).
+    /// Table items (states).
     pub items: Vec<T>,
     /// State that can be modified by TUI.
     pub state: TableState,
@@ -63,12 +63,12 @@ mod tests {
 
     #[test]
     fn test_stateful_table() {
-        let mut list = StatefulTable::with_items(vec!["data1", "data2", "data3"]);
-        list.state.select(Some(1));
-        assert_eq!(Some(&"data2"), list.selected());
-        list.next();
-        assert_eq!(Some(2), list.state.selected());
-        list.previous();
-        assert_eq!(Some(1), list.state.selected());
+        let mut table = StatefulTable::with_items(vec!["data1", "data2", "data3"]);
+        table.state.select(Some(1));
+        assert_eq!(Some(&"data2"), table.selected());
+        table.next();
+        assert_eq!(Some(2), table.state.selected());
+        table.previous();
+        assert_eq!(Some(1), table.state.selected());
     }
 }
