@@ -28,6 +28,7 @@ impl FromStr for Command {
     type Err = ();
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
+            "search" => Ok(Command::EnableSearch),
             "up" => Ok(Command::ScrollUp),
             "down" => Ok(Command::ScrollDown),
             "refresh" => Ok(Command::Refresh),
