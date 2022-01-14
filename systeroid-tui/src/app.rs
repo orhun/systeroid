@@ -199,15 +199,17 @@ impl<'a> App<'a> {
             }
             Command::Refresh => {
                 self.input = None;
-                let parameters = Sysctl::init(self.sysctl.config.clone())?.parameters;
-                self.sysctl.parameters.iter_mut().for_each(|parameter| {
-                    if let Some(param) =
-                        parameters.iter().find(|param| param.name == parameter.name)
+                self.sysctl.parameters = Sysctl::init(self.sysctl.config.clone())?.parameters;
+                self.parameter_list.items.iter_mut().for_each(|parameter| {
+                    if let Some(param) = self
+                        .sysctl
+                        .parameters
+                        .iter()
+                        .find(|param| param.name == parameter.name)
                     {
                         parameter.value = param.value.to_string();
                     }
                 });
-                self.parameter_list = StatefulTable::with_items(self.sysctl.parameters.clone());
             }
             Command::Exit => {
                 if self.options.is_some() {
