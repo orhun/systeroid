@@ -111,14 +111,14 @@ impl<'a> App<'a> {
             Command::ScrollUp => {
                 if let Some(options) = self.options.as_mut() {
                     options.previous();
-                } else {
+                } else if !self.parameter_list.items.is_empty() {
                     self.parameter_list.previous();
                 }
             }
             Command::ScrollDown => {
                 if let Some(options) = self.options.as_mut() {
                     options.next();
-                } else {
+                } else if !self.parameter_list.items.is_empty() {
                     self.parameter_list.next();
                 }
             }
