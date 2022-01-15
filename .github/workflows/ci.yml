@@ -152,7 +152,7 @@ jobs:
           args: -- -D warnings
 
   audit:
-    name: Perform security audit
+    name: Audit check
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the repository

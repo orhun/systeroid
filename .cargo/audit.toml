@@ -1,0 +1,9 @@
+[advisories]
+ignore = [
+    "RUSTSEC-2021-0119", # `nix` - Out-of-bounds write in nix::unistd::getgrouplist
+    "RUSTSEC-2021-0019", # `xcb` - Multiple soundness issues
+]
+
+[output]
+quiet = false
+deny = ["warnings"]
