@@ -1,8 +1,9 @@
 use crate::command::Command;
-use crate::error::{Error, Result};
+use crate::error::Result;
 use crate::options::CopyOption;
 use crate::widgets::StatefulTable;
-use copypasta_ext::prelude::ClipboardProvider;
+#[cfg(feature = "clipboard")]
+use copypasta_ext::{display::DisplayServer, prelude::ClipboardProvider};
 use std::str::FromStr;
 use std::time::Instant;
 use systeroid_core::sysctl::controller::Sysctl;
@@ -25,6 +26,7 @@ pub struct App<'a> {
     pub options: Option<StatefulTable<&'a str>>,
     /// List of sysctl parameters.
     pub parameter_list: StatefulTable<Parameter>,
+    #[cfg(feature = "clipboard")]
     /// Clipboard context.
     clipboard: Option<Box<dyn ClipboardProvider>>,
     /// Sysctl controller.
@@ -33,17 +35,33 @@ pub struct App<'a> {
 
 impl<'a> App<'a> {
     /// Constructs a new instance.
-    pub fn new(sysctl: &'a mut Sysctl, clipboard: Option<Box<dyn ClipboardProvider>>) -> Self {
-        Self {
+    pub fn new(sysctl: &'a mut Sysctl) -> Self {
+        let mut app = Self {
             running: true,
             input: None,
             input_time: None,
             search_mode: false,
             options: None,
-            parameter_list: StatefulTable::with_items(sysctl.parameters.clone()),
-            clipboard,
+            parameter_list: StatefulTable::default(),
+            #[cfg(feature = "clipboard")]
+            clipboard: None,
             sysctl,
+        };
+        app.parameter_list.items = app.sysctl.parameters.clone();
+        #[cfg(feature = "clipboard")]
+        {
+            app.clipboard = match DisplayServer::select().try_context() {
+                None => {
+                    app.input = Some(String::from(
+                        "Failed to initialize clipboard, no suitable clipboard provider found",
+                    ));
+                    app.input_time = Some(Instant::now());
+                    None
+                }
+                clipboard => clipboard,
+            }
         }
+        app
     }
 
     /// Returns true if the app is in input mode.
@@ -72,6 +90,7 @@ impl<'a> App<'a> {
     }
 
     /// Copies the selected entry to the clipboard.
+    #[cfg(feature = "clipboard")]
     fn copy_to_clipboard(&mut self, copy_option: CopyOption) -> Result<()> {
         self.input = Some(if let Some(clipboard) = self.clipboard.as_mut() {
             if let Some(parameter) = self.parameter_list.selected() {
@@ -82,7 +101,7 @@ impl<'a> App<'a> {
                         clipboard.set_contents(parameter.get_documentation().unwrap_or_default())
                     }
                 }
-                .map_err(|e| Error::ClipboardError(e.to_string()))?;
+                .map_err(|e| crate::error::Error::ClipboardError(e.to_string()))?;
                 String::from("Copied to clipboard!")
             } else {
                 String::from("No parameter is selected")
@@ -90,6 +109,14 @@ impl<'a> App<'a> {
         } else {
             String::from("Clipboard is not initialized")
         });
+        self.input_time = Some(Instant::now());
+        Ok(())
+    }
+
+    /// Shows a message about clipboard being not enabled.
+    #[cfg(not(feature = "clipboard"))]
+    fn copy_to_clipboard(&mut self, _: CopyOption) -> Result<()> {
+        self.input = Some(String::from("Clipboard support is not enabled"));
         self.input_time = Some(Instant::now());
         Ok(())
     }

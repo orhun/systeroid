@@ -24,7 +24,6 @@ use crate::args::Args;
 use crate::command::Command;
 use crate::error::Result;
 use crate::event::{Event, EventHandler};
-use copypasta_ext::display::DisplayServer;
 use std::io::Write;
 use systeroid_core::cache::Cache;
 use systeroid_core::config::Config;
@@ -45,16 +44,9 @@ pub fn run<Output: Write>(args: Args, output: Output) -> Result<()> {
     terminal.hide_cursor()?;
     terminal.clear()?;
     let event_handler = EventHandler::new(args.tick_rate);
-    let clipboard = match DisplayServer::select().try_context() {
-        None => {
-            eprintln!("failed to initialize clipboard, no suitable clipboard provider found");
-            None
-        }
-        clipboard => clipboard,
-    };
     let mut sysctl = Sysctl::init(Config::default())?;
     sysctl.update_docs_from_cache(args.kernel_docs.as_ref(), &Cache::init()?)?;
-    let mut app = App::new(&mut sysctl, clipboard);
+    let mut app = App::new(&mut sysctl);
     while app.running {
         terminal.draw(|frame| ui::render(frame, &mut app))?;
         match event_handler.next()? {
@@ -67,6 +59,5 @@ pub fn run<Output: Write>(args: Args, output: Output) -> Result<()> {
             }
         }
     }
-
     Ok(())
 }

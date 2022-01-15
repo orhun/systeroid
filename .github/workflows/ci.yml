@@ -29,14 +29,6 @@ jobs:
           - aarch64-unknown-linux-gnu
           - aarch64-unknown-linux-musl
     steps:
-      - name: Install dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y \
-            --no-install-recommends \
-            --allow-unauthenticated \
-            libxcb-shape0-dev libxcb-xfixes0-dev libxkbcommon-dev
-
       - name: Checkout the repository
         uses: actions/checkout@v2
 
@@ -64,7 +56,7 @@ jobs:
         with:
           use-cross: true
           command: build
-          args: --target ${{ matrix.TARGET }}
+          args: --target ${{ matrix.TARGET }} --no-default-features
 
   test:
     name: Run tests
@@ -160,7 +152,7 @@ jobs:
           args: -- -D warnings
 
   audit:
-    name: Perform audit for security
+    name: Perform security audit
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the repository

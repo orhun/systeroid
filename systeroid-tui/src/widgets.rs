@@ -9,6 +9,12 @@ pub struct StatefulTable<T> {
     pub state: TableState,
 }
 
+impl<T> Default for StatefulTable<T> {
+    fn default() -> Self {
+        Self::with_items(Vec::new())
+    }
+}
+
 impl<T> StatefulTable<T> {
     /// Constructs a new instance of `StatefulTable`.
     pub fn new(items: Vec<T>, mut state: TableState) -> StatefulTable<T> {
