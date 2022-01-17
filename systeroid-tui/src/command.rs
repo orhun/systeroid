@@ -10,6 +10,8 @@ pub enum Command {
     ScrollUp,
     /// Scroll down on the widget.
     ScrollDown,
+    /// Move cursor to right/left.
+    MoveCursor(u8),
     /// Enable the search mode.
     EnableSearch,
     /// Process the input.
@@ -51,7 +53,10 @@ impl Command {
                 Key::Char('\n') => Command::ProcessInput,
                 Key::Char(c) => Command::UpdateInput(c),
                 Key::Backspace => Command::ClearInput(false),
-                Key::Esc => Command::ClearInput(true),
+                Key::Delete => Command::ClearInput(true),
+                Key::Left => Command::MoveCursor(1),
+                Key::Right => Command::MoveCursor(0),
+                Key::Esc => Command::Exit,
                 _ => Command::None,
             }
         } else {

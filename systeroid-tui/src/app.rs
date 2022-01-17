@@ -8,6 +8,7 @@ use std::str::FromStr;
 use std::time::Instant;
 use systeroid_core::sysctl::controller::Sysctl;
 use systeroid_core::sysctl::parameter::Parameter;
+use unicode_width::UnicodeWidthStr;
 
 /// Duration of prompt messages.
 const MESSAGE_DURATION: u128 = 1750;
@@ -20,6 +21,8 @@ pub struct App<'a> {
     pub input: Option<String>,
     /// Time tracker for measuring the time for clearing the input.
     pub input_time: Option<Instant>,
+    /// Cursor position.
+    pub input_cursor: u16,
     /// Whether if the search mode is enabled.
     pub search_mode: bool,
     /// Entries of the options menu.
@@ -40,6 +43,7 @@ impl<'a> App<'a> {
             running: true,
             input: None,
             input_time: None,
+            input_cursor: 0,
             search_mode: false,
             options: None,
             parameter_list: StatefulTable::default(),
@@ -179,7 +183,7 @@ impl<'a> App<'a> {
                             self.input_time = None;
                             self.input = Some(String::new());
                         } else {
-                            input.push(v);
+                            input.insert(input.width() - self.input_cursor as usize, v);
                         }
                     }
                     None => {
@@ -191,18 +195,37 @@ impl<'a> App<'a> {
                     self.search();
                 }
             }
-            Command::ClearInput(cancel) => {
+            Command::ClearInput(remove_end) => {
                 if self.input_time.is_some() {
                     return Ok(());
-                } else if cancel {
-                    self.input = None
                 } else if let Some(input) = self.input.as_mut() {
-                    if input.pop().is_none() {
+                    if remove_end {
+                        self.input_cursor = self
+                            .input_cursor
+                            .checked_sub(1)
+                            .unwrap_or(self.input_cursor);
+                    }
+                    if let Some(remove_index) =
+                        input.width().checked_sub((self.input_cursor + 1).into())
+                    {
+                        input.remove(remove_index);
+                    } else if input.is_empty() {
                         self.input = None;
                     }
                 }
                 if self.search_mode {
                     self.search();
+                }
+            }
+            Command::MoveCursor(direction) => {
+                if let Some(input) = &self.input {
+                    if direction == 0 {
+                        if let Some(cursor_position) = self.input_cursor.checked_sub(1) {
+                            self.input_cursor = cursor_position as u16;
+                        }
+                    } else if self.input_cursor != input.width() as u16 {
+                        self.input_cursor += direction as u16;
+                    }
                 }
             }
             Command::Copy => {
@@ -239,7 +262,10 @@ impl<'a> App<'a> {
                 });
             }
             Command::Exit => {
-                if self.options.is_some() {
+                if self.input.is_some() {
+                    self.input = None;
+                    self.input_time = None;
+                } else if self.options.is_some() {
                     self.options = None;
                 } else {
                     self.running = false;

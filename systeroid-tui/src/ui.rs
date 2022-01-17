@@ -240,27 +240,37 @@ fn render_parameter_documentation<B: Backend>(
 }
 
 /// Renders the input prompt for running commands.
-fn render_input_prompt<B: Backend>(
-    frame: &mut Frame<'_, B>,
-    rect: Rect,
-    cursor_y: u16,
-    app: &mut App,
-) {
-    let text = match &app.input {
-        Some(input) => format!(
-            "{}{}",
+fn render_input_prompt<B: Backend>(frame: &mut Frame<'_, B>, rect: Rect, cursor_y: u16, app: &App) {
+    let text = match app.input.clone() {
+        Some(mut input) => {
             if app.input_time.is_some() {
-                "MSG: "
+                format!("MSG: {}", input)
             } else {
-                frame.set_cursor(input.width() as u16 + 2, cursor_y);
-                if app.search_mode {
-                    "/"
+                let mut skip_chars = 0;
+                if let Some(width_overflow) = (input.width() as u16 + 4)
+                    .checked_sub(app.input_cursor)
+                    .and_then(|v| v.checked_sub(rect.width))
+                {
+                    skip_chars = width_overflow;
+                    input.replace_range(skip_chars as usize..(skip_chars + 1) as usize, "\u{2026}");
+                    if let Some(cursor_x_end) = rect.width.checked_sub(2) {
+                        frame.set_cursor(cursor_x_end, cursor_y);
+                    }
                 } else {
-                    ":"
+                    let area_width = (rect.width - 4) as usize;
+                    if input.width() > area_width {
+                        input.replace_range(area_width..(area_width + 1), "\u{2026}");
+                    }
+                    let cursor_x = input.width() as u16 - app.input_cursor + 2;
+                    frame.set_cursor(cursor_x, cursor_y);
                 }
-            },
-            input,
-        ),
+                format!(
+                    "{}{}",
+                    if app.search_mode { "/" } else { ":" },
+                    input.chars().skip(skip_chars.into()).collect::<String>(),
+                )
+            }
+        }
         None => String::new(),
     };
     frame.render_widget(
