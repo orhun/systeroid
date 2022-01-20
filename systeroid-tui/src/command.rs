@@ -6,6 +6,8 @@ use termion::event::Key;
 pub enum Command {
     /// Perform an action based on the selected entry.
     Select,
+    /// Set the value of a parameter.
+    Set(String, String),
     /// Scroll up on the widget.
     ScrollUp,
     /// Scroll down on the widget.
@@ -41,7 +43,17 @@ impl FromStr for Command {
             "copy" => Ok(Command::Copy),
             "refresh" => Ok(Command::Refresh),
             "exit" | "quit" | "q" | "q!" => Ok(Command::Exit),
-            _ => Err(()),
+            _ => {
+                if s.starts_with("set") {
+                    let mut values = s.trim_start_matches("set").trim().split_whitespace();
+                    Ok(Command::Set(
+                        values.next().ok_or(())?.to_string(),
+                        values.next().ok_or(())?.to_string(),
+                    ))
+                } else {
+                    Err(())
+                }
+            }
         }
     }
 }

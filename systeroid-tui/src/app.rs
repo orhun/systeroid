@@ -136,8 +136,33 @@ impl<'a> App<'a> {
                     .and_then(|v| CopyOption::try_from(*v).ok())
                 {
                     self.copy_to_clipboard(copy_option)?;
+                    self.options = None;
+                } else if let Some(parameter) = self.parameter_list.selected() {
+                    self.search_mode = false;
+                    self.input_time = None;
+                    self.input = Some(format!("set {} {}", parameter.name, parameter.value));
                 }
-                self.options = None;
+            }
+            Command::Set(param_name, new_value) => {
+                if let Some(parameter) = self
+                    .parameter_list
+                    .items
+                    .iter_mut()
+                    .find(|param| param.name == param_name)
+                {
+                    match parameter.update_value(&new_value, &self.sysctl.config, &mut Vec::new()) {
+                        Ok(()) => {
+                            self.run_command(Command::Refresh)?;
+                        }
+                        Err(e) => {
+                            self.input = Some(e.to_string());
+                            self.input_time = Some(Instant::now());
+                        }
+                    }
+                } else {
+                    self.input = Some(String::from("Unknown parameter"));
+                    self.input_time = Some(Instant::now());
+                }
             }
             Command::ScrollUp => {
                 if let Some(options) = self.options.as_mut() {
