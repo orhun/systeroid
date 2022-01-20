@@ -169,6 +169,7 @@ impl<'a> App<'a> {
                     self.search_mode = false;
                 } else if let Some(input) = &self.input {
                     if let Ok(command) = Command::from_str(input) {
+                        self.input = None;
                         self.run_command(command)?;
                     } else {
                         self.input = Some(String::from("Unknown command"));
