@@ -165,26 +165,51 @@ impl<'a> App<'a> {
                     self.input_time = Some(Instant::now());
                 }
             }
-            Command::Scroll(Direction::Up) => {
+            Command::Scroll(Direction::Up, amount) => {
                 if let Some(options) = self.options.as_mut() {
                     options.previous();
                 } else if !self.parameter_list.items.is_empty() {
-                    self.parameter_list.previous();
+                    if amount == 1 {
+                        self.parameter_list.previous();
+                    } else {
+                        self.parameter_list.state.select(
+                            self.parameter_list
+                                .state
+                                .selected()
+                                .and_then(|v| v.checked_sub(amount.into()))
+                                .or(Some(0)),
+                        )
+                    }
                 }
             }
-            Command::Scroll(Direction::Down) => {
+            Command::Scroll(Direction::Down, amount) => {
                 if let Some(options) = self.options.as_mut() {
                     options.next();
                 } else if !self.parameter_list.items.is_empty() {
-                    self.parameter_list.next();
+                    if amount == 1 {
+                        self.parameter_list.next();
+                    } else {
+                        self.parameter_list.state.select(
+                            self.parameter_list
+                                .state
+                                .selected()
+                                .and_then(|v| v.checked_add(amount.into()))
+                                .map(|mut index| {
+                                    if index > self.parameter_list.items.len() {
+                                        index = self.parameter_list.items.len() - 1;
+                                    }
+                                    index
+                                }),
+                        )
+                    }
                 }
             }
-            Command::Scroll(Direction::Top) => {
+            Command::Scroll(Direction::Top, _) => {
                 if !self.parameter_list.items.is_empty() {
                     self.parameter_list.state.select(Some(0));
                 }
             }
-            Command::Scroll(Direction::Bottom) => {
+            Command::Scroll(Direction::Bottom, _) => {
                 if let Some(last_index) = self.parameter_list.items.len().checked_sub(1) {
                     self.parameter_list.state.select(Some(last_index))
                 }

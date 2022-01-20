@@ -10,7 +10,7 @@ pub enum Command {
     /// Set the value of a parameter.
     Set(String, String),
     /// Scroll the widget.
-    Scroll(Direction),
+    Scroll(Direction, u8),
     /// Move cursor to right/left.
     MoveCursor(u8),
     /// Enable the search mode.
@@ -48,12 +48,15 @@ impl FromStr for Command {
                         values.next().ok_or(())?.to_string(),
                     ))
                 } else if s.starts_with("scroll") {
-                    Ok(Command::Scroll(Direction::try_from(
-                        *(s.split_whitespace()
-                            .collect::<Vec<&str>>()
-                            .get(1)
-                            .ok_or(())?),
-                    )?))
+                    Ok(Command::Scroll(
+                        Direction::try_from(
+                            *(s.split_whitespace()
+                                .collect::<Vec<&str>>()
+                                .get(1)
+                                .ok_or(())?),
+                        )?,
+                        1,
+                    ))
                 } else {
                     Err(())
                 }
@@ -78,10 +81,12 @@ impl Command {
             }
         } else {
             match key {
-                Key::Up => Command::Scroll(Direction::Up),
-                Key::Down => Command::Scroll(Direction::Down),
-                Key::Char('t') => Command::Scroll(Direction::Top),
-                Key::Char('b') => Command::Scroll(Direction::Bottom),
+                Key::Up => Command::Scroll(Direction::Up, 1),
+                Key::Down => Command::Scroll(Direction::Down, 1),
+                Key::PageUp => Command::Scroll(Direction::Up, 4),
+                Key::PageDown => Command::Scroll(Direction::Down, 4),
+                Key::Char('t') => Command::Scroll(Direction::Top, 0),
+                Key::Char('b') => Command::Scroll(Direction::Bottom, 0),
                 Key::Char(':') => Command::UpdateInput(' '),
                 Key::Char('/') => Command::EnableSearch,
                 Key::Char('\n') => Command::Select,
