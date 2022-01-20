@@ -1,3 +1,4 @@
+use crate::options::Direction;
 use std::str::FromStr;
 use termion::event::Key;
 
@@ -8,10 +9,8 @@ pub enum Command {
     Select,
     /// Set the value of a parameter.
     Set(String, String),
-    /// Scroll up on the widget.
-    ScrollUp,
-    /// Scroll down on the widget.
-    ScrollDown,
+    /// Scroll the widget.
+    Scroll(Direction),
     /// Move cursor to right/left.
     MoveCursor(u8),
     /// Enable the search mode.
@@ -38,8 +37,6 @@ impl FromStr for Command {
         match s {
             "search" => Ok(Command::EnableSearch),
             "select" => Ok(Command::Select),
-            "up" => Ok(Command::ScrollUp),
-            "down" => Ok(Command::ScrollDown),
             "copy" => Ok(Command::Copy),
             "refresh" => Ok(Command::Refresh),
             "exit" | "quit" | "q" | "q!" => Ok(Command::Exit),
@@ -50,6 +47,13 @@ impl FromStr for Command {
                         values.next().ok_or(())?.to_string(),
                         values.next().ok_or(())?.to_string(),
                     ))
+                } else if s.starts_with("scroll") {
+                    Ok(Command::Scroll(Direction::try_from(
+                        *(s.split_whitespace()
+                            .collect::<Vec<&str>>()
+                            .get(1)
+                            .ok_or(())?),
+                    )?))
                 } else {
                     Err(())
                 }
@@ -74,8 +78,10 @@ impl Command {
             }
         } else {
             match key {
-                Key::Up => Command::ScrollUp,
-                Key::Down => Command::ScrollDown,
+                Key::Up => Command::Scroll(Direction::Up),
+                Key::Down => Command::Scroll(Direction::Down),
+                Key::Char('t') => Command::Scroll(Direction::Top),
+                Key::Char('b') => Command::Scroll(Direction::Bottom),
                 Key::Char(':') => Command::UpdateInput(' '),
                 Key::Char('/') => Command::EnableSearch,
                 Key::Char('\n') => Command::Select,

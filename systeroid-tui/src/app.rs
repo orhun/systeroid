@@ -1,6 +1,7 @@
 use crate::command::Command;
 use crate::error::Result;
 use crate::options::CopyOption;
+use crate::options::Direction;
 use crate::widgets::StatefulTable;
 #[cfg(feature = "clipboard")]
 use copypasta_ext::{display::DisplayServer, prelude::ClipboardProvider};
@@ -164,18 +165,28 @@ impl<'a> App<'a> {
                     self.input_time = Some(Instant::now());
                 }
             }
-            Command::ScrollUp => {
+            Command::Scroll(Direction::Up) => {
                 if let Some(options) = self.options.as_mut() {
                     options.previous();
                 } else if !self.parameter_list.items.is_empty() {
                     self.parameter_list.previous();
                 }
             }
-            Command::ScrollDown => {
+            Command::Scroll(Direction::Down) => {
                 if let Some(options) = self.options.as_mut() {
                     options.next();
                 } else if !self.parameter_list.items.is_empty() {
                     self.parameter_list.next();
+                }
+            }
+            Command::Scroll(Direction::Top) => {
+                if !self.parameter_list.items.is_empty() {
+                    self.parameter_list.state.select(Some(0));
+                }
+            }
+            Command::Scroll(Direction::Bottom) => {
+                if let Some(last_index) = self.parameter_list.items.len().checked_sub(1) {
+                    self.parameter_list.state.select(Some(last_index))
                 }
             }
             Command::EnableSearch => {
