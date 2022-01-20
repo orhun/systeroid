@@ -4,7 +4,7 @@ use tui::backend::Backend;
 use tui::layout::{Alignment, Constraint, Direction, Layout, Rect};
 use tui::style::{Color, Style};
 use tui::text::{Span, Text};
-use tui::widgets::{Block, BorderType, Borders, Cell, Clear, Paragraph, Row, Table};
+use tui::widgets::{Block, BorderType, Borders, Cell, Clear, Paragraph, Row, Table, Wrap};
 use tui::Frame;
 use unicode_width::UnicodeWidthStr;
 
@@ -223,18 +223,20 @@ fn render_parameter_documentation<B: Backend>(
     documentation: String,
 ) {
     frame.render_widget(
-        Paragraph::new(documentation).block(
-            Block::default()
-                .title(Span::styled(
-                    "Documentation",
-                    Style::default().fg(Color::White),
-                ))
-                .title_alignment(Alignment::Center)
-                .borders(Borders::all())
-                .border_style(Style::default().fg(Color::White))
-                .border_type(BorderType::Rounded)
-                .style(Style::default().bg(Color::Black)),
-        ),
+        Paragraph::new(documentation)
+            .block(
+                Block::default()
+                    .title(Span::styled(
+                        "Documentation",
+                        Style::default().fg(Color::White),
+                    ))
+                    .title_alignment(Alignment::Center)
+                    .borders(Borders::all())
+                    .border_style(Style::default().fg(Color::White))
+                    .border_type(BorderType::Rounded)
+                    .style(Style::default().bg(Color::Black)),
+            )
+            .wrap(Wrap { trim: false }),
         rect,
     );
 }
