@@ -35,6 +35,7 @@ impl FromStr for Command {
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
             "search" => Ok(Command::EnableSearch),
+            "select" => Ok(Command::Select),
             "up" => Ok(Command::ScrollUp),
             "down" => Ok(Command::ScrollDown),
             "copy" => Ok(Command::Copy),
