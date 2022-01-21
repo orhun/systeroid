@@ -1,7 +1,6 @@
 use crate::command::Command;
 use crate::error::Result;
-use crate::options::CopyOption;
-use crate::options::Direction;
+use crate::options::{CopyOption, Direction, ScrollArea};
 use crate::widgets::StatefulTable;
 #[cfg(feature = "clipboard")]
 use copypasta_ext::{display::DisplayServer, prelude::ClipboardProvider};
@@ -26,6 +25,8 @@ pub struct App<'a> {
     pub input_cursor: u16,
     /// Whether if the search mode is enabled.
     pub search_mode: bool,
+    /// Y-scroll offset for the documentation.
+    pub docs_scroll_amount: u16,
     /// Entries of the options menu.
     pub options: Option<StatefulTable<&'a str>>,
     /// List of sysctl parameters.
@@ -46,6 +47,7 @@ impl<'a> App<'a> {
             input_time: None,
             input_cursor: 0,
             search_mode: false,
+            docs_scroll_amount: 0,
             options: None,
             parameter_list: StatefulTable::default(),
             #[cfg(feature = "clipboard")]
@@ -92,6 +94,7 @@ impl<'a> App<'a> {
         } else {
             self.parameter_list = StatefulTable::with_items(self.sysctl.parameters.clone());
         }
+        self.docs_scroll_amount = 0;
     }
 
     /// Copies the selected entry to the clipboard.
@@ -165,10 +168,11 @@ impl<'a> App<'a> {
                     self.input_time = Some(Instant::now());
                 }
             }
-            Command::Scroll(Direction::Up, amount) => {
+            Command::Scroll(ScrollArea::List, Direction::Up, amount) => {
                 if let Some(options) = self.options.as_mut() {
                     options.previous();
                 } else if !self.parameter_list.items.is_empty() {
+                    self.docs_scroll_amount = 0;
                     if amount == 1 {
                         self.parameter_list.previous();
                     } else {
@@ -182,10 +186,11 @@ impl<'a> App<'a> {
                     }
                 }
             }
-            Command::Scroll(Direction::Down, amount) => {
+            Command::Scroll(ScrollArea::List, Direction::Down, amount) => {
                 if let Some(options) = self.options.as_mut() {
                     options.next();
                 } else if !self.parameter_list.items.is_empty() {
+                    self.docs_scroll_amount = 0;
                     if amount == 1 {
                         self.parameter_list.next();
                     } else {
@@ -204,16 +209,31 @@ impl<'a> App<'a> {
                     }
                 }
             }
-            Command::Scroll(Direction::Top, _) => {
+            Command::Scroll(ScrollArea::List, Direction::Top, _) => {
                 if !self.parameter_list.items.is_empty() {
+                    self.docs_scroll_amount = 0;
                     self.parameter_list.state.select(Some(0));
                 }
             }
-            Command::Scroll(Direction::Bottom, _) => {
+            Command::Scroll(ScrollArea::List, Direction::Bottom, _) => {
                 if let Some(last_index) = self.parameter_list.items.len().checked_sub(1) {
+                    self.docs_scroll_amount = 0;
                     self.parameter_list.state.select(Some(last_index))
                 }
             }
+            Command::Scroll(ScrollArea::Documentation, Direction::Up, amount) => {
+                self.docs_scroll_amount = self
+                    .docs_scroll_amount
+                    .checked_sub(amount.into())
+                    .unwrap_or_default();
+            }
+            Command::Scroll(ScrollArea::Documentation, Direction::Down, amount) => {
+                self.docs_scroll_amount = self
+                    .docs_scroll_amount
+                    .checked_add(amount.into())
+                    .unwrap_or(self.docs_scroll_amount);
+            }
+            Command::Scroll(_, _, _) => {}
             Command::EnableSearch => {
                 if self.input_time.is_some() {
                     self.input_time = None;
@@ -312,6 +332,7 @@ impl<'a> App<'a> {
             Command::Refresh => {
                 self.input = None;
                 self.sysctl.parameters = Sysctl::init(self.sysctl.config.clone())?.parameters;
+                self.docs_scroll_amount = 0;
                 self.parameter_list.items.iter_mut().for_each(|parameter| {
                     if let Some(param) = self
                         .sysctl

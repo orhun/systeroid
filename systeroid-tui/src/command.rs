@@ -1,4 +1,4 @@
-use crate::options::Direction;
+use crate::options::{Direction, ScrollArea};
 use std::str::FromStr;
 use termion::event::Key;
 
@@ -10,7 +10,7 @@ pub enum Command {
     /// Set the value of a parameter.
     Set(String, String),
     /// Scroll the widget.
-    Scroll(Direction, u8),
+    Scroll(ScrollArea, Direction, u8),
     /// Move cursor to right/left.
     MoveCursor(u8),
     /// Enable the search mode.
@@ -48,13 +48,10 @@ impl FromStr for Command {
                         values.next().ok_or(())?.to_string(),
                     ))
                 } else if s.starts_with("scroll") {
+                    let mut values = s.trim_start_matches("scroll").trim().split_whitespace();
                     Ok(Command::Scroll(
-                        Direction::try_from(
-                            *(s.split_whitespace()
-                                .collect::<Vec<&str>>()
-                                .get(1)
-                                .ok_or(())?),
-                        )?,
+                        ScrollArea::try_from(values.next().ok_or(())?)?,
+                        Direction::try_from(values.next().ok_or(())?)?,
                         1,
                     ))
                 } else {
@@ -81,12 +78,14 @@ impl Command {
             }
         } else {
             match key {
-                Key::Up => Command::Scroll(Direction::Up, 1),
-                Key::Down => Command::Scroll(Direction::Down, 1),
-                Key::PageUp => Command::Scroll(Direction::Up, 4),
-                Key::PageDown => Command::Scroll(Direction::Down, 4),
-                Key::Char('t') => Command::Scroll(Direction::Top, 0),
-                Key::Char('b') => Command::Scroll(Direction::Bottom, 0),
+                Key::Up => Command::Scroll(ScrollArea::List, Direction::Up, 1),
+                Key::Down => Command::Scroll(ScrollArea::List, Direction::Down, 1),
+                Key::PageUp => Command::Scroll(ScrollArea::List, Direction::Up, 4),
+                Key::PageDown => Command::Scroll(ScrollArea::List, Direction::Down, 4),
+                Key::Char('t') => Command::Scroll(ScrollArea::List, Direction::Top, 0),
+                Key::Char('b') => Command::Scroll(ScrollArea::List, Direction::Bottom, 0),
+                Key::Left => Command::Scroll(ScrollArea::Documentation, Direction::Up, 1),
+                Key::Right => Command::Scroll(ScrollArea::Documentation, Direction::Down, 1),
                 Key::Char(':') => Command::UpdateInput(' '),
                 Key::Char('/') => Command::EnableSearch,
                 Key::Char('\n') => Command::Select,

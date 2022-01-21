@@ -38,7 +38,12 @@ pub fn render<B: Backend>(frame: &mut Frame<'_, B>, app: &mut App) {
         }
     }
     if let Some(documentation) = documentation {
-        render_parameter_documentation(frame, chunks[1], documentation);
+        render_parameter_documentation(
+            frame,
+            chunks[1],
+            documentation,
+            &mut app.docs_scroll_amount,
+        );
     }
 }
 
@@ -221,7 +226,18 @@ fn render_parameter_documentation<B: Backend>(
     frame: &mut Frame<'_, B>,
     rect: Rect,
     documentation: String,
+    scroll_amount: &mut u16,
 ) {
+    match (documentation.lines().count() * 2).checked_sub(rect.height.into()) {
+        Some(scroll_overflow) => {
+            if scroll_overflow < (*scroll_amount).into() {
+                *scroll_amount = scroll_overflow as u16;
+            }
+        }
+        None => {
+            *scroll_amount = scroll_amount.checked_sub(1).unwrap_or_default();
+        }
+    }
     frame.render_widget(
         Paragraph::new(documentation)
             .block(
@@ -236,6 +252,7 @@ fn render_parameter_documentation<B: Backend>(
                     .border_type(BorderType::Rounded)
                     .style(Style::default().bg(Color::Black)),
             )
+            .scroll((*scroll_amount, 0))
             .wrap(Wrap { trim: false }),
         rect,
     );

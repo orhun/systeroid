@@ -54,3 +54,9 @@ generate_option!(
     Top => "top",
     Bottom => "bottom",
 );
+
+generate_option!(
+    ScrollArea,
+    List => "list",
+    Documentation => "documentation",
+);
