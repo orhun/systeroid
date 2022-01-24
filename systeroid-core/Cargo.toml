@@ -5,13 +5,13 @@ authors = ["Orhun Parmaksız <orhunparmaksiz@gmail.com>"]
 edition = "2021"
 
 [dependencies]
-sysctl = "0.4.2"
+sysctl = "0.4.3"
 thiserror = "1.0.29"
 lazy_static = "1.4.0"
 rayon = "1.5.1"
 colored = "2.0.0"
-serde = { version = "1.0.130", features = ["derive"] }
-serde_json = "1.0.69"
+serde = { version = "1.0.135", features = ["derive"] }
+serde_json = "1.0.78"
 dirs-next = "2.0.0"
 
 [dependencies.systeroid-parser]

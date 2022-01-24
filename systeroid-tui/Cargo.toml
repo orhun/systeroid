@@ -21,6 +21,6 @@ version = "0.1.0"
 path = "../systeroid-core"
 
 [dependencies.tui]
-version = "0.16.0"
+version = "0.17.0"
 default-features = false
 features = ["termion"]
