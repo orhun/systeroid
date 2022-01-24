@@ -23,10 +23,22 @@ pub enum Section {
     Unknown,
 }
 
+impl Section {
+    /// Returns the section of the given parameter name.
+    pub fn from_name(name: String) -> Self {
+        for section in Self::variants() {
+            if name.starts_with(&format!("{}.", section)) {
+                return *section;
+            }
+        }
+        Self::Unknown
+    }
+}
+
 impl From<String> for Section {
     fn from(value: String) -> Self {
         for section in Self::variants() {
-            if value.starts_with(&format!("{}.", section)) {
+            if value.to_lowercase() == section.to_string() {
                 return *section;
             }
         }
@@ -77,8 +89,13 @@ mod tests {
 
     #[test]
     fn test_sysctl_section() {
-        assert_eq!(Section::Net, Section::from(String::from("net.xyz")));
-        assert_eq!(Section::User, Section::from(String::from("user.aaa.bbb")));
+        assert_eq!(Section::Net, Section::from_name(String::from("net.xyz")));
+        assert_eq!(
+            Section::User,
+            Section::from_name(String::from("user.aaa.bbb"))
+        );
+        assert_eq!(Section::Unknown, Section::from_name(String::from("test")));
+        assert_eq!(Section::Sunrpc, Section::from(String::from("sunrpc")));
         assert_eq!(Section::Unknown, Section::from(String::from("test")));
         assert_eq!(Section::Vm, Section::from(Path::new("/etc/vm.txt")));
         assert_eq!(

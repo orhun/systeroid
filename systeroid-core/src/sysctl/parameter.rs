@@ -39,7 +39,7 @@ impl<'a> TryFrom<&'a Ctl> for Parameter {
                 .description()
                 .ok()
                 .and_then(|v| (v == "[N/A]").then(|| None)?),
-            section: Section::from(ctl.name()?),
+            section: Section::from_name(ctl.name()?),
             docs_path: PathBuf::new(),
             docs_title: String::new(),
         })
