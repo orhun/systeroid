@@ -5,4 +5,3 @@ members = [
     "systeroid-tui",
     "systeroid"
 ]
-default-members = ["systeroid", "systeroid-tui"]
