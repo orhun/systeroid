@@ -106,6 +106,9 @@ fn render_parameter_list<B: Backend>(frame: &mut Frame<'_, B>, rect: Rect, app: 
             app.parameter_list.items.len()
         ),
     );
+    if let Some(section) = app.section_list.selected() {
+        render_section_text(frame, rect, section);
+    }
     if let Some(options) = app.options.as_mut() {
         render_options_menu(frame, rect, options);
     }
@@ -157,6 +160,46 @@ fn render_selection_text<B: Backend>(frame: &mut Frame<'_, B>, rect: Rect, selec
             horizontal_area[2],
         );
     }
+}
+
+/// Renders the text for displaying the parameter section.
+fn render_section_text<B: Backend>(frame: &mut Frame<'_, B>, rect: Rect, section: &str) {
+    let section = format!("|{}|", section);
+    let text_width: u16 = section.width().try_into().unwrap_or(1);
+    let vertical_area = Layout::default()
+        .direction(Direction::Vertical)
+        .constraints(
+            [
+                Constraint::Min(1),
+                Constraint::Min(rect.height.checked_sub(1).unwrap_or(rect.height)),
+            ]
+            .as_ref(),
+        )
+        .split(rect);
+    let area = Layout::default()
+        .direction(Direction::Horizontal)
+        .constraints(
+            [
+                Constraint::Min(
+                    rect.width
+                        .checked_sub(text_width + 2)
+                        .unwrap_or(rect.height),
+                ),
+                Constraint::Min(text_width),
+                Constraint::Min(1),
+            ]
+            .as_ref(),
+        )
+        .split(vertical_area[0]);
+    frame.render_widget(Clear, area[1]);
+    frame.render_widget(
+        Paragraph::new(Span::styled(section, Style::default().fg(Color::White))).block(
+            Block::default()
+                .borders(Borders::NONE)
+                .style(Style::default().bg(Color::Black)),
+        ),
+        area[1],
+    );
 }
 
 /// Renders a list as a popup for showing options.

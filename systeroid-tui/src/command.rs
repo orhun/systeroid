@@ -86,6 +86,8 @@ impl Command {
                 Key::Char('b') => Command::Scroll(ScrollArea::List, Direction::Bottom, 0),
                 Key::Left => Command::Scroll(ScrollArea::Documentation, Direction::Up, 1),
                 Key::Right => Command::Scroll(ScrollArea::Documentation, Direction::Down, 1),
+                Key::Char('`') => Command::Scroll(ScrollArea::Section, Direction::Up, 1),
+                Key::Char('\t') => Command::Scroll(ScrollArea::Section, Direction::Down, 1),
                 Key::Char(':') => Command::UpdateInput(' '),
                 Key::Char('/') => Command::EnableSearch,
                 Key::Char('\n') => Command::Select,

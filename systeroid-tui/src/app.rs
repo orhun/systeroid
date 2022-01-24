@@ -8,6 +8,7 @@ use std::str::FromStr;
 use std::time::Instant;
 use systeroid_core::sysctl::controller::Sysctl;
 use systeroid_core::sysctl::parameter::Parameter;
+use systeroid_core::sysctl::section::Section;
 use unicode_width::UnicodeWidthStr;
 
 /// Duration of prompt messages.
@@ -31,6 +32,8 @@ pub struct App<'a> {
     pub options: Option<StatefulTable<&'a str>>,
     /// List of sysctl parameters.
     pub parameter_list: StatefulTable<Parameter>,
+    /// List of sysctl sections.
+    pub section_list: StatefulTable<String>,
     #[cfg(feature = "clipboard")]
     /// Clipboard context.
     clipboard: Option<Box<dyn ClipboardProvider>>,
@@ -50,6 +53,14 @@ impl<'a> App<'a> {
             docs_scroll_amount: 0,
             options: None,
             parameter_list: StatefulTable::default(),
+            section_list: StatefulTable::with_items({
+                let mut sections = Section::variants()
+                    .iter()
+                    .map(|v| v.to_string())
+                    .collect::<Vec<String>>();
+                sections.insert(0, String::from("all"));
+                sections
+            }),
             #[cfg(feature = "clipboard")]
             clipboard: None,
             sysctl,
@@ -232,6 +243,30 @@ impl<'a> App<'a> {
                     .docs_scroll_amount
                     .checked_add(amount.into())
                     .unwrap_or(self.docs_scroll_amount);
+            }
+            Command::Scroll(ScrollArea::Section, direction, _) => {
+                match direction {
+                    Direction::Up => self.section_list.previous(),
+                    _ => self.section_list.next(),
+                }
+                if let Some(section) = self
+                    .section_list
+                    .selected()
+                    .map(|v| Section::from(v.to_string()))
+                {
+                    self.parameter_list.items = self
+                        .sysctl
+                        .parameters
+                        .clone()
+                        .into_iter()
+                        .filter(|param| section == Section::Unknown || param.section == section)
+                        .collect();
+                    if self.parameter_list.items.is_empty() {
+                        self.parameter_list.state.select(None);
+                    } else {
+                        self.parameter_list.state.select(Some(0));
+                    }
+                }
             }
             Command::Scroll(_, _, _) => {}
             Command::EnableSearch => {
