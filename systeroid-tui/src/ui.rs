@@ -1,5 +1,5 @@
 use crate::app::App;
-use crate::widgets::StatefulTable;
+use crate::widgets::SelectableList;
 use tui::backend::Backend;
 use tui::layout::{Alignment, Constraint, Direction, Layout, Rect};
 use tui::style::{Color, Style};
@@ -206,7 +206,7 @@ fn render_section_text<B: Backend>(frame: &mut Frame<'_, B>, rect: Rect, section
 fn render_options_menu<B: Backend>(
     frame: &mut Frame<'_, B>,
     rect: Rect,
-    options: &mut StatefulTable<&str>,
+    options: &mut SelectableList<&str>,
 ) {
     let (length_x, length_y) = (
         25,

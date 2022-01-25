@@ -1,7 +1,7 @@
 use crate::command::Command;
 use crate::error::Result;
 use crate::options::{CopyOption, Direction, ScrollArea};
-use crate::widgets::StatefulTable;
+use crate::widgets::SelectableList;
 #[cfg(feature = "clipboard")]
 use copypasta_ext::{display::DisplayServer, prelude::ClipboardProvider};
 use std::str::FromStr;
@@ -29,11 +29,11 @@ pub struct App<'a> {
     /// Y-scroll offset for the documentation.
     pub docs_scroll_amount: u16,
     /// Entries of the options menu.
-    pub options: Option<StatefulTable<&'a str>>,
+    pub options: Option<SelectableList<&'a str>>,
     /// List of sysctl parameters.
-    pub parameter_list: StatefulTable<Parameter>,
+    pub parameter_list: SelectableList<Parameter>,
     /// List of sysctl sections.
-    pub section_list: StatefulTable<String>,
+    pub section_list: SelectableList<String>,
     #[cfg(feature = "clipboard")]
     /// Clipboard context.
     clipboard: Option<Box<dyn ClipboardProvider>>,
@@ -52,8 +52,8 @@ impl<'a> App<'a> {
             search_mode: false,
             docs_scroll_amount: 0,
             options: None,
-            parameter_list: StatefulTable::default(),
-            section_list: StatefulTable::with_items({
+            parameter_list: SelectableList::default(),
+            section_list: SelectableList::with_items({
                 let mut sections = Section::variants()
                     .iter()
                     .map(|v| v.to_string())
@@ -103,7 +103,7 @@ impl<'a> App<'a> {
                 self.parameter_list.state.select(Some(0));
             }
         } else {
-            self.parameter_list = StatefulTable::with_items(self.sysctl.parameters.clone());
+            self.parameter_list = SelectableList::with_items(self.sysctl.parameters.clone());
         }
         self.docs_scroll_amount = 0;
     }
@@ -356,7 +356,7 @@ impl<'a> App<'a> {
                     {
                         copy_options.retain(|v| v != &CopyOption::Documentation)
                     }
-                    self.options = Some(StatefulTable::with_items(
+                    self.options = Some(SelectableList::with_items(
                         copy_options.iter().map(|v| v.as_str()).collect(),
                     ));
                 } else {
