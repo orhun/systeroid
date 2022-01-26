@@ -45,7 +45,9 @@ pub fn run<Output: Write>(args: Args, output: Output) -> Result<()> {
     terminal.clear()?;
     let event_handler = EventHandler::new(args.tick_rate);
     let mut sysctl = Sysctl::init(Config::default())?;
-    sysctl.update_docs_from_cache(args.kernel_docs.as_ref(), &Cache::init()?)?;
+    if !args.no_docs {
+        sysctl.update_docs_from_cache(args.kernel_docs.as_ref(), &Cache::init()?)?;
+    }
     let mut app = App::new(&mut sysctl);
     while app.running {
         terminal.draw(|frame| ui::render(frame, &mut app))?;

@@ -18,6 +18,8 @@ pub struct Args {
     pub tick_rate: u64,
     /// Path of the Linux kernel documentation.
     pub kernel_docs: Option<PathBuf>,
+    /// Do not parse/show Linux kernel documentation.
+    pub no_docs: bool,
 }
 
 impl Args {
@@ -36,6 +38,7 @@ impl Args {
             "set the path of the kernel documentation",
             "<path>",
         );
+        opts.optflag("n", "no-docs", "do not show the kernel documentation");
         opts.optflag("h", "help", "display this help and exit");
         opts.optflag("V", "version", "output version information and exit");
         opts
@@ -67,6 +70,7 @@ impl Args {
                     .ok()?
                     .unwrap_or(250),
                 kernel_docs: matches.opt_str("D").map(PathBuf::from),
+                no_docs: matches.opt_present("n"),
             })
         }
     }
