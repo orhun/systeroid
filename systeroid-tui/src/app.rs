@@ -89,13 +89,24 @@ impl<'a> App<'a> {
 
     /// Performs a search operation in the kernel parameter list.
     fn search(&mut self) {
+        let section = self
+            .section_list
+            .selected()
+            .map(|v| Section::from(v.to_string()))
+            .unwrap_or(Section::Unknown);
         if let Some(query) = &self.input {
             self.parameter_list.items = self
                 .sysctl
                 .parameters
                 .clone()
                 .into_iter()
-                .filter(|param| param.name.contains(query))
+                .filter(|param| {
+                    let mut found = param.name.contains(query);
+                    if section != Section::Unknown {
+                        found = found && section == param.section
+                    }
+                    found
+                })
                 .collect();
             if self.parameter_list.items.is_empty() {
                 self.parameter_list.state.select(None);
@@ -103,7 +114,14 @@ impl<'a> App<'a> {
                 self.parameter_list.state.select(Some(0));
             }
         } else {
-            self.parameter_list = SelectableList::with_items(self.sysctl.parameters.clone());
+            self.parameter_list = SelectableList::with_items(
+                self.sysctl
+                    .parameters
+                    .clone()
+                    .into_iter()
+                    .filter(|param| section == Section::Unknown || param.section == section)
+                    .collect(),
+            );
         }
         self.docs_scroll_amount = 0;
     }
@@ -249,23 +267,11 @@ impl<'a> App<'a> {
                     Direction::Up => self.section_list.previous(),
                     _ => self.section_list.next(),
                 }
-                if let Some(section) = self
-                    .section_list
-                    .selected()
-                    .map(|v| Section::from(v.to_string()))
-                {
-                    self.parameter_list.items = self
-                        .sysctl
-                        .parameters
-                        .clone()
-                        .into_iter()
-                        .filter(|param| section == Section::Unknown || param.section == section)
-                        .collect();
-                    if self.parameter_list.items.is_empty() {
-                        self.parameter_list.state.select(None);
-                    } else {
-                        self.parameter_list.state.select(Some(0));
-                    }
+                self.search();
+                if self.parameter_list.items.is_empty() {
+                    self.parameter_list.state.select(None);
+                } else {
+                    self.parameter_list.state.select(Some(0));
                 }
             }
             Command::Scroll(_, _, _) => {}
