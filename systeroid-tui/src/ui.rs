@@ -146,7 +146,7 @@ fn render_selection_text<B: Backend>(frame: &mut Frame<'_, B>, rect: Rect, selec
             Paragraph::new(selection_text).block(
                 Block::default()
                     .borders(Borders::NONE)
-                    .style(Style::default().bg(Color::Black)),
+                    .style(Style::default().bg(Color::White).fg(Color::Black)),
             ),
             horizontal_area[1],
         );
