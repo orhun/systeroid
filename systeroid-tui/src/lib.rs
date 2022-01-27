@@ -48,7 +48,22 @@ pub fn run<Output: Write>(args: Args, output: Output) -> Result<()> {
     if !args.no_docs {
         sysctl.update_docs_from_cache(args.kernel_docs.as_ref(), &Cache::init()?)?;
     }
-    let mut app = App::new(&mut sysctl, args.search_query);
+    let mut app = App::new(&mut sysctl);
+    if let Some(section) = args.section {
+        app.section_list.state.select(Some(
+            app.section_list
+                .items
+                .iter()
+                .position(|r| r == &section.to_string())
+                .unwrap_or(0),
+        ));
+        app.search();
+    }
+    if args.search_query.is_some() {
+        app.input = args.search_query;
+        app.search();
+        app.input = None;
+    }
     while app.running {
         terminal.draw(|frame| ui::render(frame, &mut app))?;
         match event_handler.next()? {

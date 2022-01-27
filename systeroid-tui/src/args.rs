@@ -1,5 +1,6 @@
 use getopts::Options;
 use std::path::PathBuf;
+use systeroid_core::sysctl::section::Section;
 
 /// Help message for the arguments.
 const HELP_MESSAGE: &str = r#"
@@ -18,6 +19,8 @@ pub struct Args {
     pub tick_rate: u64,
     /// Path of the Linux kernel documentation.
     pub kernel_docs: Option<PathBuf>,
+    /// Sysctl section to filter.
+    pub section: Option<Section>,
     /// Query to search on startup.
     pub search_query: Option<String>,
     /// Do not parse/show Linux kernel documentation.
@@ -40,6 +43,7 @@ impl Args {
             "set the path of the kernel documentation",
             "<path>",
         );
+        opts.optopt("s", "section", "set the section to filter", "<section>");
         opts.optopt("q", "query", "set the query to search", "<query>");
         opts.optflag("n", "no-docs", "do not show the kernel documentation");
         opts.optflag("h", "help", "display this help and exit");
@@ -73,6 +77,7 @@ impl Args {
                     .ok()?
                     .unwrap_or(250),
                 kernel_docs: matches.opt_str("D").map(PathBuf::from),
+                section: matches.opt_str("s").map(Section::from),
                 search_query: matches.opt_str("q"),
                 no_docs: matches.opt_present("n"),
             })

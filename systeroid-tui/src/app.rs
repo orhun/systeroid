@@ -43,13 +43,13 @@ pub struct App<'a> {
 
 impl<'a> App<'a> {
     /// Constructs a new instance.
-    pub fn new(sysctl: &'a mut Sysctl, search_query: Option<String>) -> Self {
+    pub fn new(sysctl: &'a mut Sysctl) -> Self {
         let mut app = Self {
             running: true,
-            search_mode: search_query.is_some(),
-            input: search_query,
+            input: None,
             input_time: None,
             input_cursor: 0,
+            search_mode: false,
             docs_scroll_amount: 0,
             options: None,
             parameter_list: SelectableList::default(),
@@ -66,11 +66,6 @@ impl<'a> App<'a> {
             sysctl,
         };
         app.parameter_list.items = app.sysctl.parameters.clone();
-        if app.search_mode {
-            app.search();
-            app.input = None;
-            app.search_mode = false;
-        }
         #[cfg(feature = "clipboard")]
         {
             app.clipboard = match DisplayServer::select().try_context() {
@@ -93,7 +88,7 @@ impl<'a> App<'a> {
     }
 
     /// Performs a search operation in the kernel parameter list.
-    fn search(&mut self) {
+    pub fn search(&mut self) {
         let section = self
             .section_list
             .selected()
