@@ -48,7 +48,7 @@ pub fn run<Output: Write>(args: Args, output: Output) -> Result<()> {
     if !args.no_docs {
         sysctl.update_docs_from_cache(args.kernel_docs.as_ref(), &Cache::init()?)?;
     }
-    let mut app = App::new(&mut sysctl);
+    let mut app = App::new(&mut sysctl, args.search_query);
     while app.running {
         terminal.draw(|frame| ui::render(frame, &mut app))?;
         match event_handler.next()? {

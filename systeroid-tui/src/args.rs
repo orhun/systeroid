@@ -18,6 +18,8 @@ pub struct Args {
     pub tick_rate: u64,
     /// Path of the Linux kernel documentation.
     pub kernel_docs: Option<PathBuf>,
+    /// Query to search on startup.
+    pub search_query: Option<String>,
     /// Do not parse/show Linux kernel documentation.
     pub no_docs: bool,
 }
@@ -38,6 +40,7 @@ impl Args {
             "set the path of the kernel documentation",
             "<path>",
         );
+        opts.optopt("q", "query", "set the query to search", "<query>");
         opts.optflag("n", "no-docs", "do not show the kernel documentation");
         opts.optflag("h", "help", "display this help and exit");
         opts.optflag("V", "version", "output version information and exit");
@@ -70,6 +73,7 @@ impl Args {
                     .ok()?
                     .unwrap_or(250),
                 kernel_docs: matches.opt_str("D").map(PathBuf::from),
+                search_query: matches.opt_str("q"),
                 no_docs: matches.opt_present("n"),
             })
         }
