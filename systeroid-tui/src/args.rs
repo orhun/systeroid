@@ -99,6 +99,7 @@ mod tests {
         }
 
         let args = Args::parse(vec![
+            String::new(),
             String::from("-t"),
             String::from("1000"),
             String::from("-D"),
@@ -106,7 +107,7 @@ mod tests {
             String::from("--no-docs"),
             String::from("-s"),
             String::from("vm"),
-            String::from("q"),
+            String::from("-q"),
             String::from("test"),
         ])
         .unwrap();
