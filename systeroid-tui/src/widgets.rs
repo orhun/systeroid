@@ -76,5 +76,12 @@ mod tests {
         assert_eq!(Some(2), list.state.selected());
         list.previous();
         assert_eq!(Some(1), list.state.selected());
+
+        let mut list = SelectableList::<()>::default();
+        list.state.select(None);
+        list.next();
+        list.state.select(None);
+        list.previous();
+        assert_eq!(Some(0), list.state.selected());
     }
 }
