@@ -132,6 +132,14 @@ mod tests {
                 Command::Scroll(ScrollArea::Documentation, Direction::Down, 4),
                 "scroll docs down 4",
             ),
+            (
+                Command::Scroll(ScrollArea::Section, Direction::Top, 1),
+                "scroll section top 1",
+            ),
+            (
+                Command::Scroll(ScrollArea::List, Direction::Bottom, 1),
+                "scroll list bottom 1",
+            ),
         ] {
             assert_eq!(command, Command::from_str(value).unwrap());
         }
