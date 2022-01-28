@@ -58,6 +58,6 @@ generate_option!(
 generate_option!(
     ScrollArea,
     List => "list",
-    Documentation => "documentation",
+    Documentation => "docs",
     Section => "section",
 );

@@ -275,7 +275,7 @@ impl<'a> App<'a> {
                 }
             }
             Command::Scroll(_, _, _) => {}
-            Command::EnableSearch => {
+            Command::Search => {
                 if self.input_time.is_some() {
                     self.input_time = None;
                 }
@@ -395,7 +395,7 @@ impl<'a> App<'a> {
                     self.running = false;
                 }
             }
-            Command::None => {}
+            Command::Nothing => {}
         }
         Ok(())
     }
