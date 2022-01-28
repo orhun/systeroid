@@ -84,3 +84,37 @@ impl Args {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_args() {
+        for env_args in [
+            vec![String::new(), String::from("-h")],
+            vec![String::new(), String::from("-V")],
+        ] {
+            assert!(Args::parse(env_args).is_none());
+        }
+
+        let args = Args::parse(vec![
+            String::from("-t"),
+            String::from("1000"),
+            String::from("-D"),
+            String::from("/docs"),
+            String::from("--no-docs"),
+            String::from("-s"),
+            String::from("vm"),
+            String::from("q"),
+            String::from("test"),
+        ])
+        .unwrap();
+
+        assert_eq!(1000, args.tick_rate);
+        assert_eq!(Some(PathBuf::from("/docs")), args.kernel_docs);
+        assert_eq!(Some(Section::Vm), args.section);
+        assert_eq!(Some("test"), args.search_query.as_deref());
+        assert!(args.no_docs);
+    }
+}
