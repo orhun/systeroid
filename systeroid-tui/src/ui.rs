@@ -346,3 +346,55 @@ fn render_input_prompt<B: Backend>(frame: &mut Frame<'_, B>, rect: Rect, cursor_
         rect,
     );
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use systeroid_core::config::Config;
+    use systeroid_core::sysctl::controller::Sysctl;
+    use tui::backend::TestBackend;
+    use tui::buffer::Buffer;
+    use tui::Terminal;
+
+    fn assert_buffer(mut buffer: Buffer, backend: &TestBackend) {
+        assert_eq!(buffer.area, backend.size().unwrap());
+        for x in 0..buffer.area().width {
+            for y in 0..buffer.area().height {
+                buffer
+                    .get_mut(x, y)
+                    .set_style(backend.buffer().get(x, y).style());
+            }
+        }
+        backend.assert_buffer(&buffer);
+    }
+
+    #[test]
+    fn test_render_ui() {
+        let mut sysctl = Sysctl {
+            parameters: Vec::new(),
+            config: Config::default(),
+        };
+        let mut app = App::new(&mut sysctl);
+        app.section_list.state.select(None);
+
+        let backend = TestBackend::new(40, 10);
+        let mut terminal = Terminal::new(backend).unwrap();
+        terminal.draw(|frame| render(frame, &mut app)).unwrap();
+
+        assert_buffer(
+            Buffer::with_lines(vec![
+                "╭Parameters────────────────────────────╮",
+                "│                                      │",
+                "│                                      │",
+                "│                                      │",
+                "│                                      │",
+                "│                                      │",
+                "│                                      │",
+                "│                                      │",
+                "│                                  1/0 │",
+                "╰──────────────────────────────────────╯",
+            ]),
+            terminal.backend(),
+        );
+    }
+}
