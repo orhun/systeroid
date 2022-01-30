@@ -101,7 +101,7 @@ fn test_tui() -> Result<()> {
     )?;
 
     app.run_command(Command::ClearInput(false))?;
-    app.run_command(Command::MoveCursor(2))?;
+    app.run_command(Command::MoveCursor(Direction::Left))?;
     app.run_command(Command::ClearInput(true))?;
     app.run_command(Command::ClearInput(true))?;
     "kill"

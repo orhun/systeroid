@@ -11,8 +11,8 @@ pub enum Command {
     Set(String, String),
     /// Scroll the widget.
     Scroll(ScrollArea, Direction, u8),
-    /// Move cursor to right/left.
-    MoveCursor(u8),
+    /// Move cursor..
+    MoveCursor(Direction),
     /// Enable the search mode.
     Search,
     /// Process the input.
@@ -71,8 +71,8 @@ impl Command {
                 Key::Char(c) => Command::UpdateInput(c),
                 Key::Backspace => Command::ClearInput(false),
                 Key::Delete => Command::ClearInput(true),
-                Key::Left => Command::MoveCursor(1),
-                Key::Right => Command::MoveCursor(0),
+                Key::Left => Command::MoveCursor(Direction::Left),
+                Key::Right => Command::MoveCursor(Direction::Right),
                 Key::Esc => Command::Exit,
                 _ => Command::Nothing,
             }
@@ -150,8 +150,8 @@ mod tests {
             Key::Char('a') => Command::UpdateInput('a'),
             Key::Backspace => Command::ClearInput(false),
             Key::Delete => Command::ClearInput(true),
-            Key::Left => Command::MoveCursor(1),
-            Key::Right => Command::MoveCursor(0),
+            Key::Left => Command::MoveCursor(Direction::Left),
+            Key::Right => Command::MoveCursor(Direction::Right),
             Key::Esc => Command::Exit,
         }
         assert_command_parser! {

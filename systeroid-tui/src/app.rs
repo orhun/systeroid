@@ -345,12 +345,12 @@ impl<'a> App<'a> {
             }
             Command::MoveCursor(direction) => {
                 if let Some(input) = &self.input {
-                    if direction == 0 {
+                    if direction == Direction::Right {
                         if let Some(cursor_position) = self.input_cursor.checked_sub(1) {
                             self.input_cursor = cursor_position as u16;
                         }
                     } else if self.input_cursor != input.width() as u16 {
-                        self.input_cursor += direction as u16;
+                        self.input_cursor += 1;
                     }
                 }
             }

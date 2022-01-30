@@ -50,7 +50,9 @@ generate_option!(
 generate_option!(
     Direction,
     Up => "up",
+    Right => "right",
     Down => "down",
+    Left => "left",
     Top => "top",
     Bottom => "bottom",
 );
