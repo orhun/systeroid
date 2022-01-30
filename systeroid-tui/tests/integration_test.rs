@@ -195,7 +195,7 @@ fn test_tui() -> Result<()> {
             "│                                  1/3 │",
             "╰──────────────────────────────────────╯",
             "╭──────────────────────────────────────╮",
-            "│MSG: Copied to clipboard!             │",
+            "│MSG: Clipboard support is not enabled │",
             "╰──────────────────────────────────────╯",
         ]),
         terminal.backend(),

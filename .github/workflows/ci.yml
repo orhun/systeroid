@@ -100,7 +100,9 @@ jobs:
 
       - name: Run tests [default]
         run: |
-          NO_COLOR=1 cargo tarpaulin --out Xml --verbose
+          NO_COLOR=1 cargo tarpaulin \
+            --no-default-features \
+            --out Xml --verbose
           mv cobertura.xml test-output.xml
 
       - name: Run tests [live]
@@ -108,6 +110,7 @@ jobs:
           cp .github/fixtures/sysctl.conf systeroid/
           sudo env "PATH=$PATH" "HOME=$HOME" NO_COLOR=1 \
             cargo tarpaulin \
+              --no-default-features \
               --features live-tests \
               --out Xml --verbose \
               -- "test_systeroid"
