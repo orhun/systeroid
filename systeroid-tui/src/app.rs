@@ -160,6 +160,7 @@ impl<'a> App<'a> {
 
     /// Runs the given command and updates the application.
     pub fn run_command(&mut self, command: Command) -> Result<()> {
+        let mut hide_options = true;
         match command {
             Command::Select => {
                 if let Some(copy_option) = self
@@ -200,6 +201,7 @@ impl<'a> App<'a> {
             Command::Scroll(ScrollArea::List, Direction::Up, amount) => {
                 if let Some(options) = self.options.as_mut() {
                     options.previous();
+                    hide_options = false;
                 } else if !self.parameter_list.items.is_empty() {
                     self.docs_scroll_amount = 0;
                     if amount == 1 {
@@ -218,6 +220,7 @@ impl<'a> App<'a> {
             Command::Scroll(ScrollArea::List, Direction::Down, amount) => {
                 if let Some(options) = self.options.as_mut() {
                     options.next();
+                    hide_options = false;
                 } else if !self.parameter_list.items.is_empty() {
                     self.docs_scroll_amount = 0;
                     if amount == 1 {
@@ -365,6 +368,7 @@ impl<'a> App<'a> {
                     self.options = Some(SelectableList::with_items(
                         copy_options.iter().map(|v| v.as_str()).collect(),
                     ));
+                    hide_options = false;
                 } else {
                     self.input = Some(String::from("No parameter is selected"));
                     self.input_time = Some(Instant::now());
@@ -389,13 +393,14 @@ impl<'a> App<'a> {
                 if self.input.is_some() {
                     self.input = None;
                     self.input_time = None;
-                } else if self.options.is_some() {
-                    self.options = None;
-                } else {
+                } else if self.options.is_none() {
                     self.running = false;
                 }
             }
             Command::Nothing => {}
+        }
+        if hide_options {
+            self.options = None;
         }
         Ok(())
     }
