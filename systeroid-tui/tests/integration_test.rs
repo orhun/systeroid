@@ -61,14 +61,12 @@ fn test_tui() -> Result<()> {
         config: Config::default(),
     };
     let mut app = App::new(&mut sysctl);
-    app.section_list.state.select(None);
-
     let backend = TestBackend::new(40, 10);
     let mut terminal = Terminal::new(backend)?;
     terminal.draw(|frame| render(frame, &mut app))?;
     assert_buffer(
         Buffer::with_lines(vec![
-            "╭Parameters────────────────────────────╮",
+            "╭Parameters──────────────────────|all|─╮",
             "│user.name                   system    │",
             "│kernel.fictional.test_param 0         │",
             "│vm.stat_interval            1         │",
@@ -86,7 +84,7 @@ fn test_tui() -> Result<()> {
     terminal.draw(|frame| render(frame, &mut app))?;
     assert_buffer(
         Buffer::with_lines(vec![
-            "╭Parameters────────────────────────────╮",
+            "╭Parameters──────────────────────|all|─╮",
             "│user.name                   system    │",
             "│kernel.fictional.test_param 0         │",
             "│vm.stat_interval            1         │",
@@ -99,6 +97,7 @@ fn test_tui() -> Result<()> {
         ]),
         terminal.backend(),
     )?;
+    assert!(app.is_input_mode());
 
     app.run_command(Command::ClearInput(false))?;
     app.run_command(Command::MoveCursor(Direction::Left))?;
@@ -111,7 +110,7 @@ fn test_tui() -> Result<()> {
     terminal.draw(|frame| render(frame, &mut app))?;
     assert_buffer(
         Buffer::with_lines(vec![
-            "╭Parameters────────────────────────────╮",
+            "╭Parameters──────────────────────|all|─╮",
             "│user.name                   system    │",
             "│kernel.fictional.test_param 0         │",
             "│vm.stat_interval            1         │",
@@ -129,7 +128,7 @@ fn test_tui() -> Result<()> {
     terminal.draw(|frame| render(frame, &mut app))?;
     assert_buffer(
         Buffer::with_lines(vec![
-            "╭Parameters────────────────────────────╮",
+            "╭Parameters──────────────────────|all|─╮",
             "│user.name                   system    │",
             "│kernel.fictional.test_param 0         │",
             "│vm.stat_interval            1         │",
@@ -148,7 +147,7 @@ fn test_tui() -> Result<()> {
     terminal.draw(|frame| render(frame, &mut app))?;
     assert_buffer(
         Buffer::with_lines(vec![
-            "╭Parameters────────────────────────────╮",
+            "╭Parameters──────────────────────|all|─╮",
             "│user.name                   system    │",
             "│kernel.fictional.test_param 0         │",
             "│vm.stat_interval            1         │",
@@ -168,7 +167,7 @@ fn test_tui() -> Result<()> {
     terminal.draw(|frame| render(frame, &mut app))?;
     assert_buffer(
         Buffer::with_lines(vec![
-            "╭Parameters────────────────────────────╮",
+            "╭Parameters──────────────────────|all|─╮",
             "│user.name                   system    │",
             "│kernel.fictional.test_param 0         │",
             "│vm.sta╭───Copy to clipboard────╮      │",
@@ -183,11 +182,12 @@ fn test_tui() -> Result<()> {
     )?;
 
     app.run_command(Command::Scroll(ScrollArea::List, Direction::Down, 1))?;
+    app.run_command(Command::Scroll(ScrollArea::List, Direction::Up, 1))?;
     app.run_command(Command::Select)?;
     terminal.draw(|frame| render(frame, &mut app))?;
     assert_buffer(
         Buffer::with_lines(vec![
-            "╭Parameters────────────────────────────╮",
+            "╭Parameters──────────────────────|all|─╮",
             "│user.name                   system    │",
             "│kernel.fictional.test_param 0         │",
             "│vm.stat_interval            1         │",
@@ -201,13 +201,36 @@ fn test_tui() -> Result<()> {
         terminal.backend(),
     )?;
 
+    thread::sleep(Duration::from_millis(2000));
+    app.tick();
+    app.run_command(Command::Scroll(ScrollArea::Section, Direction::Up, 1))?;
+    app.run_command(Command::Scroll(ScrollArea::Section, Direction::Up, 1))?;
+    terminal.draw(|frame| render(frame, &mut app))?;
+    assert_buffer(
+        Buffer::with_lines(vec![
+            "╭Parameters─────────────────────|user|─╮",
+            "│user.name system                      │",
+            "│                                      │",
+            "│                                      │",
+            "│                                      │",
+            "│                                      │",
+            "│                                      │",
+            "│                                      │",
+            "│                                  1/1 │",
+            "╰──────────────────────────────────────╯",
+        ]),
+        terminal.backend(),
+    )?;
+    app.run_command(Command::Scroll(ScrollArea::Section, Direction::Down, 1))?;
+    app.run_command(Command::Scroll(ScrollArea::Section, Direction::Down, 1))?;
+
     app.input = Some(String::new());
     app.run_command(Command::Search)?;
     app.run_command(Command::UpdateInput('_'))?;
     terminal.draw(|frame| render(frame, &mut app))?;
     assert_buffer(
         Buffer::with_lines(vec![
-            "╭Parameters────────╮╭──Documentation───╮",
+            "╭Parameters──|all|─╮╭──Documentation───╮",
             "│kernel.fictional.t││Test Parameter    │",
             "│vm.stat_interval =││==============    │",
             "│                  ││This is a         │",
@@ -228,10 +251,11 @@ fn test_tui() -> Result<()> {
         Direction::Down,
         5,
     ))?;
+    app.run_command(Command::Scroll(ScrollArea::Documentation, Direction::Up, 1))?;
     terminal.draw(|frame| render(frame, &mut app))?;
     assert_buffer(
         Buffer::with_lines(vec![
-            "╭Parameters────────╮╭──Documentation───╮",
+            "╭Parameters──|all|─╮╭──Documentation───╮",
             "│kernel.fictional.t││This is a         │",
             "│vm.stat_interval =││fictional         │",
             "│                  ││parameter for     │",
@@ -246,13 +270,16 @@ fn test_tui() -> Result<()> {
     )?;
 
     app.run_command(Command::Scroll(ScrollArea::List, Direction::Bottom, 1))?;
+    app.run_command(Command::Scroll(ScrollArea::List, Direction::Up, 1))?;
+    app.run_command(Command::Scroll(ScrollArea::List, Direction::Up, 2))?;
     app.run_command(Command::Scroll(ScrollArea::List, Direction::Top, 1))?;
     app.run_command(Command::Scroll(ScrollArea::List, Direction::Down, 1))?;
+    app.run_command(Command::Scroll(ScrollArea::List, Direction::Down, 2))?;
     app.run_command(Command::Refresh)?;
     terminal.draw(|frame| render(frame, &mut app))?;
     assert_buffer(
         Buffer::with_lines(vec![
-            "╭Parameters────────╮╭──Documentation───╮",
+            "╭Parameters──|all|─╮╭──Documentation───╮",
             "│kernel.fictional.t││stat_interval     │",
             "│vm.stat_interval =││=============     │",
             "│                  ││The time interval │",
@@ -265,6 +292,10 @@ fn test_tui() -> Result<()> {
         ]),
         terminal.backend(),
     )?;
+
+    app.run_command(Command::Nothing)?;
+    app.run_command(Command::Exit)?;
+    assert!(!app.running);
 
     Ok(())
 }
