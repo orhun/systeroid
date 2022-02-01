@@ -182,11 +182,11 @@ fn render_section_text<B: Backend>(frame: &mut Frame<'_, B>, rect: Rect, section
             [
                 Constraint::Min(
                     rect.width
-                        .checked_sub(text_width + 2)
+                        .checked_sub(text_width + 3)
                         .unwrap_or(rect.height),
                 ),
-                Constraint::Min(text_width),
-                Constraint::Min(1),
+                Constraint::Length(text_width),
+                Constraint::Length(2),
             ]
             .as_ref(),
         )
