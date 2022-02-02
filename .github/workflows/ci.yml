@@ -67,7 +67,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y \
             --no-install-recommends \
-            --allow-unauthenticated
+            --allow-unauthenticated \
               linux-doc \
               libxcb-shape0-dev \
               libxcb-xfixes0-dev \
