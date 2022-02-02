@@ -71,10 +71,30 @@ pub fn run<Output: Write>(args: Args, output: Output) -> Result<()> {
                 let command = Command::parse(key, app.is_input_mode());
                 app.run_command(command)?;
             }
+            #[cfg(not(test))]
             Event::Tick => {
                 app.tick();
+            }
+            #[cfg(test)]
+            Event::Tick => {
+                app.running = false;
             }
         }
     }
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_systeroid_tui() -> Result<()> {
+        let args = Args {
+            tick_rate: 1000,
+            ..Args::default()
+        };
+        run(args, &mut Vec::new())?;
+        Ok(())
+    }
 }

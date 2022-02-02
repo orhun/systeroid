@@ -28,7 +28,7 @@ fn assert_buffer(mut buffer: Buffer, backend: &TestBackend) -> Result<()> {
 }
 
 #[test]
-fn test_tui() -> Result<()> {
+fn test_render_tui() -> Result<()> {
     let mut sysctl = Sysctl {
         parameters: vec![
             Parameter {
