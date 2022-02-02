@@ -24,22 +24,14 @@ use crate::args::Args;
 use crate::command::Command;
 use crate::error::Result;
 use crate::event::{Event, EventHandler};
-use std::io::Write;
 use systeroid_core::cache::Cache;
 use systeroid_core::config::Config;
 use systeroid_core::sysctl::controller::Sysctl;
-use termion::input::MouseTerminal;
-use termion::raw::IntoRawMode;
-use termion::screen::AlternateScreen;
-use tui::backend::TermionBackend;
+use tui::backend::Backend;
 use tui::terminal::Terminal;
 
 /// Runs `systeroid-tui`.
-pub fn run<Output: Write>(args: Args, output: Output) -> Result<()> {
-    let output = output.into_raw_mode()?;
-    let output = MouseTerminal::from(output);
-    let output = AlternateScreen::from(output);
-    let backend = TermionBackend::new(output);
+pub fn run<B: Backend>(args: Args, backend: B) -> Result<()> {
     let mut terminal = Terminal::new(backend)?;
     terminal.hide_cursor()?;
     terminal.clear()?;
@@ -87,6 +79,7 @@ pub fn run<Output: Write>(args: Args, output: Output) -> Result<()> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use tui::backend::TestBackend;
 
     #[test]
     fn test_systeroid_tui() -> Result<()> {
@@ -94,7 +87,8 @@ mod tests {
             tick_rate: 1000,
             ..Args::default()
         };
-        run(args, &mut Vec::new())?;
+        let backend = TestBackend::new(40, 10);
+        run(args, backend)?;
         Ok(())
     }
 }
