@@ -56,7 +56,7 @@ jobs:
         with:
           use-cross: true
           command: build
-          args: --target ${{ matrix.TARGET }} --no-default-features
+          args: --locked --target ${{ matrix.TARGET }} --no-default-features
 
   test:
     name: Run tests
