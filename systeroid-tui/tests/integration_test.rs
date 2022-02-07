@@ -162,7 +162,7 @@ fn test_render_tui() -> Result<()> {
     )?;
 
     app.run_command(Command::Search)?;
-    app.run_command(Command::Exit)?;
+    app.run_command(Command::Cancel)?;
     app.run_command(Command::Copy)?;
     terminal.draw(|frame| render(frame, &mut app))?;
     assert_buffer(

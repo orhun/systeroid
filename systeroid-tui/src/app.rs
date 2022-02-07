@@ -389,13 +389,16 @@ impl<'a> App<'a> {
                     }
                 });
             }
-            Command::Exit => {
+            Command::Cancel => {
                 if self.input.is_some() {
                     self.input = None;
                     self.input_time = None;
                 } else if self.options.is_none() {
                     self.running = false;
                 }
+            }
+            Command::Exit => {
+                self.running = false;
             }
             Command::Nothing => {}
         }

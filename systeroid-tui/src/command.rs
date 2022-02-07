@@ -25,6 +25,8 @@ pub enum Command {
     Copy,
     /// Refresh the application.
     Refresh,
+    /// Cancel the operation.
+    Cancel,
     /// Exit the application.
     Exit,
     /// Do nothing.
@@ -39,7 +41,8 @@ impl FromStr for Command {
             "select" => Ok(Command::Select),
             "copy" => Ok(Command::Copy),
             "refresh" => Ok(Command::Refresh),
-            "exit" | "quit" | "q" | "q!" => Ok(Command::Exit),
+            "cancel" | "q" => Ok(Command::Cancel),
+            "exit" | "quit" | "q!" => Ok(Command::Exit),
             _ => {
                 if s.starts_with("set") {
                     let mut values = s.trim_start_matches("set").trim().split_whitespace();
@@ -73,7 +76,7 @@ impl Command {
                 Key::Delete => Command::ClearInput(true),
                 Key::Left => Command::MoveCursor(Direction::Left),
                 Key::Right => Command::MoveCursor(Direction::Right),
-                Key::Esc => Command::Exit,
+                Key::Esc => Command::Cancel,
                 _ => Command::Nothing,
             }
         } else {
@@ -97,7 +100,8 @@ impl Command {
                 Key::Char('\n') => Command::Select,
                 Key::Char('c') => Command::Copy,
                 Key::Char('r') | Key::F(5) => Command::Refresh,
-                Key::Esc => Command::Exit,
+                Key::Esc => Command::Cancel,
+                Key::Ctrl('c') | Key::Ctrl('d') => Command::Exit,
                 _ => Command::Nothing,
             }
         }
@@ -123,6 +127,7 @@ mod tests {
             (Command::Select, "select"),
             (Command::Copy, "copy"),
             (Command::Refresh, "refresh"),
+            (Command::Cancel, "cancel"),
             (Command::Exit, "exit"),
             (
                 Command::Set(String::from("a"), String::from("b")),
@@ -156,7 +161,7 @@ mod tests {
             Key::Delete => Command::ClearInput(true),
             Key::Left => Command::MoveCursor(Direction::Left),
             Key::Right => Command::MoveCursor(Direction::Right),
-            Key::Esc => Command::Exit,
+            Key::Esc => Command::Cancel,
         }
         assert_command_parser! {
             input_mode: false,
@@ -175,7 +180,8 @@ mod tests {
             Key::Char('\n') => Command::Select,
             Key::Char('c') => Command::Copy,
             Key::Char('r') => Command::Refresh,
-            Key::Esc => Command::Exit,
+            Key::Esc => Command::Cancel,
+            Key::Ctrl('c') => Command::Exit,
         }
         assert_eq!(Command::Nothing, Command::parse(Key::PageDown, true));
         assert_eq!(Command::Nothing, Command::parse(Key::Char('#'), false));
