@@ -78,21 +78,25 @@ impl Command {
             }
         } else {
             match key {
-                Key::Up => Command::Scroll(ScrollArea::List, Direction::Up, 1),
-                Key::Down => Command::Scroll(ScrollArea::List, Direction::Down, 1),
+                Key::Up | Key::Char('k') => Command::Scroll(ScrollArea::List, Direction::Up, 1),
+                Key::Down | Key::Char('j') => Command::Scroll(ScrollArea::List, Direction::Down, 1),
                 Key::PageUp => Command::Scroll(ScrollArea::List, Direction::Up, 4),
                 Key::PageDown => Command::Scroll(ScrollArea::List, Direction::Down, 4),
                 Key::Char('t') => Command::Scroll(ScrollArea::List, Direction::Top, 0),
                 Key::Char('b') => Command::Scroll(ScrollArea::List, Direction::Bottom, 0),
-                Key::Left => Command::Scroll(ScrollArea::Documentation, Direction::Up, 1),
-                Key::Right => Command::Scroll(ScrollArea::Documentation, Direction::Down, 1),
+                Key::Left | Key::Char('h') => {
+                    Command::Scroll(ScrollArea::Documentation, Direction::Up, 1)
+                }
+                Key::Right | Key::Char('l') => {
+                    Command::Scroll(ScrollArea::Documentation, Direction::Down, 1)
+                }
                 Key::Char('`') => Command::Scroll(ScrollArea::Section, Direction::Left, 1),
                 Key::Char('\t') => Command::Scroll(ScrollArea::Section, Direction::Right, 1),
                 Key::Char(':') => Command::UpdateInput(' '),
                 Key::Char('/') => Command::Search,
                 Key::Char('\n') => Command::Select,
                 Key::Char('c') => Command::Copy,
-                Key::Char('r') => Command::Refresh,
+                Key::Char('r') | Key::F(5) => Command::Refresh,
                 Key::Esc => Command::Exit,
                 _ => Command::Nothing,
             }
