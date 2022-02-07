@@ -12,12 +12,11 @@ on:
 
 jobs:
   build:
-    name: Build for ${{ matrix.TARGET }} using Rust ${{ matrix.TOOLCHAIN }} (on ${{ matrix.OS }})
-    runs-on: ${{ matrix.OS }}
+    name: Build for ${{ matrix.TARGET }} using Rust ${{ matrix.TOOLCHAIN }}
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        OS: [ubuntu-latest]
         TOOLCHAIN: [stable]
         TARGET:
           - x86_64-unknown-linux-gnu
