@@ -267,8 +267,8 @@ impl<'a> App<'a> {
             }
             Command::Scroll(ScrollArea::Section, direction, _) => {
                 match direction {
-                    Direction::Up => self.section_list.previous(),
-                    _ => self.section_list.next(),
+                    Direction::Right => self.section_list.next(),
+                    _ => self.section_list.previous(),
                 }
                 self.search();
                 if self.parameter_list.items.is_empty() {

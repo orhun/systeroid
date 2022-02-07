@@ -203,8 +203,8 @@ fn test_render_tui() -> Result<()> {
 
     thread::sleep(Duration::from_millis(2000));
     app.tick();
-    app.run_command(Command::Scroll(ScrollArea::Section, Direction::Up, 1))?;
-    app.run_command(Command::Scroll(ScrollArea::Section, Direction::Up, 1))?;
+    app.run_command(Command::Scroll(ScrollArea::Section, Direction::Left, 1))?;
+    app.run_command(Command::Scroll(ScrollArea::Section, Direction::Left, 1))?;
     terminal.draw(|frame| render(frame, &mut app))?;
     assert_buffer(
         Buffer::with_lines(vec![
@@ -221,8 +221,8 @@ fn test_render_tui() -> Result<()> {
         ]),
         terminal.backend(),
     )?;
-    app.run_command(Command::Scroll(ScrollArea::Section, Direction::Down, 1))?;
-    app.run_command(Command::Scroll(ScrollArea::Section, Direction::Down, 1))?;
+    app.run_command(Command::Scroll(ScrollArea::Section, Direction::Right, 1))?;
+    app.run_command(Command::Scroll(ScrollArea::Section, Direction::Right, 1))?;
 
     app.input = Some(String::new());
     app.run_command(Command::Search)?;
