@@ -81,6 +81,7 @@ impl Command {
             }
         } else {
             match key {
+                Key::Char('?') | Key::F(1) => Command::Help,
                 Key::Up | Key::Char('k') => Command::Scroll(ScrollArea::List, Direction::Up, 1),
                 Key::Down | Key::Char('j') => Command::Scroll(ScrollArea::List, Direction::Down, 1),
                 Key::PageUp => Command::Scroll(ScrollArea::List, Direction::Up, 4),
