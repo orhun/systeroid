@@ -97,7 +97,7 @@ impl Command {
                 Key::Char('`') => Command::Scroll(ScrollArea::Section, Direction::Left, 1),
                 Key::Char('\t') => Command::Scroll(ScrollArea::Section, Direction::Right, 1),
                 Key::Char(':') => Command::UpdateInput(' '),
-                Key::Char('/') => Command::Search,
+                Key::Char('/') | Key::Char('s') => Command::Search,
                 Key::Char('\n') => Command::Select,
                 Key::Char('c') => Command::Copy,
                 Key::Char('r') | Key::F(5) => Command::Refresh,
