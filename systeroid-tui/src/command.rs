@@ -181,7 +181,7 @@ mod tests {
             Key::Char('c') => Command::Copy,
             Key::Char('r') => Command::Refresh,
             Key::Esc => Command::Cancel,
-            Key::Ctrl('c') => Command::Exit,
+            Key::Ctrl('c') | Key::Ctrl('d') => Command::Exit,
         }
         assert_eq!(Command::Nothing, Command::parse(Key::PageDown, true));
         assert_eq!(Command::Nothing, Command::parse(Key::Char('#'), false));
