@@ -11,6 +11,80 @@ use systeroid_core::sysctl::parameter::Parameter;
 use systeroid_core::sysctl::section::Section;
 use unicode_width::UnicodeWidthStr;
 
+/// Representation of a key binding.
+pub struct KeyBinding<'a> {
+    /// Pressed key.
+    pub key: &'a str,
+    /// Action to perform.
+    pub action: &'a str,
+}
+
+/// Help text to show.
+pub const HELP_TEXT: &str = concat!(
+    "\u{2800} _    __/_ _   '_/\n",
+    "_) (/_) /(-/ ()/(/\n",
+    "/           \u{2800}\n",
+    env!("CARGO_PKG_NAME"),
+    " v",
+    env!("CARGO_PKG_VERSION"),
+    "\n",
+    env!("CARGO_PKG_REPOSITORY"),
+    "\nwritten by ",
+    env!("CARGO_PKG_AUTHORS"),
+);
+
+/// Key bindings of the application.
+pub const KEY_BINDINGS: &[&KeyBinding] = &[
+    &KeyBinding {
+        key: "[?], f1",
+        action: "show help",
+    },
+    &KeyBinding {
+        key: "up/down, k/j, pgup/pgdown",
+        action: "scroll list",
+    },
+    &KeyBinding {
+        key: "t/b",
+        action: "scroll to top/bottom",
+    },
+    &KeyBinding {
+        key: "left/right, h/l",
+        action: "scroll documentation",
+    },
+    &KeyBinding {
+        key: "tab, [`]",
+        action: "next/previous section",
+    },
+    &KeyBinding {
+        key: "[:]",
+        action: "command",
+    },
+    &KeyBinding {
+        key: "[/]",
+        action: "search",
+    },
+    &KeyBinding {
+        key: "enter",
+        action: "select / set value",
+    },
+    &KeyBinding {
+        key: "c",
+        action: "copy to clipboard",
+    },
+    &KeyBinding {
+        key: "r, f5",
+        action: "refresh",
+    },
+    &KeyBinding {
+        key: "esc",
+        action: "cancel / exit",
+    },
+    &KeyBinding {
+        key: "ctrl-c/ctrl-d",
+        action: "exit",
+    },
+];
+
 /// Duration of prompt messages.
 const MESSAGE_DURATION: u128 = 1750;
 
@@ -18,6 +92,8 @@ const MESSAGE_DURATION: u128 = 1750;
 pub struct App<'a> {
     /// Whether if the application is running.
     pub running: bool,
+    /// Whether if the help message is shown.
+    pub show_help: bool,
     /// Input buffer.
     pub input: Option<String>,
     /// Time tracker for measuring the time for clearing the input.
@@ -34,6 +110,8 @@ pub struct App<'a> {
     pub parameter_list: SelectableList<Parameter>,
     /// List of sysctl sections.
     pub section_list: SelectableList<String>,
+    /// List of key bindings.
+    pub key_bindings: SelectableList<&'a KeyBinding<'a>>,
     #[cfg(feature = "clipboard")]
     /// Clipboard context.
     clipboard: Option<Box<dyn ClipboardProvider>>,
@@ -46,6 +124,7 @@ impl<'a> App<'a> {
     pub fn new(sysctl: &'a mut Sysctl) -> Self {
         let mut app = Self {
             running: true,
+            show_help: false,
             input: None,
             input_time: None,
             input_cursor: 0,
@@ -61,6 +140,7 @@ impl<'a> App<'a> {
                 sections.insert(0, String::from("all"));
                 sections
             }),
+            key_bindings: SelectableList::default(),
             #[cfg(feature = "clipboard")]
             clipboard: None,
             sysctl,
@@ -160,8 +240,15 @@ impl<'a> App<'a> {
 
     /// Runs the given command and updates the application.
     pub fn run_command(&mut self, command: Command) -> Result<()> {
-        let mut hide_options = true;
+        let mut hide_popup = true;
         match command {
+            Command::Help => {
+                self.options = None;
+                self.key_bindings = SelectableList::with_items(KEY_BINDINGS.to_vec());
+                self.key_bindings.state.select(None);
+                self.show_help = true;
+                hide_popup = false;
+            }
             Command::Select => {
                 if let Some(copy_option) = self
                     .options
@@ -171,6 +258,8 @@ impl<'a> App<'a> {
                 {
                     self.copy_to_clipboard(copy_option)?;
                     self.options = None;
+                } else if self.show_help {
+                    self.key_bindings.state.select(None);
                 } else if let Some(parameter) = self.parameter_list.selected() {
                     self.search_mode = false;
                     self.input_time = None;
@@ -199,9 +288,12 @@ impl<'a> App<'a> {
                 }
             }
             Command::Scroll(ScrollArea::List, Direction::Up, amount) => {
-                if let Some(options) = self.options.as_mut() {
+                if self.show_help {
+                    self.key_bindings.previous();
+                    hide_popup = false;
+                } else if let Some(options) = self.options.as_mut() {
                     options.previous();
-                    hide_options = false;
+                    hide_popup = false;
                 } else if !self.parameter_list.items.is_empty() {
                     self.docs_scroll_amount = 0;
                     if amount == 1 {
@@ -218,9 +310,12 @@ impl<'a> App<'a> {
                 }
             }
             Command::Scroll(ScrollArea::List, Direction::Down, amount) => {
-                if let Some(options) = self.options.as_mut() {
+                if self.show_help {
+                    self.key_bindings.next();
+                    hide_popup = false;
+                } else if let Some(options) = self.options.as_mut() {
                     options.next();
-                    hide_options = false;
+                    hide_popup = false;
                 } else if !self.parameter_list.items.is_empty() {
                     self.docs_scroll_amount = 0;
                     if amount == 1 {
@@ -368,7 +463,8 @@ impl<'a> App<'a> {
                     self.options = Some(SelectableList::with_items(
                         copy_options.iter().map(|v| v.as_str()).collect(),
                     ));
-                    hide_options = false;
+                    hide_popup = false;
+                    self.show_help = false;
                 } else {
                     self.input = Some(String::from("No parameter is selected"));
                     self.input_time = Some(Instant::now());
@@ -393,7 +489,7 @@ impl<'a> App<'a> {
                 if self.input.is_some() {
                     self.input = None;
                     self.input_time = None;
-                } else if self.options.is_none() {
+                } else if self.options.is_none() && !self.show_help {
                     self.running = false;
                 }
             }
@@ -402,8 +498,9 @@ impl<'a> App<'a> {
             }
             Command::Nothing => {}
         }
-        if hide_options {
+        if hide_popup {
             self.options = None;
+            self.show_help = false;
         }
         Ok(())
     }

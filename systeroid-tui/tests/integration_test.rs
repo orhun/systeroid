@@ -80,6 +80,27 @@ fn test_render_tui() -> Result<()> {
         terminal.backend(),
     )?;
 
+    app.run_command(Command::Help)?;
+    app.run_command(Command::Scroll(ScrollArea::List, Direction::Down, 1))?;
+    app.run_command(Command::Scroll(ScrollArea::List, Direction::Up, 1))?;
+    terminal.draw(|frame| render(frame, &mut app))?;
+    assert_buffer(
+        Buffer::with_lines(vec![
+            "╭Parameters──────────────────────|all|─╮",
+            "│user.name                   system    │",
+            "│kernel.fi╭──────About───────╮         │",
+            "│vm.stat_i│   \u{2800} _    __/_ _  │         │",
+            "│         │        '_/       │         │",
+            "│         │_) (/_) /(-/ ()/(/│         │",
+            "│         ╰──────────────────╯         │",
+            "│                                      │",
+            "│                                  1/3 │",
+            "╰──────────────────────────────────────╯",
+        ]),
+        terminal.backend(),
+    )?;
+    app.run_command(Command::Select)?;
+
     app.run_command(Command::Select)?;
     terminal.draw(|frame| render(frame, &mut app))?;
     assert_buffer(

@@ -1,4 +1,4 @@
-use crate::app::App;
+use crate::app::{App, KeyBinding, HELP_TEXT};
 use crate::widgets::SelectableList;
 use tui::backend::Backend;
 use tui::layout::{Alignment, Constraint, Direction, Layout, Rect};
@@ -44,6 +44,9 @@ pub fn render<B: Backend>(frame: &mut Frame<'_, B>, app: &mut App) {
             documentation,
             &mut app.docs_scroll_amount,
         );
+    }
+    if app.show_help {
+        render_help_text(frame, rect, &mut app.key_bindings);
     }
 }
 
@@ -199,6 +202,96 @@ fn render_section_text<B: Backend>(frame: &mut Frame<'_, B>, rect: Rect, section
                 .style(Style::default().bg(Color::Black)),
         ),
         area[1],
+    );
+}
+
+/// Renders the text for displaying help.
+fn render_help_text<B: Backend>(
+    frame: &mut Frame<'_, B>,
+    rect: Rect,
+    key_bindings: &mut SelectableList<&KeyBinding>,
+) {
+    let (percent_x, percent_y) = (50, 50);
+    let popup_layout = Layout::default()
+        .direction(Direction::Vertical)
+        .constraints(
+            [
+                Constraint::Percentage((100 - percent_y) / 2),
+                Constraint::Percentage(percent_y),
+                Constraint::Percentage((100 - percent_y) / 2),
+            ]
+            .as_ref(),
+        )
+        .split(rect);
+    let rect = Layout::default()
+        .direction(Direction::Horizontal)
+        .constraints(
+            [
+                Constraint::Percentage((100 - percent_x) / 2),
+                Constraint::Percentage(percent_x),
+                Constraint::Percentage((100 - percent_x) / 2),
+            ]
+            .as_ref(),
+        )
+        .split(popup_layout[1])[1];
+    let area = Layout::default()
+        .direction(Direction::Vertical)
+        .constraints(
+            [
+                Constraint::Min(
+                    (HELP_TEXT.lines().count() + 2)
+                        .try_into()
+                        .unwrap_or_default(),
+                ),
+                Constraint::Min(
+                    (key_bindings.items.len() + 2)
+                        .try_into()
+                        .unwrap_or_default(),
+                ),
+                Constraint::Percentage(100),
+            ]
+            .as_ref(),
+        )
+        .split(rect);
+    frame.render_widget(Clear, area[0]);
+    frame.render_widget(
+        Paragraph::new(HELP_TEXT)
+            .block(
+                Block::default()
+                    .title(Span::styled("About", Style::default().fg(Color::White)))
+                    .title_alignment(Alignment::Center)
+                    .borders(Borders::all())
+                    .border_style(Style::default().fg(Color::White))
+                    .border_type(BorderType::Rounded)
+                    .style(Style::default().bg(Color::Black)),
+            )
+            .alignment(Alignment::Center)
+            .wrap(Wrap { trim: false }),
+        area[0],
+    );
+    frame.render_widget(Clear, area[1]);
+    frame.render_stateful_widget(
+        Table::new(key_bindings.items.iter().map(|item| {
+            Row::new(vec![Cell::from(item.key), Cell::from(item.action)])
+                .height(1)
+                .bottom_margin(0)
+        }))
+        .block(
+            Block::default()
+                .title(Span::styled(
+                    "Key Bindings",
+                    Style::default().fg(Color::White),
+                ))
+                .title_alignment(Alignment::Center)
+                .borders(Borders::all())
+                .border_style(Style::default().fg(Color::White))
+                .border_type(BorderType::Rounded)
+                .style(Style::default().bg(Color::Black)),
+        )
+        .highlight_style(Style::default().bg(Color::White).fg(Color::Black))
+        .widths(&[Constraint::Percentage(50), Constraint::Percentage(50)]),
+        area[1],
+        &mut key_bindings.state,
     );
 }
 

@@ -5,6 +5,8 @@ use termion::event::Key;
 /// Possible application commands.
 #[derive(Debug, PartialEq)]
 pub enum Command {
+    /// Show help.
+    Help,
     /// Perform an action based on the selected entry.
     Select,
     /// Set the value of a parameter.
@@ -37,6 +39,7 @@ impl FromStr for Command {
     type Err = ();
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
+            "help" => Ok(Command::Help),
             "search" => Ok(Command::Search),
             "select" => Ok(Command::Select),
             "copy" => Ok(Command::Copy),
@@ -124,6 +127,7 @@ mod tests {
     #[test]
     fn test_command() {
         for (command, value) in vec![
+            (Command::Help, "help"),
             (Command::Search, "search"),
             (Command::Select, "select"),
             (Command::Copy, "copy"),
@@ -166,6 +170,7 @@ mod tests {
         }
         assert_command_parser! {
             input_mode: false,
+            Key::Char('?') => Command::Help,
             Key::Up => Command::Scroll(ScrollArea::List, Direction::Up, 1),
             Key::Down => Command::Scroll(ScrollArea::List, Direction::Down, 1),
             Key::PageUp => Command::Scroll(ScrollArea::List, Direction::Up, 4),
