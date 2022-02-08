@@ -1,4 +1,4 @@
-use tui::widgets::TableState;
+use tui::widgets::TableState as State;
 
 /// List widget with TUI controlled states.
 #[derive(Debug)]
@@ -6,7 +6,7 @@ pub struct SelectableList<T> {
     /// List items.
     pub items: Vec<T>,
     /// State that can be modified by TUI.
-    pub state: TableState,
+    pub state: State,
 }
 
 impl<T> Default for SelectableList<T> {
@@ -17,14 +17,14 @@ impl<T> Default for SelectableList<T> {
 
 impl<T> SelectableList<T> {
     /// Constructs a new instance of `SelectableList`.
-    pub fn new(items: Vec<T>, mut state: TableState) -> SelectableList<T> {
+    pub fn new(items: Vec<T>, mut state: State) -> SelectableList<T> {
         state.select(Some(0));
         Self { items, state }
     }
 
     /// Construct a new `SelectableList` with given items.
     pub fn with_items(items: Vec<T>) -> SelectableList<T> {
-        Self::new(items, TableState::default())
+        Self::new(items, State::default())
     }
 
     /// Returns the selected item.
