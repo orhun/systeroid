@@ -63,11 +63,20 @@ fn render_parameter_list<B: Backend>(frame: &mut Frame<'_, B>, rect: Rect, app: 
     let minimize_rows = rect.width < max_width + 10;
     let rows = app.parameter_list.items.iter().map(|item| {
         Row::new(if minimize_rows {
-            vec![Cell::from(format!("{} = {}", item.name, item.value))]
+            vec![Cell::from(Span::styled(
+                format!("{} = {}", item.name, item.value),
+                Style::default().fg(Color::White),
+            ))]
         } else {
             vec![
-                Cell::from(item.name.clone()),
-                Cell::from(item.value.clone()),
+                Cell::from(Span::styled(
+                    item.name.clone(),
+                    Style::default().fg(Color::White),
+                )),
+                Cell::from(Span::styled(
+                    item.value.clone(),
+                    Style::default().fg(Color::White),
+                )),
             ]
         })
         .height(1)
@@ -255,7 +264,7 @@ fn render_help_text<B: Backend>(
         .split(rect);
     frame.render_widget(Clear, area[0]);
     frame.render_widget(
-        Paragraph::new(HELP_TEXT)
+        Paragraph::new(Text::styled(HELP_TEXT, Style::default().fg(Color::White)))
             .block(
                 Block::default()
                     .title(Span::styled("About", Style::default().fg(Color::White)))
@@ -272,9 +281,12 @@ fn render_help_text<B: Backend>(
     frame.render_widget(Clear, area[1]);
     frame.render_stateful_widget(
         Table::new(key_bindings.items.iter().map(|item| {
-            Row::new(vec![Cell::from(item.key), Cell::from(item.action)])
-                .height(1)
-                .bottom_margin(0)
+            Row::new(vec![
+                Cell::from(Span::styled(item.key, Style::default().fg(Color::White))),
+                Cell::from(Span::styled(item.action, Style::default().fg(Color::White))),
+            ])
+            .height(1)
+            .bottom_margin(0)
         }))
         .block(
             Block::default()
@@ -334,9 +346,12 @@ fn render_options_menu<B: Backend>(
     frame.render_widget(Clear, rect);
     frame.render_stateful_widget(
         Table::new(options.items.iter().map(|item| {
-            Row::new(vec![Cell::from(item.to_string())])
-                .height(1)
-                .bottom_margin(0)
+            Row::new(vec![Cell::from(Span::styled(
+                item.to_string(),
+                Style::default().fg(Color::White),
+            ))])
+            .height(1)
+            .bottom_margin(0)
         }))
         .block(
             Block::default()
@@ -375,21 +390,24 @@ fn render_parameter_documentation<B: Backend>(
         }
     }
     frame.render_widget(
-        Paragraph::new(documentation)
-            .block(
-                Block::default()
-                    .title(Span::styled(
-                        "Documentation",
-                        Style::default().fg(Color::White),
-                    ))
-                    .title_alignment(Alignment::Center)
-                    .borders(Borders::all())
-                    .border_style(Style::default().fg(Color::White))
-                    .border_type(BorderType::Rounded)
-                    .style(Style::default().bg(Color::Black)),
-            )
-            .scroll((*scroll_amount, 0))
-            .wrap(Wrap { trim: false }),
+        Paragraph::new(Text::styled(
+            documentation,
+            Style::default().fg(Color::White),
+        ))
+        .block(
+            Block::default()
+                .title(Span::styled(
+                    "Documentation",
+                    Style::default().fg(Color::White),
+                ))
+                .title_alignment(Alignment::Center)
+                .borders(Borders::all())
+                .border_style(Style::default().fg(Color::White))
+                .border_type(BorderType::Rounded)
+                .style(Style::default().bg(Color::Black)),
+        )
+        .scroll((*scroll_amount, 0))
+        .wrap(Wrap { trim: false }),
         rect,
     );
 }
@@ -429,7 +447,7 @@ fn render_input_prompt<B: Backend>(frame: &mut Frame<'_, B>, rect: Rect, cursor_
         None => String::new(),
     };
     frame.render_widget(
-        Paragraph::new(text).block(
+        Paragraph::new(Span::styled(text, Style::default().fg(Color::White))).block(
             Block::default()
                 .borders(Borders::all())
                 .border_style(Style::default().fg(Color::White))
