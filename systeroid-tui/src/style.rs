@@ -2,15 +2,15 @@ use crate::error::Result;
 use colorsys::{ParseError, Rgb};
 use std::result::Result as StdResult;
 use std::str::FromStr;
-use tui::style::Color as TuiColor;
+use tui::style::{Color as TuiColor, Style};
 
 /// Color configuration.
 #[derive(Clone, Copy, Debug, Default, PartialEq)]
 pub struct Colors {
     /// Background color.
-    pub bg: Color,
+    bg: Color,
     /// Foreground color.
-    pub fg: Color,
+    fg: Color,
 }
 
 impl Colors {
@@ -20,6 +20,21 @@ impl Colors {
             bg: Color::from_str(background)?,
             fg: Color::from_str(foreground)?,
         })
+    }
+
+    /// Returns the background/foreground colors with default style.
+    pub fn get_style(&self) -> Style {
+        Style::default().bg(self.fg.get()).fg(self.bg.get())
+    }
+
+    /// Returns the background color with default style.
+    pub fn get_bg_style(&self) -> Style {
+        Style::default().bg(self.bg.get())
+    }
+
+    /// Returns the foreground color with default style.
+    pub fn get_fg_style(&self) -> Style {
+        Style::default().fg(self.fg.get())
     }
 }
 
@@ -96,12 +111,30 @@ mod tests {
             TuiColor::Rgb(255, 242, 255),
             Color::from_str("FFF2FF")?.get()
         );
+        Ok(())
+    }
+    #[test]
+    fn test_style() -> Result<()> {
         assert_eq!(
             Colors {
                 bg: Color::from_str("red")?,
                 fg: Color::from_str("blue")?,
             },
             Colors::new("red", "blue")?
+        );
+        assert_eq!(
+            Style::default().fg(TuiColor::Green),
+            Colors::new("reset", "Green")?.get_fg_style()
+        );
+        assert_eq!(
+            Style::default().bg(TuiColor::Yellow),
+            Colors::new("YELLOW", "reset")?.get_bg_style()
+        );
+        assert_eq!(
+            Style::default()
+                .bg(TuiColor::DarkGray)
+                .fg(TuiColor::Magenta),
+            Colors::new("Magenta", "DarkGray")?.get_style()
         );
         Ok(())
     }

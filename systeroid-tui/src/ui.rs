@@ -1,9 +1,8 @@
 use crate::app::{App, KeyBinding, HELP_TEXT};
-use crate::color::Colors;
+use crate::style::Colors;
 use crate::widgets::SelectableList;
 use tui::backend::Backend;
 use tui::layout::{Alignment, Constraint, Direction, Layout, Rect};
-use tui::style::Style;
 use tui::text::{Span, Text};
 use tui::widgets::{Block, BorderType, Borders, Cell, Clear, Paragraph, Row, Table, Wrap};
 use tui::Frame;
@@ -72,18 +71,12 @@ fn render_parameter_list<B: Backend>(
         Row::new(if minimize_rows {
             vec![Cell::from(Span::styled(
                 format!("{} = {}", item.name, item.value),
-                Style::default().fg(colors.fg.get()),
+                colors.get_fg_style(),
             ))]
         } else {
             vec![
-                Cell::from(Span::styled(
-                    item.name.clone(),
-                    Style::default().fg(colors.fg.get()),
-                )),
-                Cell::from(Span::styled(
-                    item.value.clone(),
-                    Style::default().fg(colors.fg.get()),
-                )),
+                Cell::from(Span::styled(item.name.clone(), colors.get_fg_style())),
+                Cell::from(Span::styled(item.value.clone(), colors.get_fg_style())),
             ]
         })
         .height(1)
@@ -93,17 +86,14 @@ fn render_parameter_list<B: Backend>(
         Table::new(rows)
             .block(
                 Block::default()
-                    .title(Span::styled(
-                        "Parameters",
-                        Style::default().fg(colors.fg.get()),
-                    ))
+                    .title(Span::styled("Parameters", colors.get_fg_style()))
                     .title_alignment(Alignment::Left)
                     .borders(Borders::all())
-                    .border_style(Style::default().fg(colors.fg.get()))
+                    .border_style(colors.get_fg_style())
                     .border_type(BorderType::Rounded)
-                    .style(Style::default().bg(colors.bg.get())),
+                    .style(colors.get_bg_style()),
             )
-            .highlight_style(Style::default().bg(colors.fg.get()).fg(colors.bg.get()))
+            .highlight_style(colors.get_style())
             .widths(&if minimize_rows {
                 [Constraint::Percentage(100), Constraint::Min(0)]
             } else {
@@ -171,7 +161,7 @@ fn render_selection_text<B: Backend>(
             Paragraph::new(selection_text).block(
                 Block::default()
                     .borders(Borders::NONE)
-                    .style(Style::default().bg(colors.fg.get()).fg(colors.bg.get())),
+                    .style(colors.get_style()),
             ),
             horizontal_area[1],
         );
@@ -180,7 +170,7 @@ fn render_selection_text<B: Backend>(
             Paragraph::new(Text::default()).block(
                 Block::default()
                     .borders(Borders::NONE)
-                    .style(Style::default().bg(colors.bg.get())),
+                    .style(colors.get_bg_style()),
             ),
             horizontal_area[2],
         );
@@ -223,10 +213,10 @@ fn render_section_text<B: Backend>(
         .split(vertical_area[0]);
     frame.render_widget(Clear, area[1]);
     frame.render_widget(
-        Paragraph::new(Span::styled(section, Style::default().fg(colors.fg.get()))).block(
+        Paragraph::new(Span::styled(section, colors.get_fg_style())).block(
             Block::default()
                 .borders(Borders::NONE)
-                .style(Style::default().bg(colors.bg.get())),
+                .style(colors.get_bg_style()),
         ),
         area[1],
     );
@@ -283,49 +273,40 @@ fn render_help_text<B: Backend>(
         .split(rect);
     frame.render_widget(Clear, area[0]);
     frame.render_widget(
-        Paragraph::new(Text::styled(
-            HELP_TEXT,
-            Style::default().fg(colors.fg.get()),
-        ))
-        .block(
-            Block::default()
-                .title(Span::styled("About", Style::default().fg(colors.fg.get())))
-                .title_alignment(Alignment::Center)
-                .borders(Borders::all())
-                .border_style(Style::default().fg(colors.fg.get()))
-                .border_type(BorderType::Rounded)
-                .style(Style::default().bg(colors.bg.get())),
-        )
-        .alignment(Alignment::Center)
-        .wrap(Wrap { trim: false }),
+        Paragraph::new(Text::styled(HELP_TEXT, colors.get_fg_style()))
+            .block(
+                Block::default()
+                    .title(Span::styled("About", colors.get_fg_style()))
+                    .title_alignment(Alignment::Center)
+                    .borders(Borders::all())
+                    .border_style(colors.get_fg_style())
+                    .border_type(BorderType::Rounded)
+                    .style(colors.get_bg_style()),
+            )
+            .alignment(Alignment::Center)
+            .wrap(Wrap { trim: false }),
         area[0],
     );
     frame.render_widget(Clear, area[1]);
     frame.render_stateful_widget(
         Table::new(key_bindings.items.iter().map(|item| {
             Row::new(vec![
-                Cell::from(Span::styled(item.key, Style::default().fg(colors.fg.get()))),
-                Cell::from(Span::styled(
-                    item.action,
-                    Style::default().fg(colors.fg.get()),
-                )),
+                Cell::from(Span::styled(item.key, colors.get_fg_style())),
+                Cell::from(Span::styled(item.action, colors.get_fg_style())),
             ])
             .height(1)
             .bottom_margin(0)
         }))
         .block(
             Block::default()
-                .title(Span::styled(
-                    "Key Bindings",
-                    Style::default().fg(colors.fg.get()),
-                ))
+                .title(Span::styled("Key Bindings", colors.get_fg_style()))
                 .title_alignment(Alignment::Center)
                 .borders(Borders::all())
-                .border_style(Style::default().fg(colors.fg.get()))
+                .border_style(colors.get_fg_style())
                 .border_type(BorderType::Rounded)
-                .style(Style::default().bg(colors.bg.get())),
+                .style(colors.get_bg_style()),
         )
-        .highlight_style(Style::default().bg(colors.fg.get()).fg(colors.bg.get()))
+        .highlight_style(colors.get_style())
         .widths(&[Constraint::Percentage(50), Constraint::Percentage(50)]),
         area[1],
         &mut key_bindings.state,
@@ -374,24 +355,21 @@ fn render_options_menu<B: Backend>(
         Table::new(options.items.iter().map(|item| {
             Row::new(vec![Cell::from(Span::styled(
                 item.to_string(),
-                Style::default().fg(colors.fg.get()),
+                colors.get_fg_style(),
             ))])
             .height(1)
             .bottom_margin(0)
         }))
         .block(
             Block::default()
-                .title(Span::styled(
-                    "Copy to clipboard",
-                    Style::default().fg(colors.fg.get()),
-                ))
+                .title(Span::styled("Copy to clipboard", colors.get_fg_style()))
                 .title_alignment(Alignment::Center)
                 .borders(Borders::all())
-                .border_style(Style::default().fg(colors.fg.get()))
+                .border_style(colors.get_fg_style())
                 .border_type(BorderType::Rounded)
-                .style(Style::default().bg(colors.bg.get())),
+                .style(colors.get_bg_style()),
         )
-        .highlight_style(Style::default().bg(colors.fg.get()).fg(colors.bg.get()))
+        .highlight_style(colors.get_style())
         .widths(&[Constraint::Percentage(100)]),
         rect,
         &mut options.state,
@@ -417,24 +395,18 @@ fn render_parameter_documentation<B: Backend>(
         }
     }
     frame.render_widget(
-        Paragraph::new(Text::styled(
-            documentation,
-            Style::default().fg(colors.fg.get()),
-        ))
-        .block(
-            Block::default()
-                .title(Span::styled(
-                    "Documentation",
-                    Style::default().fg(colors.fg.get()),
-                ))
-                .title_alignment(Alignment::Center)
-                .borders(Borders::all())
-                .border_style(Style::default().fg(colors.fg.get()))
-                .border_type(BorderType::Rounded)
-                .style(Style::default().bg(colors.bg.get())),
-        )
-        .scroll((*scroll_amount, 0))
-        .wrap(Wrap { trim: false }),
+        Paragraph::new(Text::styled(documentation, colors.get_fg_style()))
+            .block(
+                Block::default()
+                    .title(Span::styled("Documentation", colors.get_fg_style()))
+                    .title_alignment(Alignment::Center)
+                    .borders(Borders::all())
+                    .border_style(colors.get_fg_style())
+                    .border_type(BorderType::Rounded)
+                    .style(colors.get_bg_style()),
+            )
+            .scroll((*scroll_amount, 0))
+            .wrap(Wrap { trim: false }),
         rect,
     );
 }
@@ -480,12 +452,12 @@ fn render_input_prompt<B: Backend>(
         None => String::new(),
     };
     frame.render_widget(
-        Paragraph::new(Span::styled(text, Style::default().fg(colors.fg.get()))).block(
+        Paragraph::new(Span::styled(text, colors.get_fg_style())).block(
             Block::default()
                 .borders(Borders::all())
-                .border_style(Style::default().fg(colors.fg.get()))
+                .border_style(colors.get_fg_style())
                 .border_type(BorderType::Rounded)
-                .style(Style::default().bg(colors.bg.get())),
+                .style(colors.get_bg_style()),
         ),
         rect,
     );

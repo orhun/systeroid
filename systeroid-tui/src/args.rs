@@ -1,4 +1,4 @@
-use crate::color::Colors;
+use crate::style::Colors;
 use getopts::Options;
 use std::path::PathBuf;
 use systeroid_core::sysctl::section::Section;

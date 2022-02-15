@@ -6,8 +6,6 @@
 pub mod app;
 /// Command-line argument parser.
 pub mod args;
-/// Color helper.
-pub mod color;
 /// Application commands.
 pub mod command;
 /// Error implementation.
@@ -16,6 +14,8 @@ pub mod error;
 pub mod event;
 /// Application options.
 pub mod options;
+/// Style helper.
+pub mod style;
 /// User interface renderer.
 pub mod ui;
 /// Custom widgets.
