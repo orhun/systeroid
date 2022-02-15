@@ -16,6 +16,7 @@ unicode-width = "0.1.9"
 thiserror = "1.0.30"
 getopts = "0.2.21"
 copypasta-ext = { version = "0.3.7", optional = true }
+colorsys = "0.6.5"
 
 [dependencies.systeroid-core]
 version = "0.1.0"

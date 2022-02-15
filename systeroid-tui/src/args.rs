@@ -1,3 +1,4 @@
+use crate::color::Colors;
 use getopts::Options;
 use std::path::PathBuf;
 use systeroid_core::sysctl::section::Section;
@@ -23,6 +24,8 @@ pub struct Args {
     pub section: Option<Section>,
     /// Query to search on startup.
     pub search_query: Option<String>,
+    /// Background/foreground colors.
+    pub colors: Colors,
     /// Do not parse/show Linux kernel documentation.
     pub no_docs: bool,
 }
@@ -45,6 +48,18 @@ impl Args {
         );
         opts.optopt("s", "section", "set the section to filter", "<section>");
         opts.optopt("q", "query", "set the query to search", "<query>");
+        opts.optopt(
+            "",
+            "bg-color",
+            "set the background color [default: black]",
+            "<color>",
+        );
+        opts.optopt(
+            "",
+            "fg-color",
+            "set the foreground color [default: white]",
+            "<color>",
+        );
         opts.optflag("n", "no-docs", "do not show the kernel documentation");
         opts.optflag("h", "help", "display this help and exit");
         opts.optflag("V", "version", "output version information and exit");
@@ -79,6 +94,12 @@ impl Args {
                 kernel_docs: matches.opt_str("D").map(PathBuf::from),
                 section: matches.opt_str("s").map(Section::from),
                 search_query: matches.opt_str("q"),
+                colors: Colors::new(
+                    matches.opt_str("bg-color").as_deref().unwrap_or("black"),
+                    matches.opt_str("fg-color").as_deref().unwrap_or("white"),
+                )
+                .map_err(|e| eprintln!("error: `{}`", e))
+                .ok()?,
                 no_docs: matches.opt_present("n"),
             })
         }

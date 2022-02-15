@@ -1,15 +1,16 @@
 use crate::app::{App, KeyBinding, HELP_TEXT};
+use crate::color::Colors;
 use crate::widgets::SelectableList;
 use tui::backend::Backend;
 use tui::layout::{Alignment, Constraint, Direction, Layout, Rect};
-use tui::style::{Color, Style};
+use tui::style::Style;
 use tui::text::{Span, Text};
 use tui::widgets::{Block, BorderType, Borders, Cell, Clear, Paragraph, Row, Table, Wrap};
 use tui::Frame;
 use unicode_width::UnicodeWidthStr;
 
 /// Renders the user interface.
-pub fn render<B: Backend>(frame: &mut Frame<'_, B>, app: &mut App) {
+pub fn render<B: Backend>(frame: &mut Frame<'_, B>, app: &mut App, colors: &Colors) {
     let documentation = app
         .parameter_list
         .selected()
@@ -32,9 +33,9 @@ pub fn render<B: Backend>(frame: &mut Frame<'_, B>, app: &mut App) {
                 [Constraint::Percentage(100), Constraint::Min(0)]
             })
             .split(chunks[0]);
-        render_parameter_list(frame, chunks[0], app);
+        render_parameter_list(frame, chunks[0], app, colors);
         if app.input.is_some() {
-            render_input_prompt(frame, chunks[1], rect.height - 2, app);
+            render_input_prompt(frame, chunks[1], rect.height - 2, app, colors);
         }
     }
     if let Some(documentation) = documentation {
@@ -43,15 +44,21 @@ pub fn render<B: Backend>(frame: &mut Frame<'_, B>, app: &mut App) {
             chunks[1],
             documentation,
             &mut app.docs_scroll_amount,
+            colors,
         );
     }
     if app.show_help {
-        render_help_text(frame, rect, &mut app.key_bindings);
+        render_help_text(frame, rect, &mut app.key_bindings, colors);
     }
 }
 
 /// Renders the list that contains the sysctl parameters.
-fn render_parameter_list<B: Backend>(frame: &mut Frame<'_, B>, rect: Rect, app: &mut App) {
+fn render_parameter_list<B: Backend>(
+    frame: &mut Frame<'_, B>,
+    rect: Rect,
+    app: &mut App,
+    colors: &Colors,
+) {
     let max_width = app
         .parameter_list
         .items
@@ -65,17 +72,17 @@ fn render_parameter_list<B: Backend>(frame: &mut Frame<'_, B>, rect: Rect, app: 
         Row::new(if minimize_rows {
             vec![Cell::from(Span::styled(
                 format!("{} = {}", item.name, item.value),
-                Style::default().fg(Color::White),
+                Style::default().fg(colors.fg.get()),
             ))]
         } else {
             vec![
                 Cell::from(Span::styled(
                     item.name.clone(),
-                    Style::default().fg(Color::White),
+                    Style::default().fg(colors.fg.get()),
                 )),
                 Cell::from(Span::styled(
                     item.value.clone(),
-                    Style::default().fg(Color::White),
+                    Style::default().fg(colors.fg.get()),
                 )),
             ]
         })
@@ -88,15 +95,15 @@ fn render_parameter_list<B: Backend>(frame: &mut Frame<'_, B>, rect: Rect, app: 
                 Block::default()
                     .title(Span::styled(
                         "Parameters",
-                        Style::default().fg(Color::White),
+                        Style::default().fg(colors.fg.get()),
                     ))
                     .title_alignment(Alignment::Left)
                     .borders(Borders::all())
-                    .border_style(Style::default().fg(Color::White))
+                    .border_style(Style::default().fg(colors.fg.get()))
                     .border_type(BorderType::Rounded)
-                    .style(Style::default().bg(Color::Black)),
+                    .style(Style::default().bg(colors.bg.get())),
             )
-            .highlight_style(Style::default().bg(Color::White).fg(Color::Black))
+            .highlight_style(Style::default().bg(colors.fg.get()).fg(colors.bg.get()))
             .widths(&if minimize_rows {
                 [Constraint::Percentage(100), Constraint::Min(0)]
             } else {
@@ -117,17 +124,23 @@ fn render_parameter_list<B: Backend>(frame: &mut Frame<'_, B>, rect: Rect, app: 
                 .unwrap_or(0),
             app.parameter_list.items.len()
         ),
+        colors,
     );
     if let Some(section) = app.section_list.selected() {
-        render_section_text(frame, rect, section);
+        render_section_text(frame, rect, section, colors);
     }
     if let Some(options) = app.options.as_mut() {
-        render_options_menu(frame, rect, options);
+        render_options_menu(frame, rect, options, colors);
     }
 }
 
 /// Renders the text for displaying the selected index.
-fn render_selection_text<B: Backend>(frame: &mut Frame<'_, B>, rect: Rect, selection_text: String) {
+fn render_selection_text<B: Backend>(
+    frame: &mut Frame<'_, B>,
+    rect: Rect,
+    selection_text: String,
+    colors: &Colors,
+) {
     let selection_text_width = u16::try_from(selection_text.width()).unwrap_or_default();
     if let Some(horizontal_area_width) = rect.width.checked_sub(selection_text_width + 2) {
         let vertical_area = Layout::default()
@@ -158,7 +171,7 @@ fn render_selection_text<B: Backend>(frame: &mut Frame<'_, B>, rect: Rect, selec
             Paragraph::new(selection_text).block(
                 Block::default()
                     .borders(Borders::NONE)
-                    .style(Style::default().bg(Color::White).fg(Color::Black)),
+                    .style(Style::default().bg(colors.fg.get()).fg(colors.bg.get())),
             ),
             horizontal_area[1],
         );
@@ -167,7 +180,7 @@ fn render_selection_text<B: Backend>(frame: &mut Frame<'_, B>, rect: Rect, selec
             Paragraph::new(Text::default()).block(
                 Block::default()
                     .borders(Borders::NONE)
-                    .style(Style::default().bg(Color::Black)),
+                    .style(Style::default().bg(colors.bg.get())),
             ),
             horizontal_area[2],
         );
@@ -175,7 +188,12 @@ fn render_selection_text<B: Backend>(frame: &mut Frame<'_, B>, rect: Rect, selec
 }
 
 /// Renders the text for displaying the parameter section.
-fn render_section_text<B: Backend>(frame: &mut Frame<'_, B>, rect: Rect, section: &str) {
+fn render_section_text<B: Backend>(
+    frame: &mut Frame<'_, B>,
+    rect: Rect,
+    section: &str,
+    colors: &Colors,
+) {
     let section = format!("|{}|", section);
     let text_width: u16 = section.width().try_into().unwrap_or(1);
     let vertical_area = Layout::default()
@@ -205,10 +223,10 @@ fn render_section_text<B: Backend>(frame: &mut Frame<'_, B>, rect: Rect, section
         .split(vertical_area[0]);
     frame.render_widget(Clear, area[1]);
     frame.render_widget(
-        Paragraph::new(Span::styled(section, Style::default().fg(Color::White))).block(
+        Paragraph::new(Span::styled(section, Style::default().fg(colors.fg.get()))).block(
             Block::default()
                 .borders(Borders::NONE)
-                .style(Style::default().bg(Color::Black)),
+                .style(Style::default().bg(colors.bg.get())),
         ),
         area[1],
     );
@@ -219,6 +237,7 @@ fn render_help_text<B: Backend>(
     frame: &mut Frame<'_, B>,
     rect: Rect,
     key_bindings: &mut SelectableList<&KeyBinding>,
+    colors: &Colors,
 ) {
     let (percent_x, percent_y) = (50, 50);
     let popup_layout = Layout::default()
@@ -264,26 +283,32 @@ fn render_help_text<B: Backend>(
         .split(rect);
     frame.render_widget(Clear, area[0]);
     frame.render_widget(
-        Paragraph::new(Text::styled(HELP_TEXT, Style::default().fg(Color::White)))
-            .block(
-                Block::default()
-                    .title(Span::styled("About", Style::default().fg(Color::White)))
-                    .title_alignment(Alignment::Center)
-                    .borders(Borders::all())
-                    .border_style(Style::default().fg(Color::White))
-                    .border_type(BorderType::Rounded)
-                    .style(Style::default().bg(Color::Black)),
-            )
-            .alignment(Alignment::Center)
-            .wrap(Wrap { trim: false }),
+        Paragraph::new(Text::styled(
+            HELP_TEXT,
+            Style::default().fg(colors.fg.get()),
+        ))
+        .block(
+            Block::default()
+                .title(Span::styled("About", Style::default().fg(colors.fg.get())))
+                .title_alignment(Alignment::Center)
+                .borders(Borders::all())
+                .border_style(Style::default().fg(colors.fg.get()))
+                .border_type(BorderType::Rounded)
+                .style(Style::default().bg(colors.bg.get())),
+        )
+        .alignment(Alignment::Center)
+        .wrap(Wrap { trim: false }),
         area[0],
     );
     frame.render_widget(Clear, area[1]);
     frame.render_stateful_widget(
         Table::new(key_bindings.items.iter().map(|item| {
             Row::new(vec![
-                Cell::from(Span::styled(item.key, Style::default().fg(Color::White))),
-                Cell::from(Span::styled(item.action, Style::default().fg(Color::White))),
+                Cell::from(Span::styled(item.key, Style::default().fg(colors.fg.get()))),
+                Cell::from(Span::styled(
+                    item.action,
+                    Style::default().fg(colors.fg.get()),
+                )),
             ])
             .height(1)
             .bottom_margin(0)
@@ -292,15 +317,15 @@ fn render_help_text<B: Backend>(
             Block::default()
                 .title(Span::styled(
                     "Key Bindings",
-                    Style::default().fg(Color::White),
+                    Style::default().fg(colors.fg.get()),
                 ))
                 .title_alignment(Alignment::Center)
                 .borders(Borders::all())
-                .border_style(Style::default().fg(Color::White))
+                .border_style(Style::default().fg(colors.fg.get()))
                 .border_type(BorderType::Rounded)
-                .style(Style::default().bg(Color::Black)),
+                .style(Style::default().bg(colors.bg.get())),
         )
-        .highlight_style(Style::default().bg(Color::White).fg(Color::Black))
+        .highlight_style(Style::default().bg(colors.fg.get()).fg(colors.bg.get()))
         .widths(&[Constraint::Percentage(50), Constraint::Percentage(50)]),
         area[1],
         &mut key_bindings.state,
@@ -312,6 +337,7 @@ fn render_options_menu<B: Backend>(
     frame: &mut Frame<'_, B>,
     rect: Rect,
     options: &mut SelectableList<&str>,
+    colors: &Colors,
 ) {
     let (length_x, length_y) = (
         25,
@@ -348,7 +374,7 @@ fn render_options_menu<B: Backend>(
         Table::new(options.items.iter().map(|item| {
             Row::new(vec![Cell::from(Span::styled(
                 item.to_string(),
-                Style::default().fg(Color::White),
+                Style::default().fg(colors.fg.get()),
             ))])
             .height(1)
             .bottom_margin(0)
@@ -357,15 +383,15 @@ fn render_options_menu<B: Backend>(
             Block::default()
                 .title(Span::styled(
                     "Copy to clipboard",
-                    Style::default().fg(Color::White),
+                    Style::default().fg(colors.fg.get()),
                 ))
                 .title_alignment(Alignment::Center)
                 .borders(Borders::all())
-                .border_style(Style::default().fg(Color::White))
+                .border_style(Style::default().fg(colors.fg.get()))
                 .border_type(BorderType::Rounded)
-                .style(Style::default().bg(Color::Black)),
+                .style(Style::default().bg(colors.bg.get())),
         )
-        .highlight_style(Style::default().bg(Color::White).fg(Color::Black))
+        .highlight_style(Style::default().bg(colors.fg.get()).fg(colors.bg.get()))
         .widths(&[Constraint::Percentage(100)]),
         rect,
         &mut options.state,
@@ -378,6 +404,7 @@ fn render_parameter_documentation<B: Backend>(
     rect: Rect,
     documentation: String,
     scroll_amount: &mut u16,
+    colors: &Colors,
 ) {
     match (documentation.lines().count() * 2).checked_sub(rect.height.into()) {
         Some(scroll_overflow) => {
@@ -392,19 +419,19 @@ fn render_parameter_documentation<B: Backend>(
     frame.render_widget(
         Paragraph::new(Text::styled(
             documentation,
-            Style::default().fg(Color::White),
+            Style::default().fg(colors.fg.get()),
         ))
         .block(
             Block::default()
                 .title(Span::styled(
                     "Documentation",
-                    Style::default().fg(Color::White),
+                    Style::default().fg(colors.fg.get()),
                 ))
                 .title_alignment(Alignment::Center)
                 .borders(Borders::all())
-                .border_style(Style::default().fg(Color::White))
+                .border_style(Style::default().fg(colors.fg.get()))
                 .border_type(BorderType::Rounded)
-                .style(Style::default().bg(Color::Black)),
+                .style(Style::default().bg(colors.bg.get())),
         )
         .scroll((*scroll_amount, 0))
         .wrap(Wrap { trim: false }),
@@ -413,7 +440,13 @@ fn render_parameter_documentation<B: Backend>(
 }
 
 /// Renders the input prompt for running commands.
-fn render_input_prompt<B: Backend>(frame: &mut Frame<'_, B>, rect: Rect, cursor_y: u16, app: &App) {
+fn render_input_prompt<B: Backend>(
+    frame: &mut Frame<'_, B>,
+    rect: Rect,
+    cursor_y: u16,
+    app: &App,
+    colors: &Colors,
+) {
     let text = match app.input.clone() {
         Some(mut input) => {
             if app.input_time.is_some() {
@@ -447,12 +480,12 @@ fn render_input_prompt<B: Backend>(frame: &mut Frame<'_, B>, rect: Rect, cursor_
         None => String::new(),
     };
     frame.render_widget(
-        Paragraph::new(Span::styled(text, Style::default().fg(Color::White))).block(
+        Paragraph::new(Span::styled(text, Style::default().fg(colors.fg.get()))).block(
             Block::default()
                 .borders(Borders::all())
-                .border_style(Style::default().fg(Color::White))
+                .border_style(Style::default().fg(colors.fg.get()))
                 .border_type(BorderType::Rounded)
-                .style(Style::default().bg(Color::Black)),
+                .style(Style::default().bg(colors.bg.get())),
         ),
         rect,
     );

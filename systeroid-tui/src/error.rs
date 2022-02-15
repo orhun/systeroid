@@ -12,6 +12,9 @@ pub enum Error {
     /// Error that may occur while getting/setting the contents of the clipboard.
     #[error("Clipboard error: `{0}`")]
     ClipboardError(String),
+    /// Error that may occur while parsing a color.
+    #[error(transparent)]
+    ColorParseError(#[from] colorsys::ParseError),
     /// Error that may occur in the core library.
     #[error("{0}")]
     SysctlError(#[from] systeroid_core::error::Error),

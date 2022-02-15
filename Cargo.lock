@@ -101,6 +101,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "colorsys"
+version = "0.6.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "4dfdf9179d546b55ff3f88c9d93ecfaa3e9760163da5a1080af5243230dbbb70"
+
+[[package]]
 name = "copypasta"
 version = "0.7.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -734,6 +740,7 @@ dependencies = [
 name = "systeroid-tui"
 version = "0.1.0"
 dependencies = [
+ "colorsys",
  "copypasta-ext",
  "getopts",
  "systeroid-core",

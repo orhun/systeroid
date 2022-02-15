@@ -6,6 +6,8 @@
 pub mod app;
 /// Command-line argument parser.
 pub mod args;
+/// Color helper.
+pub mod color;
 /// Application commands.
 pub mod command;
 /// Error implementation.
@@ -57,7 +59,7 @@ pub fn run<B: Backend>(args: Args, backend: B) -> Result<()> {
         app.input = None;
     }
     while app.running {
-        terminal.draw(|frame| ui::render(frame, &mut app))?;
+        terminal.draw(|frame| ui::render(frame, &mut app, &args.colors))?;
         match event_handler.next()? {
             Event::KeyPress(key) => {
                 let command = Command::parse(key, app.is_input_mode());

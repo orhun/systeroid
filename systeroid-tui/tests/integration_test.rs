@@ -6,6 +6,7 @@ use systeroid_core::sysctl::controller::Sysctl;
 use systeroid_core::sysctl::parameter::Parameter;
 use systeroid_core::sysctl::section::Section;
 use systeroid_tui::app::App;
+use systeroid_tui::color::Colors;
 use systeroid_tui::command::Command;
 use systeroid_tui::error::Result;
 use systeroid_tui::options::{Direction, ScrollArea};
@@ -61,9 +62,10 @@ fn test_render_tui() -> Result<()> {
         config: Config::default(),
     };
     let mut app = App::new(&mut sysctl);
+    let colors = Colors::default();
     let backend = TestBackend::new(40, 10);
     let mut terminal = Terminal::new(backend)?;
-    terminal.draw(|frame| render(frame, &mut app))?;
+    terminal.draw(|frame| render(frame, &mut app, &colors))?;
     assert_buffer(
         Buffer::with_lines(vec![
             "╭Parameters──────────────────────|all|─╮",
@@ -83,7 +85,7 @@ fn test_render_tui() -> Result<()> {
     app.run_command(Command::Help)?;
     app.run_command(Command::Scroll(ScrollArea::List, Direction::Down, 1))?;
     app.run_command(Command::Scroll(ScrollArea::List, Direction::Up, 1))?;
-    terminal.draw(|frame| render(frame, &mut app))?;
+    terminal.draw(|frame| render(frame, &mut app, &colors))?;
     assert_buffer(
         Buffer::with_lines(vec![
             "╭Parameters──────────────────────|all|─╮",
@@ -102,7 +104,7 @@ fn test_render_tui() -> Result<()> {
     app.run_command(Command::Select)?;
 
     app.run_command(Command::Select)?;
-    terminal.draw(|frame| render(frame, &mut app))?;
+    terminal.draw(|frame| render(frame, &mut app, &colors))?;
     assert_buffer(
         Buffer::with_lines(vec![
             "╭Parameters──────────────────────|all|─╮",
@@ -128,7 +130,7 @@ fn test_render_tui() -> Result<()> {
         .chars()
         .try_for_each(|c| app.run_command(Command::UpdateInput(c)))?;
 
-    terminal.draw(|frame| render(frame, &mut app))?;
+    terminal.draw(|frame| render(frame, &mut app, &colors))?;
     assert_buffer(
         Buffer::with_lines(vec![
             "╭Parameters──────────────────────|all|─╮",
@@ -146,7 +148,7 @@ fn test_render_tui() -> Result<()> {
     )?;
 
     app.run_command(Command::ProcessInput)?;
-    terminal.draw(|frame| render(frame, &mut app))?;
+    terminal.draw(|frame| render(frame, &mut app, &colors))?;
     assert_buffer(
         Buffer::with_lines(vec![
             "╭Parameters──────────────────────|all|─╮",
@@ -165,7 +167,7 @@ fn test_render_tui() -> Result<()> {
 
     thread::sleep(Duration::from_millis(2000));
     app.tick();
-    terminal.draw(|frame| render(frame, &mut app))?;
+    terminal.draw(|frame| render(frame, &mut app, &colors))?;
     assert_buffer(
         Buffer::with_lines(vec![
             "╭Parameters──────────────────────|all|─╮",
@@ -185,7 +187,7 @@ fn test_render_tui() -> Result<()> {
     app.run_command(Command::Search)?;
     app.run_command(Command::Cancel)?;
     app.run_command(Command::Copy)?;
-    terminal.draw(|frame| render(frame, &mut app))?;
+    terminal.draw(|frame| render(frame, &mut app, &colors))?;
     assert_buffer(
         Buffer::with_lines(vec![
             "╭Parameters──────────────────────|all|─╮",
@@ -205,7 +207,7 @@ fn test_render_tui() -> Result<()> {
     app.run_command(Command::Scroll(ScrollArea::List, Direction::Down, 1))?;
     app.run_command(Command::Scroll(ScrollArea::List, Direction::Up, 1))?;
     app.run_command(Command::Select)?;
-    terminal.draw(|frame| render(frame, &mut app))?;
+    terminal.draw(|frame| render(frame, &mut app, &colors))?;
     assert_buffer(
         Buffer::with_lines(vec![
             "╭Parameters──────────────────────|all|─╮",
@@ -226,7 +228,7 @@ fn test_render_tui() -> Result<()> {
     app.tick();
     app.run_command(Command::Scroll(ScrollArea::Section, Direction::Left, 1))?;
     app.run_command(Command::Scroll(ScrollArea::Section, Direction::Left, 1))?;
-    terminal.draw(|frame| render(frame, &mut app))?;
+    terminal.draw(|frame| render(frame, &mut app, &colors))?;
     assert_buffer(
         Buffer::with_lines(vec![
             "╭Parameters─────────────────────|user|─╮",
@@ -248,7 +250,7 @@ fn test_render_tui() -> Result<()> {
     app.input = Some(String::new());
     app.run_command(Command::Search)?;
     app.run_command(Command::UpdateInput('_'))?;
-    terminal.draw(|frame| render(frame, &mut app))?;
+    terminal.draw(|frame| render(frame, &mut app, &colors))?;
     assert_buffer(
         Buffer::with_lines(vec![
             "╭Parameters──|all|─╮╭──Documentation───╮",
@@ -273,7 +275,7 @@ fn test_render_tui() -> Result<()> {
         5,
     ))?;
     app.run_command(Command::Scroll(ScrollArea::Documentation, Direction::Up, 1))?;
-    terminal.draw(|frame| render(frame, &mut app))?;
+    terminal.draw(|frame| render(frame, &mut app, &colors))?;
     assert_buffer(
         Buffer::with_lines(vec![
             "╭Parameters──|all|─╮╭──Documentation───╮",
@@ -297,7 +299,7 @@ fn test_render_tui() -> Result<()> {
     app.run_command(Command::Scroll(ScrollArea::List, Direction::Down, 1))?;
     app.run_command(Command::Scroll(ScrollArea::List, Direction::Down, 2))?;
     app.run_command(Command::Refresh)?;
-    terminal.draw(|frame| render(frame, &mut app))?;
+    terminal.draw(|frame| render(frame, &mut app, &colors))?;
     assert_buffer(
         Buffer::with_lines(vec![
             "╭Parameters──|all|─╮╭──Documentation───╮",
