@@ -7,16 +7,16 @@ pub enum Error {
     #[error("IO error: `{0}`")]
     IoError(#[from] std::io::Error),
     /// Error that may occur while receiving messages from the channel.
-    #[error("Channel receive error: `{0}`")]
+    #[error("channel receive error: `{0}`")]
     ChannelReceiveError(#[from] std::sync::mpsc::RecvError),
     /// Error that may occur while getting/setting the contents of the clipboard.
-    #[error("Clipboard error: `{0}`")]
+    #[error("clipboard error: `{0}`")]
     ClipboardError(String),
     /// Error that may occur while parsing a color.
     #[error(transparent)]
     ColorParseError(#[from] colorsys::ParseError),
     /// Error that may occur in the core library.
-    #[error("{0}")]
+    #[error(transparent)]
     SysctlError(#[from] systeroid_core::error::Error),
 }
 
