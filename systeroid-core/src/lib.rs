@@ -6,7 +6,7 @@
 extern crate lazy_static;
 
 /// Export regex crate.
-pub use systeroid_parser::regex;
+pub use parseit::regex;
 
 /// Sysctl implementation.
 pub mod sysctl;

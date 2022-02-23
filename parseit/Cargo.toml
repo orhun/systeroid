@@ -1,13 +1,17 @@
 [package]
-name = "systeroid-parser"
+name = "parseit"
 version = "0.1.0"
+description = "Simple text file parsing library powered by regex and glob patterns"
 authors = ["Orhun Parmaksız <orhunparmaksiz@gmail.com>"]
 repository = "https://github.com/orhun/systeroid"
 license = "MIT OR Apache-2.0"
 edition = "2021"
 
+[features]
+gzip = ["flate2"]
+
 [dependencies]
 regex = "1.5.4"
 globwalk = "0.8.1"
 thiserror = "1.0.29"
-flate2 = "1.0.22"
+flate2 = { version = "1.0.22", optional = true }

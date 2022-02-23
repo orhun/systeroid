@@ -1,9 +1,9 @@
 use crate::error::{Error, Result};
+use parseit::document::Document;
+use parseit::parser::Parser;
+use parseit::regex::RegexBuilder;
 use rayon::prelude::*;
 use std::path::Path;
-use systeroid_parser::document::Document;
-use systeroid_parser::parser::Parser;
-use systeroid_parser::regex::RegexBuilder;
 
 lazy_static! {
     /// Possible locations for the Linux kernel documentation.

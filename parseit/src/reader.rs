@@ -1,7 +1,6 @@
-use flate2::read::GzDecoder;
 use std::fs::File;
 use std::io::{
-    BufRead, BufReader as IoBufReader, Error as IoError, ErrorKind as IoErrorKind, Read,
+    BufRead, BufReader as IoBufReader, Error as IoError, ErrorKind as IoErrorKind,
     Result as IoResult,
 };
 use std::path::Path;
@@ -80,12 +79,14 @@ pub fn read_to_string<P: AsRef<Path>>(path: P) -> IoResult<String> {
 /// Reads (decodes) the given gzip file into a string.
 ///
 /// Uses [`BufReader`] under the hood.
+#[cfg(feature = "gzip")]
 pub fn read_gzip<P: AsRef<Path>>(path: P) -> IoResult<String> {
+    use std::io::Read;
     let mut bytes = Vec::<u8>::new();
     for read_bytes in BufReader::open(path, None)? {
         bytes.extend(read_bytes?.to_vec());
     }
-    let mut gz = GzDecoder::new(&bytes[..]);
+    let mut gz = flate2::read::GzDecoder::new(&bytes[..]);
     let mut data = String::new();
     gz.read_to_string(&mut data)?;
     Ok(data)

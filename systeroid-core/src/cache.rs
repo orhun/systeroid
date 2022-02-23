@@ -1,11 +1,11 @@
 use crate::error::{Error, Result};
+use parseit::reader;
 use serde::de::DeserializeOwned;
 use serde::{Deserialize, Serialize};
 use std::fs::{self, File};
 use std::io::Write;
 use std::path::{Path, PathBuf};
 use std::time::SystemTime;
-use systeroid_parser::reader;
 
 /// Cache data to store on the file system.
 #[derive(Debug, Serialize, Deserialize)]

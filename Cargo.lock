@@ -484,6 +484,16 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "da32515d9f6e6e489d7bc9d84c71b060db7247dc035bbe44eac88cf87486d8d5"
 
 [[package]]
+name = "parseit"
+version = "0.1.0"
+dependencies = [
+ "flate2",
+ "globwalk",
+ "regex",
+ "thiserror",
+]
+
+[[package]]
 name = "pkg-config"
 version = "0.3.24"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -707,8 +717,8 @@ name = "systeroid"
 version = "0.1.0"
 dependencies = [
  "getopts",
+ "parseit",
  "systeroid-core",
- "systeroid-parser",
 ]
 
 [[package]]
@@ -718,21 +728,11 @@ dependencies = [
  "colored",
  "dirs-next",
  "lazy_static",
+ "parseit",
  "rayon",
  "serde",
  "serde_json",
  "sysctl",
- "systeroid-parser",
- "thiserror",
-]
-
-[[package]]
-name = "systeroid-parser"
-version = "0.1.0"
-dependencies = [
- "flate2",
- "globwalk",
- "regex",
  "thiserror",
 ]
 

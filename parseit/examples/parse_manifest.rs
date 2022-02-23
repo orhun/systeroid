@@ -1,6 +1,6 @@
+use parseit::error::Error;
+use parseit::parser::Parser;
 use std::path::PathBuf;
-use systeroid_parser::error::Error;
-use systeroid_parser::parser::Parser;
 
 // Parse Cargo manifest and print sections.
 fn main() -> Result<(), Error> {

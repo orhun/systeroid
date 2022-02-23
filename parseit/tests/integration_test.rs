@@ -1,6 +1,6 @@
+use parseit::error::Error;
+use parseit::parser::Parser;
 use std::path::PathBuf;
-use systeroid_parser::error::Error;
-use systeroid_parser::parser::Parser;
 
 #[test]
 fn test_parser() -> Result<(), Error> {

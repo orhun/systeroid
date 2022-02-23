@@ -20,7 +20,7 @@ pub enum Error {
     SystemTimeError(#[from] std::time::SystemTimeError),
     /// Error that may occur while parsing documents.
     #[error(transparent)]
-    ParseError(#[from] systeroid_parser::error::Error),
+    ParseError(#[from] parseit::error::Error),
     /// Error that may occur while handling sysctl operations.
     #[error("sysctl error: `{0}`")]
     SysctlError(#[from] sysctl::SysctlError),

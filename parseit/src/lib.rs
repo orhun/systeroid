@@ -1,4 +1,4 @@
-//! systeroid-parser
+//! Simple text file parsing library powered by [regex](https://en.wikipedia.org/wiki/Regular_expression) and [glob patterns](https://en.wikipedia.org/wiki/Glob_(programming)).
 
 #![warn(missing_docs, clippy::unwrap_used)]
 
@@ -11,7 +11,7 @@ pub use globwalk;
 /// Document parser.
 pub mod parser;
 
-/// Parse results.
+/// Parser results.
 pub mod document;
 
 /// Error implementation.

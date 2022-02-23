@@ -1,4 +1,6 @@
 use crate::output::OutputType;
+use parseit::globwalk;
+use parseit::reader;
 use std::env;
 use std::io::Write;
 use std::path::PathBuf;
@@ -10,8 +12,6 @@ use systeroid_core::sysctl::controller::Sysctl;
 use systeroid_core::sysctl::parameter::Parameter;
 use systeroid_core::sysctl::{DEPRECATED_PARAMS, SYSTEM_PRELOAD};
 use systeroid_core::tree::{Tree, TreeNode};
-use systeroid_parser::globwalk;
-use systeroid_parser::reader;
 
 /// Application controller.
 #[derive(Debug)]

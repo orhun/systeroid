@@ -6,7 +6,7 @@ use regex::{Captures, Regex, RegexBuilder};
 use std::path::Path;
 use std::result::Result as StdResult;
 
-/// Regex-powered parser for text documents.
+/// Parser for text files.
 ///
 /// It is responsible for traversing the path specified with
 /// a glob pattern and parsing the contents of the files.
@@ -59,11 +59,16 @@ impl<'a> Parser<'a> {
                     .ok_or_else(|| Error::MissingFileError(file_name.to_string()))
             })?;
         for file in glob_files {
-            let input = if file.path().extension().and_then(|ext| ext.to_str()) == Some("gz") {
-                reader::read_gzip(file.path())?
-            } else {
-                reader::read_to_string(file.path())?
-            };
+            let input = {
+                #[cfg(feature = "gzip")]
+                if file.path().extension().and_then(|ext| ext.to_str()) == Some("gz") {
+                    reader::read_gzip(file.path())
+                } else {
+                    reader::read_to_string(file.path())
+                }
+                #[cfg(not(feature = "gzip"))]
+                reader::read_to_string(file.path())
+            }?;
             let capture_group = self
                 .regex
                 .captures_iter(&input)
