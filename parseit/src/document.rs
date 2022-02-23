@@ -89,8 +89,10 @@ mod tests {
             .contents
             .contains(&format!("version = \"{}\"", env!("CARGO_PKG_VERSION"))));
 
-        assert_eq!("[dependencies]", paragraphs[1].title);
-        assert!(paragraphs[1].contents.contains("regex = "));
+        if let Some(paragraph) = paragraphs.iter().find(|p| p.title == "[dependencies]") {
+            assert!(paragraph.contents.contains("regex = "));
+        }
+
         Ok(())
     }
 }
