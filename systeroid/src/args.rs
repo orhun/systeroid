@@ -45,6 +45,8 @@ pub struct Args {
     pub explain: bool,
     /// Output type of the application.
     pub output_type: OutputType,
+    /// Whether if the TUI will be shown.
+    pub show_tui: bool,
     /// Free string fragments.
     pub values: Vec<String>,
 }
@@ -94,6 +96,7 @@ impl Args {
         );
         opts.optflag("P", "no-pager", "do not pipe output into a pager");
         opts.optflag("v", "verbose", "enable verbose logging");
+        opts.optflag("", "tui", "show terminal user interface");
         opts.optflag("h", "help", "display this help and exit (-d)");
         opts.optflag("V", "version", "output version information and exit");
         opts
@@ -122,7 +125,8 @@ impl Args {
             || matches.opt_present("r")
             || matches.opt_present("E")
             || matches.opt_present("T")
-            || matches.opt_present("J");
+            || matches.opt_present("J")
+            || matches.opt_present("tui");
 
         if show_help || env_args.len() == 1 {
             let usage = opts.usage_with_format(|opts| {
@@ -187,6 +191,7 @@ impl Args {
                     .map(|v| Regex::new(&v).expect("invalid regex")),
                 explain: matches.opt_present("E"),
                 output_type,
+                show_tui: matches.opt_present("tui"),
                 values: matches.free,
             })
         }
