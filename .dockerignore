@@ -1,0 +1,14 @@
+# Directories
+/.git/
+/.github/
+/target/
+/.cargo/
+
+# Files
+.editorconfig
+.gitignore
+*.md
+*.yml
+Dockerfile
+LICENSE*
+rustfmt.toml
