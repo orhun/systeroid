@@ -1,4 +1,4 @@
-//! systeroid-tui
+//! A terminal user interface for managing kernel parameters.
 
 #![warn(missing_docs, clippy::unwrap_used)]
 

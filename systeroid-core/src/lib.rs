@@ -1,4 +1,4 @@
-//! systeroid-core
+//! Core library of systeroid.
 
 #![warn(missing_docs, clippy::unwrap_used)]
 

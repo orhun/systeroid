@@ -1,4 +1,4 @@
-//! systeroid
+//! A more powerful alternative to sysctl.
 
 #![warn(missing_docs, clippy::unwrap_used)]
 

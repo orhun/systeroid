@@ -1,6 +1,7 @@
 [package]
 name = "systeroid-tui"
 version = "0.1.0"
+description = "A terminal user interface for managing kernel parameters"
 authors = ["Orhun Parmaksız <orhunparmaksiz@gmail.com>"]
 repository = "https://github.com/orhun/systeroid"
 license = "MIT OR Apache-2.0"
