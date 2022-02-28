@@ -3,8 +3,12 @@ name = "systeroid"
 version = "0.1.0"
 description = "A more powerful alternative to sysctl"
 authors = ["Orhun Parmaksız <orhunparmaksiz@gmail.com>"]
-repository = "https://github.com/orhun/systeroid"
 license = "MIT OR Apache-2.0"
+readme = "../README.md"
+homepage = "https://github.com/orhun/systeroid"
+repository = "https://github.com/orhun/systeroid"
+keywords = ["linux", "kernel", "parameter", "sysctl"]
+categories = ["command-line-utilities"]
 edition = "2021"
 default-run="systeroid"
 

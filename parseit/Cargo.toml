@@ -3,8 +3,12 @@ name = "parseit"
 version = "0.1.0"
 description = "Simple text file parsing library powered by regex and glob patterns"
 authors = ["Orhun Parmaksız <orhunparmaksiz@gmail.com>"]
-repository = "https://github.com/orhun/systeroid"
 license = "MIT OR Apache-2.0"
+readme = "README.md"
+homepage = "https://github.com/orhun/systeroid"
+repository = "https://github.com/orhun/systeroid"
+keywords = ["text", "parser", "regex", "glob"]
+categories = ["parsing"]
 edition = "2021"
 
 [features]
