@@ -13,3 +13,4 @@ Dockerfile
 LICENSE*
 rustfmt.toml
 deny.toml
+bors.toml

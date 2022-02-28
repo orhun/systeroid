@@ -1,0 +1,14 @@
+status = [
+    "Build %",
+    "Test",
+    "Lint",
+    "Audit"
+]
+required_approvals = 1
+up_to_date_approvals = true
+delete_merged_branches = true
+update_base_for_deletes = true
+use_codeowners = true
+use_squash_merge = true
+commit_title = "Merge ${PR_REFS}"
+timeout_sec = 36000
