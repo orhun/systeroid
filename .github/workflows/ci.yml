@@ -12,7 +12,7 @@ on:
 
 jobs:
   build:
-    name: Build for ${{ matrix.TARGET }} using Rust ${{ matrix.TOOLCHAIN }}
+    name: Build (${{ matrix.TARGET }})
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -61,7 +61,7 @@ jobs:
           args: --locked --target ${{ matrix.TARGET }} --no-default-features
 
   test:
-    name: Run tests
+    name: Test
     runs-on: ubuntu-latest
     steps:
       - name: Install dependencies
@@ -133,7 +133,7 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
 
   lint:
-    name: Check lints
+    name: Lint
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the repository
@@ -160,7 +160,7 @@ jobs:
           args: -- -D warnings
 
   audit:
-    name: Audit check
+    name: Audit
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the repository
