@@ -5,8 +5,8 @@
 #[macro_use]
 extern crate lazy_static;
 
-/// Export regex crate.
-pub use parseit::regex;
+/// Export parseit crate.
+pub use parseit;
 
 /// Sysctl implementation.
 pub mod sysctl;

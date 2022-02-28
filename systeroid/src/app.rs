@@ -1,13 +1,13 @@
 use crate::output::OutputType;
-use parseit::globwalk;
-use parseit::reader;
 use std::env;
 use std::io::Write;
 use std::path::PathBuf;
 use std::process::{Command, Stdio};
 use systeroid_core::cache::Cache;
 use systeroid_core::error::Result;
-use systeroid_core::regex::Regex;
+use systeroid_core::parseit::globwalk;
+use systeroid_core::parseit::reader;
+use systeroid_core::parseit::regex::Regex;
 use systeroid_core::sysctl::controller::Sysctl;
 use systeroid_core::sysctl::parameter::Parameter;
 use systeroid_core::sysctl::{DEPRECATED_PARAMS, SYSTEM_PRELOAD};

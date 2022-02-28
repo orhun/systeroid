@@ -19,10 +19,6 @@ live-tests = []
 [dependencies]
 getopts = "0.2.21"
 
-[dependencies.parseit]
-version = "0.1.0"
-path = "../parseit"
-
 [dependencies.systeroid-core]
 version = "0.1.0"
 path = "../systeroid-core"

@@ -2,7 +2,7 @@ use crate::output::OutputType;
 use getopts::Options;
 use std::env;
 use std::path::PathBuf;
-use systeroid_core::regex::Regex;
+use systeroid_core::parseit::regex::Regex;
 use systeroid_core::sysctl::display::DisplayType;
 use systeroid_core::sysctl::DEFAULT_PRELOAD;
 
