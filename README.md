@@ -32,17 +32,14 @@
 <br>
 <br>
 
-**systeroid** is implemented using [procfs](https://en.wikipedia.org/wiki/Procfs) which is the virtual file system that is typically mapped to a mount point named `/proc` at boot time. This means checking the value of some kernel parameter requires opening a file in this virtual filesystem, reading its contents, parsing them and, closing the file. In Linux, these dynamically configurable kernel options are available under `/proc/sys` which contains directories representing the sections of the kernel and readable/writable virtual files. For example, to enable/disable IP forwarding, `1` or `0` could be written in `/proc/sys/net/ipv4/ip_forward`.
-
-Similarly, systeroid can be used to change the value of a parameter:
-
-```
-systeroid ip_forward=1
-```
+**systeroid** is implemented using [procfs](https://en.wikipedia.org/wiki/Procfs) which is the virtual file system that is typically mapped to a mount point named `/proc` at boot time. This means checking the value of some kernel parameter requires opening a file in this virtual filesystem, reading its contents, parsing them, and closing the file. In Linux, these dynamically configurable kernel options are available under `/proc/sys` which contains directories representing the sections of the kernel and readable/writable virtual files. For example, to enable/disable IP forwarding, `1` or `0` could be written in `/proc/sys/net/ipv4/ip_forward` or `systeroid ip_forward=1` command can be used to change the value of the parameter.
 
 <details>
   <summary>Table of Contents</summary>
 
+- [Usage](#usage)
+- [TUI](#tui)
+  - [Key bindings](#key-bindings)
 - [Resources](#resources)
   - [Logo](#logo)
   - [Social Links](#social-links)
@@ -52,6 +49,27 @@ systeroid ip_forward=1
 - [Copyright](#copyright)
 
 </details>
+
+## Usage
+
+## TUI
+
+### Key bindings
+
+| Key                             	| Action                       	|
+|---------------------------------	|------------------------------	|
+| `?`, `f1`                       	| show help                    	|
+| `up/down`, `k/j`, `pgup/pgdown` 	| scroll list                  	|
+| `t/b`                           	| scroll to top/bottom         	|
+| `left/right`, `h/l`             	| scroll documentation         	|
+| `tab`, `` ` ``                  	| next/previous section        	|
+| `:`                             	| command                      	|
+| `/`, `s`                        	| search                       	|
+| `enter`                         	| select / set parameter value 	|
+| `c`                             	| copy to clipboard            	|
+| `r`, `f5`                       	| refresh                      	|
+| `esc`                           	| cancel / exit                	|
+| `ctrl-c/ctrl-d`                 	| exit                         	|
 
 ## Resources
 
