@@ -71,7 +71,7 @@ impl Sysctl {
                     || param.get_absolute_name() == Some(&query.replace('/', "."))
             })
             .collect::<Vec<&Parameter>>();
-        if parameters.is_empty() {
+        if parameters.is_empty() && !self.config.ignore_errors {
             eprintln!(
                 "{}: cannot stat {}{}: No such file or directory",
                 env!("CARGO_PKG_NAME").split('-').collect::<Vec<_>>()[0],
