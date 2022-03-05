@@ -2,7 +2,6 @@ status = [
     "Build %",
     "Test",
     "Lint",
-    "Audit"
 ]
 required_approvals = 1
 up_to_date_approvals = true

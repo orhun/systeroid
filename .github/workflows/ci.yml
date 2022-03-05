@@ -177,12 +177,6 @@ jobs:
             cargo msrv --output-format json --path "$package" verify | tail -n 1 | jq --exit-status '.success'
           done
 
-  audit:
-    name: Audit
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout the repository
-        uses: actions/checkout@v2
       - name: Run cargo-audit
         uses: actions-rs/audit-check@v1
         with:
