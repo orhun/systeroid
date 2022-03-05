@@ -1,6 +1,6 @@
 # parseit
 
-Simple text file parsing library powered by [regex](https://en.wikipedia.org/wiki/Regular_expression) and [glob patterns](https://en.wikipedia.org/wiki/Glob_(programming)).
+Simple text file parsing library powered by [regex](https://en.wikipedia.org/wiki/Regular_expression) and [glob patterns](<https://en.wikipedia.org/wiki/Glob_(programming)>).
 
 ```rs
 // Create a parser to parse sections in Cargo.toml (and optionally Cargo.lock)
@@ -32,9 +32,7 @@ Licensed under either of [Apache License Version 2.0](http://www.apache.org/lice
 
 ### Contribution
 
-Unless you explicitly state otherwise, any contribution intentionally submitted
-for inclusion in the work by you, as defined in the Apache 2.0 License, shall be
-dual licensed as above, without any additional terms or conditions.
+Unless you explicitly state otherwise, any contribution intentionally submitted for inclusion in the work by you, as defined in the Apache 2.0 License, shall be dual licensed as above, without any additional terms or conditions.
 
 ## Copyright
 
