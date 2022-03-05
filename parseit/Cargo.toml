@@ -10,6 +10,7 @@ repository = "https://github.com/orhun/systeroid"
 keywords = ["text", "parser", "regex", "glob"]
 categories = ["parsing"]
 edition = "2021"
+rust-version = "1.56.1"
 
 [features]
 gzip = ["flate2"]

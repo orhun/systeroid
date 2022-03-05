@@ -9,6 +9,7 @@ homepage = "https://github.com/orhun/systeroid"
 repository = "https://github.com/orhun/systeroid"
 keywords = ["linux", "kernel", "parameter", "sysctl"]
 edition = "2021"
+rust-version = "1.56.1"
 
 [dependencies]
 sysctl = "0.4.3"
