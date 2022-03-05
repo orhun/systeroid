@@ -57,7 +57,9 @@ systeroid ip_forward=1
 
 ### Logo
 
-**systeroid** logo was originally painted by [Ryan Tippery](https://www.ryantippery.com/about) as a part of the [Compositions](https://www.ryantippery.com/compositions/) art collection and it is put together by me using the [Filled Spots](https://www.fontspace.com/filled-spots-font-f30755) font. Shout out to Ryan for letting me use his painting for the logo! <3 Also, check out his [store](https://www.ryantippery.com/store) for a fine piece of similar art. Kudos!
+**systeroid** logo was originally painted by [Ryan Tippery](https://www.ryantippery.com/about) as a part of the [Compositions](https://www.ryantippery.com/compositions/) art collection and it is put together by me using the [Filled Spots](https://www.fontspace.com/filled-spots-font-f30755) font. Shout out to Ryan for letting me use his painting for the logo! **<3**
+
+Check out his [store](https://www.ryantippery.com/store) for a fine piece of similar art. Kudos!
 
 ### Social Links
 
