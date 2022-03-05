@@ -32,11 +32,32 @@
 <br>
 <br>
 
-### Resources
+**systeroid** is implemented using [procfs](https://en.wikipedia.org/wiki/Procfs) which is the virtual file system that is typically mapped to a mount point named `/proc` at boot time. This means checking the value of some kernel parameter requires opening a file in this virtual filesystem, reading its contents, parsing them and, closing the file. In Linux, these dynamically configurable kernel options are available under `/proc/sys` which contains directories representing the sections of the kernel and readable/writable virtual files. For example, to enable/disable IP forwarding, `1` or `0` could be written in `/proc/sys/net/ipv4/ip_forward`.
 
-### Code of Conduct
+Similarly, systeroid can be used to change the value of a parameter:
 
-See our [Code of Conduct](./CODE_OF_CONDUCT.md) and follow it in all your interactions with the project.
+```
+systeroid ip_forward=1
+```
+
+<details>
+  <summary>Table of Contents</summary>
+
+- [Resources](#resources)
+  - [Logo](#logo)
+  - [Social Links](#social-links)
+  - [Funding](#funding)
+- [Contributing](#contributing)
+- [License](#license)
+- [Copyright](#copyright)
+
+</details>
+
+## Resources
+
+### Logo
+
+**systeroid** logo was originally painted by [Ryan Tippery](https://www.ryantippery.com/about) as a part of the [Compositions](https://www.ryantippery.com/compositions/) art collection and it is put together by me using the [Filled Spots](https://www.fontspace.com/filled-spots-font-f30755) font. Shout out to Ryan for letting me use his painting for the logo! <3 Also, check out his [store](https://www.ryantippery.com/store) for a fine piece of similar art. Kudos!
 
 ### Social Links
 
@@ -52,9 +73,9 @@ If you find **systeroid** and/or other projects on my [GitHub profile](https://g
 [![Support me on Patreon](https://img.shields.io/endpoint.svg?url=https%3A%2F%2Fshieldsio-patreon.vercel.app%2Fapi%3Fusername%3Dorhunp%26type%3Dpatrons&style=flat&logo=Patreon&labelColor=000000&color=CECDCB&logoColor=CECDCB)](https://patreon.com/join/orhunp)
 [![Support me on Patreon](https://img.shields.io/endpoint.svg?url=https%3A%2F%2Fshieldsio-patreon.vercel.app%2Fapi%3Fusername%3Dorhunp%26type%3Dpledges&style=flat&logo=Patreon&labelColor=000000&color=CECDCB&logoColor=CECDCB&label=)](https://patreon.com/join/orhunp)
 
-### Contributing
+## Contributing
 
-See our [Contribution Guide](./CONTRIBUTING.md).
+See our [Contribution Guide](./CONTRIBUTING.md) and please follow the [Code of Conduct](./CODE_OF_CONDUCT.md) in all your interactions with the project.
 
 Unless you explicitly state otherwise, any contribution intentionally submitted for inclusion in the work by you, as defined in the Apache 2.0 License, shall be dual licensed as above, without any additional terms or conditions.
 
