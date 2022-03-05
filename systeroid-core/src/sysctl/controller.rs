@@ -43,21 +43,10 @@ impl Sysctl {
         Ok(Self { parameters, config })
     }
 
-    /// Searches and returns the parameter if it exists.
-    pub fn get_parameter(&mut self, param_name: &str) -> Option<&mut Parameter> {
-        let parameter = self
-            .parameters
-            .iter_mut()
-            .find(|param| param.name == *param_name.replace('/', "."));
-        if parameter.is_none() && !self.config.ignore_errors {
-            eprintln!(
-                "{}: cannot stat {}{}: No such file or directory",
-                env!("CARGO_PKG_NAME").split('-').collect::<Vec<_>>()[0],
-                PROC_PATH,
-                param_name.replace('.', "/")
-            )
-        }
-        parameter
+    /// Returns the first found parameter in the available parameters.
+    #[cfg(test)]
+    fn get_parameter(&self, query: &str) -> Option<&Parameter> {
+        self.get_parameters(query).first().map(|v| *v)
     }
 
     /// Returns the parameters that matches the given query.
