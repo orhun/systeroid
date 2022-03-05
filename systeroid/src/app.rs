@@ -148,18 +148,32 @@ impl<'a, Output: Write> App<'a, Output> {
         } else {
             None
         };
+        let sysctl = self.sysctl.clone();
         if let Some(new_value) = new_value {
-            let config = self.sysctl.config.clone();
-            if let Some(param) = self.sysctl.get_parameter(&parameter) {
+            let parameters = sysctl.get_parameters(&parameter);
+            if parameters.len() == 1 {
+                let param = parameters[0];
                 if DEPRECATED_PARAMS.contains(&param.get_absolute_name().unwrap_or_default()) {
                     eprintln!(
                         "{}: {} is deprecated, value not set",
                         env!("CARGO_PKG_NAME"),
                         parameter
                     );
-                } else {
+                } else if let Some(param) = self
+                    .sysctl
+                    .parameters
+                    .iter_mut()
+                    .find(|p| p.name == param.name)
+                {
+                    let config = self.sysctl.config.clone();
                     param.update_value(&new_value, &config, self.output)?;
                 }
+            } else {
+                eprintln!(
+                    "{}: ambiguous parameter name: {}",
+                    env!("CARGO_PKG_NAME"),
+                    parameter
+                );
             }
         } else if write_mode {
             eprintln!(
@@ -168,7 +182,6 @@ impl<'a, Output: Write> App<'a, Output> {
                 parameter
             );
         } else if display_value {
-            let sysctl = self.sysctl.clone();
             let parameters = sysctl.get_parameters(&parameter);
             self.print_parameters(&mut parameters.into_iter())?;
         }
