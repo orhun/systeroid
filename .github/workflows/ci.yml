@@ -97,6 +97,7 @@ jobs:
           key: ${{ runner.os }}-cargo-${{ hashFiles('Cargo.lock') }}
 
       - name: Setup cargo-tarpaulin
+        shell: bash
         run: |
           curl -s https://api.github.com/repos/xd009642/tarpaulin/releases/latest | \
             grep "browser_download_url.*tar.gz" | cut -d : -f 2,3 | tr -d \" | wget -qi -
@@ -163,6 +164,18 @@ jobs:
         uses: EmbarkStudios/cargo-deny-action@v1
         with:
           command: check licenses sources
+
+      - name: Run cargo-msrv
+        shell: bash
+        run: |
+          curl -s 'https://api.github.com/repos/foresterre/cargo-msrv/releases' | \
+            jq -r ".[0].assets[] | select(.name | contains (\"Linux_x86_64\")).browser_download_url" | \
+            wget -qi -
+          tar -xvf cargo-msrv*_Linux_x86_64.tar -C  ~/.cargo/bin/ cargo-msrv
+          for package in $(cargo metadata --format-version 1 | jq -r ".workspace_members[]" | awk '{print $1}'); do
+            printf "Checking MSRV for $package..."
+            cargo msrv --output-format json --path "$package" verify | tail -n 1 | jq --exit-status '.success'
+          done
 
   audit:
     name: Audit
