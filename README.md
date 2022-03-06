@@ -118,20 +118,20 @@ systeroid-tui [options]
 
 ### Key Bindings
 
-| Key                             	| Action                       	|
-|---------------------------------	|------------------------------	|
-| `?`, `f1`                       	| show help                    	|
-| `up/down`, `k/j`, `pgup/pgdown` 	| scroll list                  	|
-| `t/b`                           	| scroll to top/bottom         	|
-| `left/right`, `h/l`             	| scroll documentation         	|
-| `tab`, `` ` ``                  	| next/previous section        	|
-| `:`                             	| command                      	|
-| `/`, `s`                        	| search                       	|
-| `enter`                         	| select / set parameter value 	|
-| `c`                             	| copy to clipboard            	|
-| `r`, `f5`                       	| refresh                      	|
-| `esc`                           	| cancel / exit                	|
-| `ctrl-c/ctrl-d`                 	| exit                         	|
+| Key                             | Action                       |
+| ------------------------------- | ---------------------------- |
+| `?`, `f1`                       | show help                    |
+| `up/down`, `k/j`, `pgup/pgdown` | scroll list                  |
+| `t/b`                           | scroll to top/bottom         |
+| `left/right`, `h/l`             | scroll documentation         |
+| `tab`, `` ` ``                  | next/previous section        |
+| `:`                             | command                      |
+| `/`, `s`                        | search                       |
+| `enter`                         | select / set parameter value |
+| `c`                             | copy to clipboard            |
+| `r`, `f5`                       | refresh                      |
+| `esc`                           | cancel / exit                |
+| `ctrl-c/ctrl-d`                 | exit                         |
 
 ### Examples
 
@@ -147,10 +147,10 @@ Check out his [store](https://www.ryantippery.com/store) for a fine piece of sim
 
 ### Social Links
 
-* [![Follow @systeroid](https://img.shields.io/twitter/follow/systeroid?style=flat&&logo=twitter&labelColor=000000&color=CECDCB&logoColor=CECDCB)](https://twitter.com/systeroid)
-* [![https://orhun.dev](https://img.shields.io/badge/author-orhun-000000?style=flat&logo=Rust&labelColor=000000&color=CECDCB&logoColor=CECDCB)](https://orhun.dev)
-  * [![Follow @orhun](https://img.shields.io/github/followers/orhun?label=follow%20%40orhun&style=flat&logo=GitHub&labelColor=000000&color=CECDCB&logoColor=CECDCB)](https://github.com/orhun)
-  * [![Follow @orhunp_](https://img.shields.io/twitter/follow/orhunp_?style=flat&logo=twitter&labelColor=000000&color=CECDCB&logoColor=CECDCB)](https://twitter.com/orhunp_)
+- [![Follow @systeroid](https://img.shields.io/twitter/follow/systeroid?style=flat&&logo=twitter&labelColor=000000&color=CECDCB&logoColor=CECDCB)](https://twitter.com/systeroid)
+- [![https://orhun.dev](https://img.shields.io/badge/author-orhun-000000?style=flat&logo=Rust&labelColor=000000&color=CECDCB&logoColor=CECDCB)](https://orhun.dev)
+  - [![Follow @orhun](https://img.shields.io/github/followers/orhun?label=follow%20%40orhun&style=flat&logo=GitHub&labelColor=000000&color=CECDCB&logoColor=CECDCB)](https://github.com/orhun)
+  - [![Follow @orhunp_](https://img.shields.io/twitter/follow/orhunp_?style=flat&logo=twitter&labelColor=000000&color=CECDCB&logoColor=CECDCB)](https://twitter.com/orhunp_)
 
 ### Funding
 
