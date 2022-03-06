@@ -38,8 +38,12 @@
   <summary>Table of Contents</summary>
 
 - [Usage](#usage)
+  - [Options](#options)
+  - [Examples](#examples)
 - [TUI](#tui)
-  - [Key bindings](#key-bindings)
+  - [Usage](#usage-1)
+  - [Key Bindings](#key-bindings)
+  - [Examples](#examples-1)
 - [Resources](#resources)
   - [Logo](#logo)
   - [Social Links](#social-links)
@@ -52,9 +56,67 @@
 
 ## Usage
 
+```
+systeroid [options] [variable[=value] ...] --load[=<file>]
+```
+
+### Options
+
+```
+-a, --all           display all variables (-A,-X)
+-T, --tree          display the variables in a tree-like format
+-J, --json          display the variables in JSON format
+    --deprecated    include deprecated variables while listing
+-e, --ignore        ignore unknown variable errors
+-N, --names         print only variable names
+-n, --values        print only variable values
+-b, --binary        print only variable values without new line
+-p, --load          read values from file (-f)
+-S, --system        read values from all system directories
+-r, --pattern <expr>
+                    use a regex for matching variable names
+-q, --quiet         do not print variable after the value is set
+-w, --write         only enable writing a value to variable
+-E, --explain       provide a detailed explanation for variable
+-D, --docs <path>   set the path of the kernel documentation
+-P, --no-pager      do not pipe output into a pager
+-v, --verbose       enable verbose logging
+    --tui           show terminal user interface
+-h, --help          display this help and exit (-d)
+-V, --version       output version information and exit
+```
+
+Most of the arguments/flags are inherited from `sysctl` so they have the same functionality.
+
+### Examples
+
+TBA
+
 ## TUI
 
-### Key bindings
+### Usage
+
+```
+systeroid-tui [options]
+```
+
+```
+-t, --tick-rate <ms>
+                    set the tick rate of the terminal [default: 250]
+-D, --docs <path>   set the path of the kernel documentation
+-s, --section <section>
+                    set the section to filter
+-q, --query <query> set the query to search
+    --bg-color <color>
+                    set the background color [default: black]
+    --fg-color <color>
+                    set the foreground color [default: white]
+-n, --no-docs       do not show the kernel documentation
+-h, --help          display this help and exit
+-V, --version       output version information and exit
+```
+
+### Key Bindings
 
 | Key                             	| Action                       	|
 |---------------------------------	|------------------------------	|
@@ -70,6 +132,10 @@
 | `r`, `f5`                       	| refresh                      	|
 | `esc`                           	| cancel / exit                	|
 | `ctrl-c/ctrl-d`                 	| exit                         	|
+
+### Examples
+
+TBA
 
 ## Resources
 
