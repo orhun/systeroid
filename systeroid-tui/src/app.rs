@@ -472,14 +472,11 @@ impl<'a> App<'a> {
             }
             Command::Refresh => {
                 self.input = None;
-                self.sysctl.parameters = Sysctl::init(self.sysctl.config.clone())?.parameters;
                 self.docs_scroll_amount = 0;
-                self.parameter_list.items.iter_mut().for_each(|parameter| {
-                    if let Some(param) = self
-                        .sysctl
-                        .parameters
-                        .iter()
-                        .find(|param| param.name == parameter.name)
+                let parameters = Sysctl::init(self.sysctl.config.clone())?.parameters;
+                self.sysctl.parameters.iter_mut().for_each(|parameter| {
+                    if let Some(param) =
+                        parameters.iter().find(|param| param.name == parameter.name)
                     {
                         parameter.value = param.value.to_string();
                     }
