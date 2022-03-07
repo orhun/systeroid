@@ -96,7 +96,7 @@ impl Parameter {
             .for_each(|(i, component)| {
                 if i != total_components - 1 {
                     *component = component.color(section_color).to_string();
-                } else {
+                } else if config.display_type != DisplayType::Name {
                     *component = format!(
                         "{} {} {}",
                         component,
