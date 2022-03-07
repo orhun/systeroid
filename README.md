@@ -40,6 +40,12 @@
 - [Usage](#usage)
   - [Options](#options)
   - [Examples](#examples)
+    - [Listing parameters](#listing-parameters)
+    - [Displaying values](#displaying-values)
+    - [Setting values](#setting-values)
+    - [Load values from a file](#load-values-from-a-file)
+    - [Searching parameters](#searching-parameters)
+    - [Getting information about parameters](#getting-information-about-parameters)
 - [TUI](#tui)
   - [Usage](#usage-1)
   - [Key Bindings](#key-bindings)
@@ -90,7 +96,73 @@ Most of the arguments/flags are inherited from `sysctl` so they have the same fu
 
 ### Examples
 
-TBA
+#### Listing parameters
+
+```sh
+systeroid -a
+systeroid -a --names
+```
+
+```sh
+systeroid -T
+systeroid -T --names
+```
+
+```sh
+systeroid -J
+```
+
+```sh
+systeroid kernel
+systeroid vm
+```
+
+#### Displaying values
+
+```sh
+systeroid kernel.hostname
+systeroid -n kernel.hostname
+systeroid hostname version
+```
+
+#### Setting values
+
+```sh
+systeroid kernel.domainname="example.com"
+systeroid dmesg_restrict=0
+```
+
+#### Loading values from file
+
+```sh
+systeroid --load sysctl.conf
+```
+
+```sh
+systeroid --system
+```
+
+#### Searching parameters
+
+```sh
+systeroid -r 'net.ipv4.conf.(eth|wlan)0.arp'
+systeroid -r 'kernel.*_max$'
+systeroid -r '^net.ipv6'
+```
+
+#### Getting information about parameters
+
+```sh
+systeroid --explain user.max_user_namespaces --docs /usr/share/doc/linux
+```
+
+```sh
+systeroid -E oom_dump_tasks
+```
+
+```sh
+systeroid -E kernel.ctrl-alt-del --no-pager
+```
 
 ## TUI
 
