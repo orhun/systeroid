@@ -38,7 +38,7 @@
     <img src="img/systeroid-demo.gif" width="800">
 </a>
 
-Although **systeroid** does not need the parameter section to be present, it is important to know the sections and their areas of impact. Here are the available kernel sections according to the [Linux kernel documentation](https://www.kernel.org/doc/html/latest/admin-guide/sysctl/index.html):
+Although **systeroid** does not need the parameter section to be specified explicitly, it is important to know the sections and their areas of impact. Here are the available kernel sections according to the [Linux kernel documentation](https://www.kernel.org/doc/html/latest/admin-guide/sysctl/index.html):
 
 | Section    | Path                | Description                                                   |
 | ---------- | ------------------- | ------------------------------------------------------------- |
@@ -59,16 +59,19 @@ Although **systeroid** does not need the parameter section to be present, it is 
   - [Options](#options)
   - [Examples](#examples)
     - [Listing parameters](#listing-parameters)
+    - [Filtering by section](#filtering-by-section)
     - [Displaying values](#displaying-values)
     - [Setting values](#setting-values)
-    - [Load values from a file](#load-values-from-a-file)
+    - [Loading values from a file](#loading-values-from-a-file)
+    - [Loading values from the system directories](#loading-values-from-the-system-directories)
     - [Searching parameters](#searching-parameters)
-    - [Getting information about parameters](#getting-information-about-parameters)
+    - [Showing information about parameters](#showing-information-about-parameters)
 - [TUI](#tui)
   - [Usage](#usage-1)
   - [Key Bindings](#key-bindings)
   - [Examples](#examples-1)
 - [Resources](#resources)
+  - [References](#references)
   - [Logo](#logo)
   - [Social Links](#social-links)
   - [Funding](#funding)
@@ -162,13 +165,14 @@ systeroid kernel.domainname="example.com"
 systeroid -e kernel.dmesg_restrict=0 vm.panic_on_oom=1 unknown_param="test"
 
 # set the values of multiple parameters and enforce the "name=value" format
-# (ignores the last parameter)
 systeroid -w fs.dir-notify-enable=1 net.mptcp.enabled=1 vm.oom_kill_allocating_task
 ```
 
 #### Loading values from a file
 
-Parameter values can be set from an [INI file](https://en.wikipedia.org/wiki/INI_file). For example, contents of `sysctl.conf`:
+Parameter values can be set from an [INI file](https://en.wikipedia.org/wiki/INI_file).
+
+`sysctl.conf`:
 
 ```ini
 # Use kernel.sysrq = 1 to allow all keys.
@@ -201,8 +205,9 @@ The list of default system directories are the following:
 - `/usr/local/lib/sysctl.d`
 - `/usr/lib/sysctl.d`
 - `/lib/sysctl.d`
+- `/etc/sysctl.conf`
 
-Use `--system` flag to load the files with ".conf" extension in these directories and also `/etc/sysctl.conf`:
+Use `--system` flag to load the files with ".conf" extension in these directories:
 
 ```sh
 systeroid --system
@@ -229,18 +234,20 @@ kernel
 
 #### Showing information about parameters
 
-**systeroid** can dump the parameter information from the kernel documentation. This is useful if you don't know what a parameter is (used for), which is likely in most cases.
+**systeroid** can dump the parameter information from the kernel documentation. This is useful if you don't know what a parameter is used for.
 
 ```sh
 # show information about a parameter
 systeroid --explain oom_dump_tasks
 ```
 
-Kernel documentation should be present in one of the following paths for **systeroid** to parse upon first launch:
+Kernel documentation should be present in one of the following paths for parsing upon first launch:
 
 - `/usr/share/doc/linux`
 - `/usr/share/doc/linux-doc`
 - `/usr/share/doc/linux-docs`
+
+Then the parsed data is cached in `$HOME/.cache/systeroid-core` and used from there as long as the documentation is not updated.
 
 This is a design choice due to the fact that different versions of kernels might be installed on different systems so the documentation might be too new or old if **systeroid** was to be shipped with a fixed set of parameter descriptions bundled in. With the parsing approach, documentation is always kept up-to-date.
 
