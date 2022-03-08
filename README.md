@@ -32,11 +32,25 @@
 <br>
 <br>
 
-**systeroid** is implemented using [procfs](https://en.wikipedia.org/wiki/Procfs) which is the virtual file system that is typically mapped to a mount point named `/proc` at boot time. This means checking the value of some kernel parameter requires opening a file in this virtual filesystem, reading its contents, parsing them, and closing the file. In Linux, these dynamically configurable kernel options are available under `/proc/sys` which contains directories representing the sections of the kernel and readable/writable virtual files. For example, to enable/disable IP forwarding, `1` or `0` could be written in `/proc/sys/net/ipv4/ip_forward` or `systeroid ip_forward=1` command can be used to change the value of the parameter.
+**systeroid** is implemented using [procfs](https://en.wikipedia.org/wiki/Procfs) which is the virtual file system that is typically mapped to a mount point named `/proc` at boot time. This means checking the value of some kernel parameter requires opening a file in this virtual filesystem, reading its contents, parsing them, and closing the file. In [Linux](https://en.wikipedia.org/wiki/Linux), these dynamically configurable kernel options are available under `/proc/sys` which contains directories representing the sections of the kernel and readable/writable virtual files. For example, to enable/disable IP forwarding, `1` or `0` could be written in `/proc/sys/net/ipv4/ip_forward` or `systeroid ip_forward=1` command can be used to change the value of the parameter.
 
 <a href="img/systeroid-demo.gif">
     <img src="img/systeroid-demo.gif" width="800">
 </a>
+
+Although **systeroid** does not need the parameter section to be present, it is important to know the sections and their areas of impact. Here are the available kernel sections according to the [Linux kernel documentation](https://www.kernel.org/doc/html/latest/admin-guide/sysctl/index.html):
+
+| Section    | Path                | Description                                                   |
+| ---------- | ------------------- | ------------------------------------------------------------- |
+| **abi**    | `/proc/sys/abi/`    | execution domains & personalities                             |
+| **fs**     | `/proc/sys/fs/`     | filesystem settings                                           |
+| **kernel** | `/proc/sys/kernel/` | global kernel information / miscellaneous settings            |
+| **net**    | `/proc/sys/net/`    | networking settings                                           |
+| **sunrpc** | `/proc/sys/sunrpc/` | SUN Remote Procedure Call settings                            |
+| **user**   | `/proc/sys/user/`   | user namespace limits                                         |
+| **vm**     | `/proc/sys/vm/`     | memory management tuning buffer and cache management settings |
+| **dev**    | `/proc/sys/dev/`    | device specific information                                   |
+| **debug**  | `/proc/sys/debug/`  | -                                                             |
 
 <details>
   <summary>Table of Contents</summary>
@@ -103,44 +117,92 @@ Most of the arguments/flags are inherited from `sysctl` so they have the same fu
 #### Listing parameters
 
 ```sh
-systeroid -a
-systeroid -a --names
-```
+# list all parameters
+systeroid -A
 
-```sh
+# list parameters in a tree-like format
 systeroid -T
-systeroid -T --names
-```
 
-```sh
+# list parameters in JSON format
 systeroid -J
 ```
 
+To disable colors, set the [`NO_COLOR`](https://no-color.org/) environment variable.
+
+#### Filtering by section
+
 ```sh
+# only list parameters in the "kernel" section
 systeroid kernel
-systeroid vm
+
+# only list parameters in the "vm" and "user" sections
+systeroid vm user
 ```
 
 #### Displaying values
 
 ```sh
+# print the name and value of a parameter (in "name=value" format)
 systeroid kernel.hostname
+
+# print only the value of a parameter
 systeroid -n kernel.hostname
-systeroid hostname version
+
+# print the name and values of the multiple parameters
+systeroid kernel.hostname user.max_user_namespaces
 ```
 
 #### Setting values
 
 ```sh
+# set the value of a parameter
 systeroid kernel.domainname="example.com"
-systeroid dmesg_restrict=0
+
+# set the values of multiple parameters and ignore errors
+systeroid -e kernel.dmesg_restrict=0 vm.panic_on_oom=1 unknown_param="test"
+
+# set the values of multiple parameters and enforce the "name=value" format
+# (ignores the last parameter)
+systeroid -w fs.dir-notify-enable=1 net.mptcp.enabled=1 vm.oom_kill_allocating_task
 ```
 
-#### Loading values from file
+#### Loading values from a file
+
+Parameter values can be set from an [INI file](https://en.wikipedia.org/wiki/INI_file). For example, contents of `sysctl.conf`:
+
+```ini
+# Use kernel.sysrq = 1 to allow all keys.
+# See https://www.kernel.org/doc/html/latest/admin-guide/sysrq.html for a list
+# of values and keys.
+kernel.sysrq = 16
+
+# Append the PID to the core filename
+kernel.core_uses_pid = 1
+```
+
+To load it:
 
 ```sh
 systeroid --load sysctl.conf
 ```
+
+If no file is given, values are loaded from `/etc/sysctl.conf` as default:
+
+```sh
+systeroid --load
+```
+
+#### Loading values from the system directories
+
+The list of default system directories are the following:
+
+- `/etc/sysctl.d`
+- `/run/sysctl.d`
+- `/usr/local/lib/sysctl.d`
+- `/usr/lib/sysctl.d`
+- `/lib/sysctl.d`
+
+Use `--system` flag to load the files with ".conf" extension in these directories and also `/etc/sysctl.conf`:
 
 ```sh
 systeroid --system
@@ -149,22 +211,55 @@ systeroid --system
 #### Searching parameters
 
 ```sh
+# search parameters using regex patterns
 systeroid -r 'net.ipv4.conf.(eth|wlan)0.arp'
-systeroid -r 'kernel.*_max$'
 systeroid -r '^net.ipv6'
 ```
 
-#### Getting information about parameters
+Example output of combining search with listing:
 
 ```sh
-systeroid --explain user.max_user_namespaces --docs /usr/share/doc/linux
+$ systeroid --names --pattern 'kernel.*_max$' --tree
+
+kernel
+├── ngroups_max
+├── pid_max
+└── sched_util_clamp_max
 ```
 
-```sh
-systeroid -E oom_dump_tasks
-```
+#### Showing information about parameters
+
+**systeroid** can dump the parameter information from the kernel documentation. This is useful if you don't know what a parameter is (used for), which is likely in most cases.
 
 ```sh
+# show information about a parameter
+systeroid --explain oom_dump_tasks
+```
+
+Kernel documentation should be present in one of the following paths for **systeroid** to parse upon first launch:
+
+- `/usr/share/doc/linux`
+- `/usr/share/doc/linux-doc`
+- `/usr/share/doc/linux-docs`
+
+This is a design choice due to the fact that different versions of kernels might be installed on different systems so the documentation might be too new or old if **systeroid** was to be shipped with a fixed set of parameter descriptions bundled in. With the parsing approach, documentation is always kept up-to-date.
+
+However, this means you need to:
+
+- either install the kernel documentation package (based on your distribution)
+  - on Arch Linux: `pacman -S linux-docs`
+  - on Debian/Ubuntu: `apt-get install linux-doc`
+- or explicitly specify the path of the [kernel documentation](https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/admin-guide).
+
+```sh
+# specify the kernel documentation path explicitly
+# (not needed if you have the kernel documentation installed as a package)
+systeroid -E user.max_user_namespaces --docs /usr/share/doc/linux
+```
+
+To change the default pager (`less(1)`), you can use the `PAGER` environment variable. Also, you can simply use `--no-pager` flag to disable it.
+
+```
 systeroid -E kernel.ctrl-alt-del --no-pager
 ```
 
