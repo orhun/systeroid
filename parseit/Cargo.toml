@@ -16,7 +16,7 @@ rust-version = "1.56.1"
 gzip = ["flate2"]
 
 [dependencies]
-regex = "1.5.4"
+regex = "1.5.5"
 globwalk = "0.8.1"
 thiserror = "1.0.29"
 flate2 = { version = "1.0.22", optional = true }
