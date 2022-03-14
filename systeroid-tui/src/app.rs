@@ -391,6 +391,7 @@ impl<'a> App<'a> {
                     if let Ok(command) = Command::from_str(input) {
                         self.input = None;
                         self.run_command(command)?;
+                        hide_popup = false;
                     } else {
                         self.input = Some(String::from("Unknown command"));
                         self.input_time = Some(Instant::now());
