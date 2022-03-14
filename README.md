@@ -70,6 +70,17 @@ Although **systeroid** does not need the parameter section to be specified expli
   - [Usage](#usage-1)
   - [Key Bindings](#key-bindings)
   - [Examples](#examples-1)
+    - [Launching](#launching)
+    - [Showing help](#showing-help)
+    - [Scrolling](#scrolling)
+    - [Toggling the kernel section](#toggling-the-kernel-section)
+    - [Searching](#searching)
+    - [Setting values](#setting-values-1)
+    - [Running commands](#running-commands)
+    - [Copying to clipboard](#copying-to-clipboard)
+    - [Changing the colors](#changing-the-colors)
+    - [Viewing the parameter documentation](#viewing-the-parameter-documentation)
+    - [Setting the refresh rate](#setting-the-refresh-rate)
 - [Resources](#resources)
   - [References](#references)
   - [Logo](#logo)
@@ -296,24 +307,129 @@ systeroid-tui [options]
 
 ### Key Bindings
 
-| Key                             | Action                       |
-| ------------------------------- | ---------------------------- |
-| `?`, `f1`                       | show help                    |
-| `up/down`, `k/j`, `pgup/pgdown` | scroll list                  |
-| `t/b`                           | scroll to top/bottom         |
-| `left/right`, `h/l`             | scroll documentation         |
-| `tab`, `` ` ``                  | next/previous section        |
-| `:`                             | command                      |
-| `/`, `s`                        | search                       |
-| `enter`                         | select / set parameter value |
-| `c`                             | copy to clipboard            |
-| `r`, `f5`                       | refresh                      |
-| `esc`                           | cancel / exit                |
-| `ctrl-c/ctrl-d`                 | exit                         |
+| Key                                                        | Action                       |
+| ---------------------------------------------------------- | ---------------------------- |
+| <kbd>?</kbd>, <kbd>f1</kbd>                                | show help                    |
+| <kbd>up/down</kbd>, <kbd>k/j</kbd>, <kbd>pgup/pgdown</kbd> | scroll list                  |
+| <kbd>t/b</kbd>                                             | scroll to top/bottom         |
+| <kbd>left/right</kbd>, <kbd>h/l</kbd>                      | scroll documentation         |
+| <kbd>tab</kbd>, <kbd>`</kbd>                               | next/previous section        |
+| <kbd>:</kbd>                                               | command                      |
+| <kbd>/</kbd>, <kbd>s</kbd>                                 | search                       |
+| <kbd>enter</kbd>                                           | select / set parameter value |
+| <kbd>c</kbd>                                               | copy to clipboard            |
+| <kbd>r</kbd>, <kbd>f5</kbd>                                | refresh                      |
+| <kbd>esc</kbd>                                             | cancel / exit                |
+| <kbd>ctrl-c/ctrl-d</kbd>                                   | exit                         |
 
 ### Examples
 
-TBA
+#### Launching
+
+Simply run `systeroid-tui` to launch the terminal user interface. Alternatively, you can use `systeroid --tui` command (which runs `systeroid-tui` under the hood if it is found in [`PATH`](<https://en.wikipedia.org/wiki/PATH_(variable)>)).
+
+#### Showing help
+
+Help menu and key bindings can be shown via pressing <kbd>?</kbd>:
+
+![Help](img/systeroid-tui-help.gif)
+
+#### Scrolling
+
+Use <kbd>up/down</kbd> keys to scroll the parameter list. Alternatively, use <kbd>t/b</kbd> to scroll to the top/bottom.
+
+![Scroll list](img/systeroid-tui-scroll-list.gif)
+
+Use <kbd>left/right</kbd> to scroll the parameter documentation.
+
+![Scroll documentation](img/systeroid-tui-scroll-documentation.gif)
+
+#### Toggling the kernel section
+
+Press <kbd>tab</kbd> or <kbd>`</kbd> to toggle the kernel section for filtering entries in the parameter list.
+
+![Toggle section](img/systeroid-tui-toggle-section.gif)
+
+`--section` argument can be used to start **systeroid-tui** with the specified section for filtering.
+
+```sh
+systeroid-tui --section kernel
+```
+
+![Section option](img/systeroid-tui-section.gif)
+
+#### Searching
+
+Press <kbd>/</kbd> and type in your query to search for parameters.
+
+![Search](img/systeroid-tui-search.gif)
+
+Alternatively, you can start **systeroid-tui** with a pre-defined search query by using `--query` argument.
+
+```sh
+systeroid-tui --query "fs.quota"
+```
+
+![Query option](img/systeroid-tui-query.gif)
+
+#### Setting values
+
+Press <kbd>enter</kbd> to select a parameter and set its value via command prompt.
+
+![Set value](img/systeroid-tui-set-value.gif)
+
+You can press <kbd>r</kbd> to refresh the values in the parameter list.
+
+#### Running commands
+
+Press <kbd>:</kbd> to open the command prompt for running a command. Available commands are:
+
+| Command                               | Description                                                                                                                   |
+| ------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| `:help`                               | Show help                                                                                                                     |
+| `:search`                             | Enable search                                                                                                                 |
+| `:select`                             | Select the current parameter in the list                                                                                      |
+| `:set <name> <value>`                 | Set parameter value                                                                                                           |
+| `:scroll [area] [direction] <amount>` | Scroll the list or text<br>- areas: `list`, `docs`, `section`<br>- directions: `up`, `down`, `top`, `bottom`, `right`, `left` |
+| `:copy`                               | Copy to clipboard                                                                                                             |
+| `:refresh`                            | Refresh values                                                                                                                |
+| `:quit`, `:q`                         | Quit                                                                                                                          |
+
+#### Copying to clipboard
+
+Press <kbd>c</kbd> to show the options menu for copying the name, value, or documentation of the selected parameter.
+
+![Copy to clipboard](img/systeroid-tui-copy.gif)
+
+\* **systeroid-tui** should be built with `clipboard` feature for enabling the clipboard support.
+
+#### Changing the colors
+
+Use `--bg-color` and `--fg-color` arguments to customize the colors of the terminal user interface.
+
+```sh
+# use a color name for setting the foreground color
+systeroid-tui --fg-color blue
+
+# use hexadecimal values for setting foreground/background colors
+systeroid-tui --bg-color ffff99 --fg-color 003366
+```
+
+![Change colors](img/systeroid-tui-colors.gif)
+
+#### Viewing the parameter documentation
+
+To view the documentation as parameters are being selected on the list, kernel documentation should be parsed as explained in the "[Showing information about parameters](#showing-information-about-parameters)" section. A specific path for kernel documentation can be given via `--docs` argument if it is not found in one of the locations that are checked as default.
+
+To disable this feature altogether, use `--no-docs` flag.
+
+#### Setting the refresh rate
+
+It is possible to specify a value in milliseconds via `--tick-rate` argument for tweaking the refresh rate of the terminal which might be necessary in some cases where better performance is desired.
+
+```sh
+systeroid-tui --tick-rate 500
+```
 
 ## Resources
 
