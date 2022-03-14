@@ -320,7 +320,7 @@ systeroid-tui [options]
 | <kbd>c</kbd>                                               | copy to clipboard            |
 | <kbd>r</kbd>, <kbd>f5</kbd>                                | refresh                      |
 | <kbd>esc</kbd>                                             | cancel / exit                |
-| <kbd>ctrl-c/ctrl-d</kbd>                                   | exit                         |
+| <kbd>q</kbd>, <kbd>ctrl-c/ctrl-d</kbd>                     | exit                         |
 
 ### Examples
 
