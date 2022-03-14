@@ -47,10 +47,14 @@ impl FromStr for Command {
             "exit" | "quit" | "q" | "q!" => Ok(Command::Exit),
             _ => {
                 if s.starts_with("set") {
-                    let mut values = s.trim_start_matches("set").trim().split_whitespace();
+                    let values: Vec<&str> = s
+                        .trim_start_matches("set")
+                        .trim()
+                        .split_whitespace()
+                        .collect();
                     Ok(Command::Set(
-                        values.next().ok_or(())?.to_string(),
-                        values.next().ok_or(())?.to_string(),
+                        values.first().ok_or(())?.to_string(),
+                        values[1..].join(" "),
                     ))
                 } else if s.starts_with("scroll") {
                     let mut values = s.trim_start_matches("scroll").trim().split_whitespace();
@@ -133,8 +137,8 @@ mod tests {
             (Command::Refresh, "refresh"),
             (Command::Exit, "quit"),
             (
-                Command::Set(String::from("a"), String::from("b")),
-                "set a b",
+                Command::Set(String::from("a"), String::from("b c")),
+                "set a b c",
             ),
             (
                 Command::Scroll(ScrollArea::List, Direction::Up, 1),
