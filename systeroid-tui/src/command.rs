@@ -104,7 +104,7 @@ impl Command {
                 Key::Char('c') => Command::Copy,
                 Key::Char('r') | Key::F(5) => Command::Refresh,
                 Key::Esc => Command::Cancel,
-                Key::Ctrl('c') | Key::Ctrl('d') => Command::Exit,
+                Key::Char('q') | Key::Ctrl('c') | Key::Ctrl('d') => Command::Exit,
                 _ => Command::Nothing,
             }
         }

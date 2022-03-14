@@ -80,7 +80,7 @@ pub const KEY_BINDINGS: &[&KeyBinding] = &[
         action: "cancel / exit",
     },
     &KeyBinding {
-        key: "ctrl-c/ctrl-d",
+        key: "q, ctrl-c/ctrl-d",
         action: "exit",
     },
 ];
