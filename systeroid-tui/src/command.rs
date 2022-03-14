@@ -44,8 +44,7 @@ impl FromStr for Command {
             "select" => Ok(Command::Select),
             "copy" => Ok(Command::Copy),
             "refresh" => Ok(Command::Refresh),
-            "cancel" | "q" => Ok(Command::Cancel),
-            "exit" | "quit" | "q!" => Ok(Command::Exit),
+            "exit" | "quit" | "q" | "q!" => Ok(Command::Exit),
             _ => {
                 if s.starts_with("set") {
                     let mut values = s.trim_start_matches("set").trim().split_whitespace();
@@ -132,8 +131,7 @@ mod tests {
             (Command::Select, "select"),
             (Command::Copy, "copy"),
             (Command::Refresh, "refresh"),
-            (Command::Cancel, "cancel"),
-            (Command::Exit, "exit"),
+            (Command::Exit, "quit"),
             (
                 Command::Set(String::from("a"), String::from("b")),
                 "set a b",
