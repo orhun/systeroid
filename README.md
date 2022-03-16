@@ -1,5 +1,5 @@
 <a href="https://github.com/orhun/systeroid">
-    <img align="left" src="img/systeroid-logo.jpg" width="256">
+    <img align="left" src="assets/systeroid-logo.jpg" width="256">
 </a>
 
 #### **`systeroid`** — A more powerful alternative to sysctl.
@@ -34,8 +34,8 @@
 
 **systeroid** is implemented using [procfs](https://en.wikipedia.org/wiki/Procfs) which is the virtual file system that is typically mapped to a mount point named `/proc` at boot time. This means checking the value of some kernel parameter requires opening a file in this virtual filesystem, reading its contents, parsing them, and closing the file. In [Linux](https://en.wikipedia.org/wiki/Linux), these dynamically configurable kernel options are available under `/proc/sys` which contains directories representing the sections of the kernel and readable/writable virtual files. For example, to enable/disable IP forwarding, `1` or `0` could be written in `/proc/sys/net/ipv4/ip_forward` or `systeroid ip_forward=1` command can be used to change the value of the parameter.
 
-<a href="img/systeroid-demo.gif">
-    <img src="img/systeroid-demo.gif" width="800">
+<a href="assets/systeroid-demo.gif">
+    <img src="assets/systeroid-demo.gif" width="800">
 </a>
 
 Although **systeroid** does not need the parameter section to be specified explicitly, it is important to know the sections and their areas of impact. Here are the available kernel sections according to the [Linux kernel documentation](https://www.kernel.org/doc/html/latest/admin-guide/sysctl/index.html):
@@ -332,23 +332,23 @@ Simply run `systeroid-tui` to launch the terminal user interface. Alternatively,
 
 Help menu and key bindings can be shown via pressing <kbd>?</kbd>:
 
-![Help](img/systeroid-tui-help.gif)
+![Help](assets/systeroid-tui-help.gif)
 
 #### Scrolling
 
 Use <kbd>up/down</kbd> keys to scroll the parameter list. Alternatively, use <kbd>t/b</kbd> to scroll to the top/bottom.
 
-![Scroll list](img/systeroid-tui-scroll-list.gif)
+![Scroll list](assets/systeroid-tui-scroll-list.gif)
 
 Use <kbd>left/right</kbd> to scroll the parameter documentation.
 
-![Scroll documentation](img/systeroid-tui-scroll-documentation.gif)
+![Scroll documentation](assets/systeroid-tui-scroll-documentation.gif)
 
 #### Toggling the kernel section
 
 Press <kbd>tab</kbd> or <kbd>`</kbd> to toggle the kernel section for filtering entries in the parameter list.
 
-![Toggle section](img/systeroid-tui-toggle-section.gif)
+![Toggle section](assets/systeroid-tui-toggle-section.gif)
 
 `--section` argument can be used to start **systeroid-tui** with the specified section for filtering.
 
@@ -356,13 +356,13 @@ Press <kbd>tab</kbd> or <kbd>`</kbd> to toggle the kernel section for filtering 
 systeroid-tui --section kernel
 ```
 
-![Section option](img/systeroid-tui-section.gif)
+![Section option](assets/systeroid-tui-section.gif)
 
 #### Searching
 
 Press <kbd>/</kbd> and type in your query to search for parameters.
 
-![Search](img/systeroid-tui-search.gif)
+![Search](assets/systeroid-tui-search.gif)
 
 Alternatively, you can start **systeroid-tui** with a pre-defined search query by using `--query` argument.
 
@@ -370,13 +370,13 @@ Alternatively, you can start **systeroid-tui** with a pre-defined search query b
 systeroid-tui --query "fs.quota"
 ```
 
-![Query option](img/systeroid-tui-query.gif)
+![Query option](assets/systeroid-tui-query.gif)
 
 #### Setting values
 
 Press <kbd>enter</kbd> to select a parameter and set its value via command prompt.
 
-![Set value](img/systeroid-tui-set-value.gif)
+![Set value](assets/systeroid-tui-set-value.gif)
 
 You can press <kbd>r</kbd> to refresh the values in the parameter list.
 
@@ -399,7 +399,7 @@ Press <kbd>:</kbd> to open the command prompt for running a command. Available c
 
 Press <kbd>c</kbd> to show the options menu for copying the name, value, or documentation of the selected parameter.
 
-![Copy to clipboard](img/systeroid-tui-copy.gif)
+![Copy to clipboard](assets/systeroid-tui-copy.gif)
 
 \* **systeroid-tui** should be built with `clipboard` feature for enabling the clipboard support.
 
@@ -415,7 +415,7 @@ systeroid-tui --fg-color blue
 systeroid-tui --bg-color ffff99 --fg-color 003366
 ```
 
-![Change colors](img/systeroid-tui-colors.gif)
+![Change colors](assets/systeroid-tui-colors.gif)
 
 #### Viewing the parameter documentation
 
