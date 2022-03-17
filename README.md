@@ -101,10 +101,10 @@ Although **systeroid** does not need the parameter section to be specified expli
 ## Requirements
 
 - [Rust](https://www.rust-lang.org/) (`>=1.56.1`) (see [building from source](#building-from-source))
-- [libxcb](https://gitlab.freedesktop.org/xorg/lib/libxcb) (for TUI clipboard support)
-- [linux-documentation](https://www.kernel.org/doc/) (for viewing documentation)
+- [libxcb](https://gitlab.freedesktop.org/xorg/lib/libxcb) (for [clipboard support](#copying-to-clipboard))
+- [linux-documentation](https://www.kernel.org/doc/) (for [viewing the documentation](#viewing-the-parameter-documentation))
 
-To install the runtime depencies:
+To install the runtime dependencies:
 
 - on Arch Linux: `pacman -S libxcb libxkbcommon linux-docs`
 - on Debian/Ubuntu: `apt-get install libx11-dev libxcb-shape0-dev libxcb-xfixes0-dev libxkbcommon-dev linux-doc`
