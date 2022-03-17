@@ -34,14 +34,14 @@ use tui::terminal::Terminal;
 
 /// Runs `systeroid-tui`.
 pub fn run<B: Backend>(args: Args, backend: B) -> Result<()> {
-    let mut terminal = Terminal::new(backend)?;
-    terminal.hide_cursor()?;
-    terminal.clear()?;
-    let event_handler = EventHandler::new(args.tick_rate);
     let mut sysctl = Sysctl::init(Config::default())?;
     if !args.no_docs {
         sysctl.update_docs_from_cache(args.kernel_docs.as_ref(), &Cache::init()?)?;
     }
+    let mut terminal = Terminal::new(backend)?;
+    terminal.hide_cursor()?;
+    terminal.clear()?;
+    let event_handler = EventHandler::new(args.tick_rate);
     let mut app = App::new(&mut sysctl);
     if let Some(section) = args.section {
         app.section_list.state.select(Some(
