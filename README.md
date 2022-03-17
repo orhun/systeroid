@@ -55,6 +55,12 @@ Although **systeroid** does not need the parameter section to be specified expli
 <details>
   <summary>Table of Contents</summary>
 
+- [Requirements](#requirements)
+- [Installation](#installation)
+  - [Cargo](#cargo)
+  - [Binary releases](#binary-releases)
+  - [Building from source](#building-from-source)
+  - [Docker images](#docker-images)
 - [Usage](#usage)
   - [Options](#options)
   - [Examples](#examples)
@@ -91,6 +97,40 @@ Although **systeroid** does not need the parameter section to be specified expli
 - [Copyright](#copyright)
 
 </details>
+
+## Requirements
+
+- [Rust](https://www.rust-lang.org/) (`>=1.56.1`) (see [building from source](#building-from-source))
+- [libxcb](https://gitlab.freedesktop.org/xorg/lib/libxcb) (for TUI clipboard support)
+- [linux-documentation](https://www.kernel.org/doc/) (for viewing documentation)
+
+To install the runtime depencies:
+
+- on Arch Linux: `pacman -S libxcb libxkbcommon linux-docs`
+- on Debian/Ubuntu: `apt-get install libx11-dev libxcb-shape0-dev libxcb-xfixes0-dev libxkbcommon-dev linux-doc`
+- on Fedora: `dnf install libX11-devel kernel-doc`
+
+## Installation
+
+### Cargo
+
+**systeroid** is available on [crates.io](https://crates.io/crates/systeroid):
+
+```sh
+cargo install systeroid
+```
+
+### Binary releases
+
+See available [releases](https://github.com/orhun/systeroid/releases).
+
+### Building from source
+
+TBA
+
+### Docker images
+
+TBA
 
 ## Usage
 
