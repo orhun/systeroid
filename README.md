@@ -459,7 +459,7 @@ systeroid-tui --bg-color ffff99 --fg-color 003366
 
 #### Viewing the parameter documentation
 
-To view the documentation as parameters are being selected on the list, kernel documentation should be parsed as explained in the "[Showing information about parameters](#showing-information-about-parameters)" section. A specific path for kernel documentation can be given via `--docs` argument if it is not found in one of the locations that are checked as default.
+To view the documentation as parameters are being selected on the list, kernel documentation should be parsed as explained in the "[Showing information about parameters](#showing-information-about-parameters)" section. A specific path for kernel documentation can be given via `--docs` argument or `KERNEL_DOCS` environment variable if it is not found in one of the locations that are checked as default.
 
 To disable this feature altogether, use `--no-docs` flag.
 
