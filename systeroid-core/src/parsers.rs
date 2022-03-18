@@ -5,14 +5,15 @@ use parseit::regex::RegexBuilder;
 use rayon::prelude::*;
 use std::path::Path;
 
-lazy_static! {
-    /// Possible locations for the Linux kernel documentation.
-    pub static ref KERNEL_DOCS_PATH: Vec<&'static Path> = vec![
-        Path::new("/usr/share/doc/linux/"),
-        Path::new("/usr/share/doc/linux-doc/"),
-        Path::new("/usr/share/doc/linux-docs/")
-    ];
+/// Possible locations for the Linux kernel documentation.
+pub const KERNEL_DOCS_PATH: &[&str] = &[
+    "/usr/share/doc/linux/*",
+    "/usr/share/doc/linux-doc/*",
+    "/usr/share/doc/linux-docs/*",
+    "/usr/share/doc/kernel-doc-*/Documentation/*",
+];
 
+lazy_static! {
     /// Pre-defined parsers for parsing the kernel documentation.
     pub static ref PARSERS: Vec<Parser<'static>> = vec![
         Parser {
