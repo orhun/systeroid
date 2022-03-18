@@ -5,6 +5,7 @@ use crate::parsers::{parse_kernel_docs, KERNEL_DOCS_PATH};
 use crate::sysctl::parameter::Parameter;
 use crate::sysctl::section::Section;
 use crate::sysctl::{DISABLE_CACHE_ENV, PARAMETERS_CACHE_LABEL, PROC_PATH};
+use parseit::globwalk;
 use rayon::prelude::*;
 use std::convert::TryFrom;
 use std::env;
@@ -78,9 +79,21 @@ impl Sysctl {
         kernel_docs: Option<&PathBuf>,
         cache: &Cache,
     ) -> Result<()> {
-        let mut kernel_docs_path = KERNEL_DOCS_PATH.clone();
-        if let Some(path) = kernel_docs {
-            kernel_docs_path.insert(0, path);
+        let mut kernel_docs_path = if let Some(path) = kernel_docs {
+            vec![path.to_path_buf()]
+        } else {
+            Vec::new()
+        };
+        for path in KERNEL_DOCS_PATH {
+            if let Some(mut path) = globwalk::glob(path).ok().and_then(|glob| {
+                glob.filter_map(StdResult::ok)
+                    .filter(|entry| entry.file_type().is_file())
+                    .map(|entry| entry.into_path())
+                    .next()
+            }) {
+                path.pop();
+                kernel_docs_path.push(path);
+            }
         }
         if let Some(path) = kernel_docs_path.iter().find(|path| path.exists()) {
             if cache.exists(PARAMETERS_CACHE_LABEL) {
@@ -160,10 +173,10 @@ impl Sysctl {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::parsers::KERNEL_DOCS_PATH;
 
     #[test]
     fn test_sysctl_controller() -> Result<()> {
+        env::set_var(DISABLE_CACHE_ENV, "1");
         let config = Config::default();
         let mut sysctl = Sysctl::init(config)?;
         assert!(sysctl.get_parameter("kernel.hostname").is_some());
@@ -174,11 +187,7 @@ mod tests {
         );
         assert!(sysctl.get_parameters("---").is_empty());
 
-        for path in KERNEL_DOCS_PATH.iter() {
-            if path.exists() {
-                sysctl.update_docs(&path)?;
-            }
-        }
+        sysctl.update_docs_from_cache(None, &Cache::init()?)?;
 
         let parameter = sysctl.get_parameter("kernel.hostname").unwrap().clone();
         let old_value = parameter.docs_title;
