@@ -2,11 +2,12 @@ use crate::cache::{Cache, CacheData};
 use crate::config::Config;
 use crate::error::Result;
 use crate::parsers::{parse_kernel_docs, KERNEL_DOCS_PATH};
-use crate::sysctl::parameter::{Parameter, PARAMETERS_CACHE_LABEL};
+use crate::sysctl::parameter::Parameter;
 use crate::sysctl::section::Section;
-use crate::sysctl::PROC_PATH;
+use crate::sysctl::{DISABLE_CACHE_ENV, PARAMETERS_CACHE_LABEL, PROC_PATH};
 use rayon::prelude::*;
 use std::convert::TryFrom;
+use std::env;
 use std::path::{Path, PathBuf};
 use std::result::Result as StdResult;
 use sysctl::{CtlFlags, CtlIter, Sysctl as SysctlImpl};
@@ -90,10 +91,12 @@ impl Sysctl {
                 }
             }
             self.update_docs(path)?;
-            cache.write(
-                CacheData::new(&self.parameters, path)?,
-                PARAMETERS_CACHE_LABEL,
-            )?;
+            if env::var(DISABLE_CACHE_ENV).is_err() {
+                cache.write(
+                    CacheData::new(&self.parameters, path)?,
+                    PARAMETERS_CACHE_LABEL,
+                )?;
+            }
         } else {
             eprintln!("warning: `Linux kernel documentation cannot be found. Please specify a path via '-D' argument`");
         }

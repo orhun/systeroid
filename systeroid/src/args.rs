@@ -4,7 +4,7 @@ use std::env;
 use std::path::PathBuf;
 use systeroid_core::parseit::regex::Regex;
 use systeroid_core::sysctl::display::DisplayType;
-use systeroid_core::sysctl::DEFAULT_PRELOAD;
+use systeroid_core::sysctl::{DEFAULT_PRELOAD, KERNEL_DOCS_ENV};
 
 /// Help message for the arguments.
 const HELP_MESSAGE: &str = r#"
@@ -179,7 +179,10 @@ impl Args {
                 verbose: matches.opt_present("v"),
                 quiet: matches.opt_present("q"),
                 write: matches.opt_present("w"),
-                kernel_docs: matches.opt_str("D").map(PathBuf::from),
+                kernel_docs: matches
+                    .opt_str("D")
+                    .or_else(|| env::var(KERNEL_DOCS_ENV).ok())
+                    .map(PathBuf::from),
                 display_type,
                 display_deprecated: matches.opt_present("deprecated"),
                 ignore_errors: matches.opt_present("e"),

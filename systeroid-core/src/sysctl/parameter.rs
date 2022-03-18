@@ -8,9 +8,6 @@ use std::io::Write;
 use std::path::PathBuf;
 use sysctl::{Ctl, Sysctl as SysctlImpl};
 
-/// Label for caching the kernel parameters.
-pub(crate) const PARAMETERS_CACHE_LABEL: &str = "parameters";
-
 /// Representation of a kernel parameter.
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Parameter {

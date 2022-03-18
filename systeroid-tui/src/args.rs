@@ -1,7 +1,9 @@
 use crate::style::Colors;
 use getopts::Options;
+use std::env;
 use std::path::PathBuf;
 use systeroid_core::sysctl::section::Section;
+use systeroid_core::sysctl::KERNEL_DOCS_ENV;
 
 /// Help message for the arguments.
 const HELP_MESSAGE: &str = r#"
@@ -91,7 +93,10 @@ impl Args {
                     .map_err(|e| eprintln!("error: `{}`", e))
                     .ok()?
                     .unwrap_or(250),
-                kernel_docs: matches.opt_str("D").map(PathBuf::from),
+                kernel_docs: matches
+                    .opt_str("D")
+                    .or_else(|| env::var(KERNEL_DOCS_ENV).ok())
+                    .map(PathBuf::from),
                 section: matches.opt_str("s").map(Section::from),
                 search_query: matches.opt_str("q"),
                 colors: Colors::new(
