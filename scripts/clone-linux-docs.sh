@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
- 
+
 set -eux
 
 docs_dir="$(pwd)/linux-docs"
