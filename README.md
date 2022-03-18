@@ -298,7 +298,7 @@ Kernel documentation should be present in one of the following paths for parsing
 - `/usr/share/doc/linux-doc`
 - `/usr/share/doc/linux-docs`
 
-Then the parsed data is cached in `$HOME/.cache/systeroid-core` and used from there as long as the documentation is not updated. The caching mechanism can be disabled via setting the `NOCACHE` environment variable.
+Then the parsed data is cached in `$HOME/.cache/systeroid-core` and used from there as long as the documentation is not updated. The caching mechanism can be disabled via setting the `NO_CACHE` environment variable.
 
 This is a design choice due to the fact that different versions of kernels might be installed on different systems so the documentation might be too new or old if **systeroid** was to be shipped with a fixed set of parameter descriptions bundled in. With the parsing approach, documentation is always kept up-to-date.
 
