@@ -34,7 +34,7 @@ pub const DEPRECATED_PARAMS: &[&str] = &["base_reachable_time", "retrans_time"];
 pub const KERNEL_DOCS_ENV: &str = "KERNEL_DOCS";
 
 /// Environment variable for disabling the cache.
-pub(crate) const DISABLE_CACHE_ENV: &str = "NOCACHE";
+pub(crate) const DISABLE_CACHE_ENV: &str = "NO_CACHE";
 
 /// Label for caching the kernel parameters.
 pub(crate) const PARAMETERS_CACHE_LABEL: &str = "parameters";

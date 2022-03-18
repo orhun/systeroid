@@ -17,5 +17,5 @@ COPY --from=builder \
     /home/rust/src/linux-docs \
     /usr/share/doc/linux-docs
 USER 1000:1000
-ENV NOCACHE=1
+ENV NO_CACHE=1
 ENTRYPOINT ["systeroid"]
