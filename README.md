@@ -297,6 +297,7 @@ Kernel documentation should be present in one of the following paths for parsing
 - `/usr/share/doc/linux`
 - `/usr/share/doc/linux-doc`
 - `/usr/share/doc/linux-docs`
+- `/usr/share/doc/kernel-doc-*/Documentation`
 
 Then the parsed data is cached in `$HOME/.cache/systeroid-core` and used from there as long as the documentation is not updated. The caching mechanism can be disabled via setting the `NO_CACHE` environment variable.
 
