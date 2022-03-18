@@ -96,7 +96,7 @@ impl Sysctl {
             }
         }
         if let Some(path) = kernel_docs_path.iter().find(|path| path.exists()) {
-            if cache.exists(PARAMETERS_CACHE_LABEL) && kernel_docs.is_none() {
+            if cache.exists(PARAMETERS_CACHE_LABEL) {
                 let cache_data = cache.read(PARAMETERS_CACHE_LABEL)?;
                 if cache_data.timestamp == CacheData::<()>::get_timestamp(path)? {
                     self.update_params(cache_data.data);
