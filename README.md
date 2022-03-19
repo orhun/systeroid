@@ -129,7 +129,17 @@ See available [releases](https://github.com/orhun/systeroid/releases).
 
 ### Building from source
 
-TBA
+```sh
+# clone the repository
+git clone https://github.com/orhun/systeroid && cd systeroid/
+
+# binaries will be located at:
+# - target/release/systeroid
+# - target/release/systeroid-tui
+CARGO_TARGET_DIR=target cargo build --release
+```
+
+Also see [requirements](#requirements).
 
 ### Docker
 
@@ -148,7 +158,7 @@ The following command can be used to interactively view the documentation of sel
 docker run --rm -it "orhunp/systeroid:${TAG:-latest}" --tui
 ```
 
-Docker containers share the host system's kernel and its settings thus access to `/proc` and `/sys` are restricted for security. That is why it is not possible (and not recommended) to tweak the kernel parameters within a container. [*](https://stackoverflow.com/questions/54845095/cannot-run-sysctl-command-in-dockerfile)
+Docker containers share the host system's kernel and its settings thus access to `/proc` and `/sys` are restricted for security. That is why it is not possible (and not recommended) to tweak the kernel parameters within a container. [\*](https://stackoverflow.com/questions/54845095/cannot-run-sysctl-command-in-dockerfile)
 
 #### Building
 
