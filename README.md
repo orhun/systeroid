@@ -115,6 +115,13 @@ To install the runtime dependencies:
 
 ## Installation
 
+<details>
+  <summary>Packaging status</summary>
+
+[![Packaging status](https://repology.org/badge/vertical-allrepos/systeroid.svg)](https://repology.org/project/systeroid/versions)
+
+</details>
+
 ### Cargo
 
 **systeroid** is available on [crates.io](https://crates.io/crates/systeroid):
