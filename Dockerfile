@@ -7,7 +7,7 @@ RUN mkdir -p build-out/
 RUN ["/bin/bash", "-c", "cp target/x86_64-unknown-linux-musl/release/systeroid{,-tui} build-out/"]
 RUN ["/bin/bash", "-c", "scripts/clone-linux-docs.sh"]
 
-FROM debian:buster-slim
+FROM scratch
 WORKDIR /app
 COPY --from=builder \
     /home/rust/src/build-out/systeroid \
