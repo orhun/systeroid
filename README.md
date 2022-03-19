@@ -132,7 +132,7 @@ cargo install systeroid
 
 ### Binary releases
 
-See available [releases](https://github.com/orhun/systeroid/releases).
+See available [releases](https://github.com/orhun/systeroid/releases) that are automated by [Continuous Deployment](.github/workflows/cd.yml) workflow.
 
 ### Building from source
 
