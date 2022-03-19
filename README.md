@@ -60,8 +60,11 @@ Although **systeroid** does not need the parameter section to be specified expli
   - [Cargo](#cargo)
   - [Binary releases](#binary-releases)
   - [Building from source](#building-from-source)
-  - [Docker images](#docker-images)
-- [Usage](#usage)
+  - [Docker](#docker)
+    - [Images](#images)
+    - [Usage](#usage)
+    - [Building](#building)
+- [Usage](#usage-1)
   - [Options](#options)
   - [Examples](#examples)
     - [Listing parameters](#listing-parameters)
@@ -73,7 +76,7 @@ Although **systeroid** does not need the parameter section to be specified expli
     - [Searching parameters](#searching-parameters)
     - [Showing information about parameters](#showing-information-about-parameters)
 - [TUI](#tui)
-  - [Usage](#usage-1)
+  - [Usage](#usage-2)
   - [Key Bindings](#key-bindings)
   - [Examples](#examples-1)
     - [Launching](#launching)
@@ -128,9 +131,24 @@ See available [releases](https://github.com/orhun/systeroid/releases).
 
 TBA
 
-### Docker images
+### Docker
 
-TBA
+#### Images
+
+- [Docker Hub](https://hub.docker.com/r/orhunp/systeroid)
+- [GitHub Container Registry](https://github.com/orhun/systeroid/pkgs/container/systeroid)
+
+#### Usage
+
+```sh
+docker run --rm -it "orhunp/systeroid:${TAG:-latest}" --tui
+```
+
+#### Building
+
+```sh
+docker build -t systeroid .
+```
 
 ## Usage
 
