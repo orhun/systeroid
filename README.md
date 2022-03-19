@@ -135,16 +135,24 @@ TBA
 
 #### Images
 
+Docker builds are [automated](./.github/workflows/docker.yml) and images are available in the following registries:
+
 - [Docker Hub](https://hub.docker.com/r/orhunp/systeroid)
 - [GitHub Container Registry](https://github.com/orhun/systeroid/pkgs/container/systeroid)
 
 #### Usage
 
+The following command can be used to interactively view the documentation of selected parameters:
+
 ```sh
 docker run --rm -it "orhunp/systeroid:${TAG:-latest}" --tui
 ```
 
+Docker containers share the host system's kernel and its settings thus access to `/proc` and `/sys` are restricted for security. That is why it is not possible (and not recommended) to tweak the kernel parameters within a container. [*](https://stackoverflow.com/questions/54845095/cannot-run-sysctl-command-in-dockerfile)
+
 #### Building
+
+Custom Docker images can be built from the [Dockerfile](./Dockerfile):
 
 ```sh
 docker build -t systeroid .
