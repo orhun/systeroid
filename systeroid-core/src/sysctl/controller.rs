@@ -87,7 +87,7 @@ impl Sysctl {
         for path in KERNEL_DOCS_PATH {
             if let Some(mut path) = globwalk::glob(path).ok().and_then(|glob| {
                 glob.filter_map(StdResult::ok)
-                    .filter(|entry| entry.file_type().is_file())
+                    .filter(|entry| entry.file_type().is_dir())
                     .map(|entry| entry.into_path())
                     .next()
             }) {
