@@ -147,7 +147,7 @@ impl Sysctl {
                         document.paragraphs.par_iter().find_first(|paragraph| {
                             match param.get_absolute_name() {
                                 Some(absolute_name) => {
-                                    absolute_name == &paragraph.title
+                                    absolute_name == paragraph.title
                                         || absolute_name.len() > 2
                                             && paragraph.title.contains(absolute_name)
                                 }
