@@ -143,20 +143,16 @@ impl Sysctl {
                     .iter()
                     .filter(|document| Section::from(document.path.as_path()) == param.section)
                 {
-                    if let Some(paragraph) = document
-                        .paragraphs
-                        .par_iter()
-                        .find_first(|paragraph| param.get_absolute_name() == Some(&paragraph.title))
-                        .or_else(|| {
-                            document.paragraphs.par_iter().find_first(|paragraph| {
-                                match param.get_absolute_name() {
-                                    Some(absolute_name) => {
-                                        absolute_name.len() > 2
+                    if let Some(paragraph) =
+                        document.paragraphs.par_iter().find_first(|paragraph| {
+                            match param.get_absolute_name() {
+                                Some(absolute_name) => {
+                                    absolute_name == &paragraph.title
+                                        || absolute_name.len() > 2
                                             && paragraph.title.contains(absolute_name)
-                                    }
-                                    _ => false,
                                 }
-                            })
+                                None => false,
+                            }
                         })
                     {
                         param.description = Some(paragraph.contents.to_owned());
