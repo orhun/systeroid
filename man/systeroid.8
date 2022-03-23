@@ -1,0 +1,221 @@
+.\" Manpage for systeroid
+
+.TH SYSTEROID "8" "2022-03-22" "systeroid" "System Administration"
+.SH NAME
+systeroid \- configure kernel parameters at runtime
+
+.SH SYNOPSIS
+.B systeroid
+[options] [variable[=value] ...] --load[=<file>]
+
+.SH DESCRIPTION
+.B systeroid
+is used to modify kernel parameters at runtime.  The parameters available
+are those listed under /proc/sys/.  Procfs is required for
+.B systeroid
+support in Linux.  You can use
+.B systeroid
+to both read and write sysctl data.
+
+.SH PARAMETERS
+.TP
+.I variable
+The name of a key to read from.  An example is kernel.ostype.  The '/'
+separator is also accepted in place of a '.'.
+.TP
+.IR  variable = value
+To set a key, use the form
+.IR  variable = value
+where
+.I variable
+is the key and
+.I value
+is the value to set it to.  If the value contains quotes or characters
+which are parsed by the shell, you may need to enclose the value in double
+quotes.
+
+.TP
+\fB\-a\fR, \fB\-\-all\fR
+Display all variables currently available. (\fB\-A\fR,\fB\-X\fR)
+.TP
+\fB\-T\fR, \fB\-\-tree\fR
+Display the variables in a tree\-like format.
+.TP
+\fB\-J\fR, \fB\-\-json\fR
+Display the variables in JSON format.
+.TP
+\fB\-\-deprecated\fR
+Include deprecated parameters to
+.B \-\-all
+values listing.
+.TP
+\fB\-e\fR, \fB\-\-ignore\fR
+Use this option to ignore errors about unknown keys.
+.TP
+\fB\-N\fR, \fB\-\-names\fR
+Use this option to only print the names.  It may be useful with shells that
+have programmable completion.
+.TP
+\fB\-n\fR, \fB\-\-values\fR
+Use this option to disable printing of the key name when printing values.
+.TP
+\fB\-b\fR, \fB\-\-binary\fR
+Print only variable values without new line.
+.TP
+\fB\-p\fR[\fIFILE\fR], \fB\-\-load\fR[=\fIFILE\fR]
+Load in sysctl settings from the file specified or /etc/sysctl.conf if none
+given.  Specifying \- as filename means reading data from standard input.
+.TP
+\fB\-S\fR, \fB\-\-system\fR
+Load settings from all system configuration files. See the
+.B CONFIGURATION
+section below.
+.TP
+\fB\-r\fR, \fB\-\-pattern\fR <expr>
+Only apply settings that match
+.IR pattern .
+The
+.I pattern
+uses extended regular expression syntax.
+.TP
+\fB\-q\fR, \fB\-\-quiet\fR
+Use this option to not display the values set to stdout.
+.TP
+\fB\-w\fR, \fB\-\-write\fR
+Use this option when all arguments prescribe a key to be set.
+.TP
+\fB\-E\fR, \fB\-\-explain\fR
+Use this option to print a detailed explanation of a variable.
+.TP
+\fB\-D\fR, \fB\-\-docs\fR <path>
+Use this option to set a custom path for the kernel documentation.
+.TP
+\fB\-P\fR, \fB\-\-no\-pager\fR
+Use this option to disable piping output into a pager.
+.TP
+\fB\-v\fR, \fB\-\-verbose\fR
+Use this option to enable verbose logging.
+.TP
+\fB\-\-tui\fR
+Use this option to show the terminal user interface.
+.B systeroid-tui
+binary should be present in $PATH. See
+.B systeroid-tui(8)
+for more information.
+.TP
+\fB\-h\fR, \fB\-\-help\fR
+Display help text and exit. (\fB\-d\fR)
+.TP
+\fB\-V\fR, \fB\-\-version\fR
+Display version information and exit.
+
+.SH EXAMPLES
+systeroid \-a
+.br
+systeroid \-t
+.br
+systeroid vm user
+.br
+systeroid \-n kernel.hostname
+.br
+systeroid kernel.domainname="example.com"
+.br
+systeroid dmesg_restrict=0
+.br
+systeroid \-p /etc/sysctl.conf
+.br
+systeroid \-r 'net.ipv4.conf.(eth|wlan)0.arp'
+.br
+systeroid \-\-names \-\-tree \-\-pattern 'kernel.*_max$'
+.br
+systeroid \-\-explain oom_dump_tasks
+.br
+systeroid \-E user.max_user_namespaces \-\-docs /usr/share/doc/linux
+.br
+systeroid \-\-no-pager \-E kernel.ctrl-alt-del
+.br
+systeroid \-\-tui
+
+.SH DEPRECATED PARAMETERS
+The
+.B base_reachable_time
+and
+.B retrans_time
+are deprecated.  The
+.B systeroid
+command does not allow changing values of these
+parameters.  Users who insist to use deprecated kernel interfaces should push values
+to /proc file system by other means.  For example:
+.PP
+echo 256 > /proc/sys/net/ipv6/neigh/eth0/base_reachable_time
+
+.SH CONFIGURATION
+.B sysctl.conf
+is a simple file containing sysctl values to be read in and set by
+.BR systeroid .
+The syntax is simply as follows:
+.RS
+.sp
+.nf
+.ne 7
+# comment
+; comment
+
+token = value
+.fi
+.RE
+.PP
+Note that blank lines are ignored, and whitespace before and after a token or
+value is ignored, although a value can contain whitespace within.  Lines which
+begin with a \fI#\fR or \fI;\fR are considered comments and ignored.
+
+If a line begins with a single \-, any attempts to set the value that fail will be
+ignored.
+
+.SS EXAMPLE
+.RS
+.sp
+.nf
+.ne 7
+# sysctl.conf sample
+#
+  kernel.domainname = example.com
+; this one has a space which will be written to the sysctl!
+  kernel.modprobe = /sbin/mod probe
+.fi
+.RE
+
+.SS FILES
+When using the \fB\-\-system\fR option,
+.B systeroid
+will read files from directories in the following list.
+
+/etc/sysctl.d/*.conf
+.br
+/run/sysctl.d/*.conf
+.br
+/usr/local/lib/sysctl.d/*.conf
+.br
+/usr/lib/sysctl.d/*.conf
+.br
+/lib/sysctl.d/*.conf
+.br
+/etc/sysctl.conf
+
+.SH SEE ALSO
+.BR systeroid-tui (8)
+
+.SH AUTHOR
+.UR orhunparmaksiz@gmail.com
+Orhun Parmaksız
+.UE
+
+.SH COPYRIGHT
+Copyright © 2022 Orhun Parmaksız
+.RS 0
+Licensed under either of Apache License Version 2.0 or The MIT License at your option.
+
+.SH REPORTING BUGS
+Report bugs at <https://github.com/orhun/systeroid/issues> or contact the author via email.
+.RS 0
+See the project homepage at <https://github.com/orhun/systeroid> for full documentation.
