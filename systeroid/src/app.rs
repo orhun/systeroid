@@ -1,6 +1,6 @@
 use crate::output::OutputType;
 use std::env;
-use std::io::Write;
+use std::io::{self, BufRead, Write};
 use std::path::PathBuf;
 use std::process::{Command, Stdio};
 use systeroid_core::cache::Cache;
@@ -190,6 +190,14 @@ impl<'a, Output: Write> App<'a, Output> {
 
     /// Processes the parameters in the given file.
     pub fn preload_from_file(&mut self, path: PathBuf) -> Result<()> {
+        if path == PathBuf::from("-") {
+            for line in io::stdin().lock().lines() {
+                if let Err(e) = self.process_parameter(line?, true, false) {
+                    println!("{}: {}", env!("CARGO_PKG_NAME"), e);
+                }
+            }
+            return Ok(());
+        }
         if !path.exists() {
             eprintln!(
                 "{}: cannot open {:?}: No such file or directory",
