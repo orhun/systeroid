@@ -276,6 +276,11 @@ kernel.sysrq = 16
 
 # Append the PID to the core filename
 kernel.core_uses_pid = 1
+
+; Enable hard and soft link protection
+; (If a line begins with a single '-', any attempts to set the value that fail will be ignored.)
+-fs.protected_hardlinks = 1
+fs.protected_symlinks = 1
 ```
 
 To load it:
@@ -288,6 +293,12 @@ If no file is given, values are loaded from `/etc/sysctl.conf` as default:
 
 ```sh
 systeroid --load
+```
+
+Specifying "-" as file name means reading data from standard input:
+
+```sh
+systeroid --load -
 ```
 
 #### Loading values from the system directories
