@@ -1,6 +1,6 @@
 use crate::output::OutputType;
 use std::env;
-use std::io::Write;
+use std::io::{self, BufRead, Write};
 use std::path::PathBuf;
 use std::process::{Command, Stdio};
 use systeroid_core::cache::Cache;
@@ -189,8 +189,15 @@ impl<'a, Output: Write> App<'a, Output> {
     }
 
     /// Processes the parameters in the given file.
-    pub fn preload_from_file(&mut self, file: String) -> Result<()> {
-        let path = PathBuf::from(file);
+    pub fn preload_from_file(&mut self, path: PathBuf) -> Result<()> {
+        if path == PathBuf::from("-") {
+            for line in io::stdin().lock().lines() {
+                if let Err(e) = self.process_parameter(line?, true, false) {
+                    println!("{}: {}", env!("CARGO_PKG_NAME"), e);
+                }
+            }
+            return Ok(());
+        }
         if !path.exists() {
             eprintln!(
                 "{}: cannot open {:?}: No such file or directory",
@@ -202,9 +209,15 @@ impl<'a, Output: Write> App<'a, Output> {
         let contents = reader::read_to_string(path)?;
         for parameter in contents
             .lines()
-            .filter(|v| !(v.starts_with('#') || v.is_empty()))
+            .filter(|v| !(v.starts_with('#') || v.starts_with(';') || v.is_empty()))
         {
-            self.process_parameter(parameter.to_string(), false, false)?;
+            let process_result =
+                self.process_parameter(parameter.trim_start_matches('-').to_string(), false, false);
+            if !parameter.starts_with('-') {
+                process_result?;
+            } else if let Err(e) = process_result {
+                eprintln!("{}: {}", env!("CARGO_PKG_NAME"), e);
+            }
         }
         Ok(())
     }
@@ -218,16 +231,7 @@ impl<'a, Output: Write> App<'a, Output> {
             if let Ok(glob_walker) = globwalk::glob(preload_path.to_string_lossy()) {
                 for file in glob_walker.filter_map(|v| v.ok()) {
                     println!("* Applying {} ...", file.path().display());
-                    let contents = reader::read_to_string(file.path())?;
-                    for parameter in contents
-                        .lines()
-                        .filter(|v| !(v.starts_with('#') || v.is_empty()))
-                    {
-                        if let Err(e) = self.process_parameter(parameter.to_string(), false, false)
-                        {
-                            eprintln!("{}: {}", env!("CARGO_PKG_NAME"), e);
-                        }
-                    }
+                    self.preload_from_file(file.path().to_path_buf())?;
                 }
             }
         }
