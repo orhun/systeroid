@@ -12,6 +12,7 @@ pub mod output;
 use crate::app::App;
 use crate::args::Args;
 use std::io::Write;
+use std::path::PathBuf;
 use systeroid_core::config::Config;
 use systeroid_core::error::Result;
 use systeroid_core::sysctl::controller::Sysctl;
@@ -39,7 +40,7 @@ pub fn run<Output: Write>(args: Args, output: &mut Output) -> Result<()> {
         }
     } else if args.preload_files {
         for file in args.values {
-            app.preload_from_file(file)?;
+            app.preload_from_file(PathBuf::from(file))?;
         }
     } else {
         for param in args.values {
