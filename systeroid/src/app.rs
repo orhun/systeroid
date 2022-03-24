@@ -202,7 +202,7 @@ impl<'a, Output: Write> App<'a, Output> {
         let contents = reader::read_to_string(path)?;
         for parameter in contents
             .lines()
-            .filter(|v| !(v.starts_with('#') || v.is_empty()))
+            .filter(|v| !(v.starts_with('#') || v.starts_with(';') || v.is_empty()))
         {
             self.process_parameter(parameter.to_string(), false, false)?;
         }
@@ -221,7 +221,7 @@ impl<'a, Output: Write> App<'a, Output> {
                     let contents = reader::read_to_string(file.path())?;
                     for parameter in contents
                         .lines()
-                        .filter(|v| !(v.starts_with('#') || v.is_empty()))
+                        .filter(|v| !(v.starts_with('#') || v.starts_with(';') || v.is_empty()))
                     {
                         if let Err(e) = self.process_parameter(parameter.to_string(), false, false)
                         {
