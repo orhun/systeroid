@@ -5,6 +5,7 @@ RUN cargo build --locked --release -p systeroid
 RUN cargo build --locked --release --no-default-features -p systeroid-tui
 RUN mkdir -p build-out/
 RUN ["/bin/bash", "-c", "cp target/x86_64-unknown-linux-musl/release/systeroid{,-tui} build-out/"]
+RUN ["/bin/bash", "-c", "strip build-out/systeroid{,-tui}"]
 RUN ["/bin/bash", "-c", "scripts/clone-linux-docs.sh"]
 
 FROM scratch
