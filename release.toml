@@ -1,0 +1,5 @@
+pre-release-commit-message = "chore(release): prepare for v{{version}}"
+tag-name = "{{prefix}}v{{version}}"
+consolidate-commits = true
+consolidate-pushes = true
+allow-branch = ["main"]
