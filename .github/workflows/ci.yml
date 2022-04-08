@@ -181,3 +181,10 @@ jobs:
         uses: actions-rs/audit-check@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Run lychee
+        uses: lycheeverse/lychee-action@v1
+        with:
+          args: --exclude "repology.org|patreon.com|README.md" -v *.md
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
