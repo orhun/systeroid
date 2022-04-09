@@ -140,6 +140,13 @@ jobs:
       - name: Checkout the repository
         uses: actions/checkout@v3
 
+      - name: Run shellcheck
+        uses: ludeeus/action-shellcheck@master
+        with:
+          scandir: "./scripts"
+        env:
+          SHELLCHECK_OPTS: -e SC2086
+
       - name: Install Rust
         uses: actions-rs/toolchain@v1
         with:
@@ -181,3 +188,10 @@ jobs:
         uses: actions-rs/audit-check@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Run lychee
+        uses: lycheeverse/lychee-action@v1
+        with:
+          args: --exclude "repology.org|patreon.com|README.md" -v *.md
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
