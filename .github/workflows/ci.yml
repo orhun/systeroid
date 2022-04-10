@@ -56,7 +56,6 @@ jobs:
       - name: Build
         uses: actions-rs/cargo@v1
         with:
-          use-cross: true
           command: build
           args: --locked --target ${{ matrix.TARGET }} --no-default-features
 
