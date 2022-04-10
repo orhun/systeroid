@@ -2,8 +2,7 @@
 members = [
     "systeroid-core",
     "systeroid-tui",
-    "systeroid",
-    "parseit",
+    "systeroid"
 ]
 
 [profile.dev]

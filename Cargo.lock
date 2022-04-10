@@ -486,6 +486,8 @@ checksum = "87f3e037eac156d1775da914196f0f37741a274155e34a0b7e427c35d2a2ecb9"
 [[package]]
 name = "parseit"
 version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "88b1326519874d2c452c203ca512d83be71b4703e8d848a9903f18771660f613"
 dependencies = [
  "flate2",
  "globwalk",
