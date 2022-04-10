@@ -150,8 +150,7 @@ jobs:
             --allow-unauthenticated \
               libxcb-shape0-dev \
               libxcb-xfixes0-dev \
-              libxkbcommon-dev \
-              musl-tools
+              libxkbcommon-dev
 
       - name: Checkout the repository
         uses: actions/checkout@master
