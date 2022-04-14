@@ -56,7 +56,6 @@ jobs:
       - name: Build
         uses: actions-rs/cargo@v1
         with:
-          use-cross: true
           command: build
           args: --locked --target ${{ matrix.TARGET }} --no-default-features
 
@@ -124,7 +123,7 @@ jobs:
           mv cobertura.xml live-test-output.xml
 
       - name: Upload reports to codecov
-        uses: codecov/codecov-action@v2
+        uses: codecov/codecov-action@v3
         with:
           name: code-coverage-report
           files: test-output.xml,live-test-output.xml
