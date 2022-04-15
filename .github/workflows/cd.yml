@@ -121,10 +121,10 @@ jobs:
         run: |
           sha512sum ${{ steps.assets.outputs.artifact_name }} > \
             ${{ steps.assets.outputs.artifact_name }}.sha512
-          echo "${{secrets.GPG_KEY}}" | base64 --decode > signing.key
-          echo "${{secrets.GPG_PASSPHRASE}}" | \
+          echo "${{ secrets.GPG_KEY }}" | base64 --decode > signing.key
+          echo "${{ secrets.GPG_PASSPHRASE }}" | \
             gpg --pinentry-mode=loopback --passphrase-fd 0 --import signing.key
-          echo "${{secrets.GPG_PASSPHRASE}}" | \
+          echo "${{ secrets.GPG_PASSPHRASE }}" | \
             gpg --pinentry-mode=loopback --passphrase-fd 0 --detach-sign \
               ${{ steps.assets.outputs.artifact_name }}
 
@@ -136,6 +136,8 @@ jobs:
           file_glob: true
           overwrite: true
           tag: ${{ github.ref }}
+          body: |
+            See [**CHANGELOG.md**](https://github.com/orhun/systeroid/blob/main/CHANGELOG.md) for release notes.
 
   publish-crates-io:
     name: Publish on crates.io

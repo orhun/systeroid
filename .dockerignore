@@ -8,6 +8,7 @@
 # Files
 .editorconfig
 .gitignore
+.clippy.toml
 *.md
 *.yml
 Dockerfile
