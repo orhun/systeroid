@@ -7,10 +7,10 @@
 [`sysctl(8)`](https://man7.org/linux/man-pages/man8/sysctl.8.html) is a utility on Unix-like operating systems that is used to read and modify the attributes of the kernel such as its version number, maximum limits, and security settings[\*](https://en.wikipedia.org/wiki/Sysctl). **systeroid** is "_sysctl on steroids_". It can do everything that sysctl does and even more. It provides a safer, more performant, and user-friendly CLI/TUI for managing the kernel parameters at runtime.
 
 <a href="https://github.com/orhun/systeroid/releases">
-    <img src="https://img.shields.io/github/v/release/orhun/git-cliff?style=flat&logo=GitHub%20Actions&labelColor=000000&color=CECDCB&logoColor=CECDCB">
+    <img src="https://img.shields.io/github/v/release/orhun/systeroid?style=flat&logo=GitHub%20Actions&labelColor=000000&color=CECDCB&logoColor=CECDCB">
 </a>
-<a href="https://crates.io/crates/git-cliff/">
-    <img src="https://img.shields.io/crates/v/git-cliff?style=flat&logo=Rust&labelColor=000000&color=CECDCB&logoColor=CECDCB">
+<a href="https://crates.io/crates/systeroid/">
+    <img src="https://img.shields.io/crates/v/systeroid?style=flat&logo=Rust&labelColor=000000&color=CECDCB&logoColor=CECDCB">
 </a>
 <a href="https://codecov.io/gh/orhun/systeroid">
     <img src="https://img.shields.io/codecov/c/gh/orhun/systeroid?style=flat&logo=Codecov&labelColor=000000&color=CECDCB&logoColor=CECDCB">
@@ -20,13 +20,13 @@
     <img src="https://img.shields.io/github/workflow/status/orhun/systeroid/Continuous%20Integration?style=flat&logo=GitHub%20Actions&label=build&labelColor=000000&color=CECDCB&logoColor=CECDCB">
 </a>
 <a href="https://github.com/orhun/systeroid/actions?query=workflow%3A%22Continuous+Deployment%22">
-    <img src="https://img.shields.io/github/workflow/status/orhun/git-cliff/Continuous%20Deployment?style=flat&logo=GitHub%20Actions&label=deploy&labelColor=000000&color=CECDCB&logoColor=CECDCB">
+    <img src="https://img.shields.io/github/workflow/status/orhun/systeroid/Continuous%20Deployment?style=flat&logo=GitHub%20Actions&label=deploy&labelColor=000000&color=CECDCB&logoColor=CECDCB">
 </a>
-<a href="https://hub.docker.com/r/orhunp/git-cliff">
-    <img src="https://img.shields.io/docker/cloud/build/orhunp/git-cliff?style=flat&logo=Docker&label=docker&labelColor=000000&color=CECDCB&logoColor=CECDCB">
+<a href="https://hub.docker.com/r/orhunp/systeroid">
+    <img src="https://img.shields.io/docker/cloud/build/orhunp/systeroid?style=flat&logo=Docker&label=docker&labelColor=000000&color=CECDCB&logoColor=CECDCB">
 </a>
-<a href="https://docs.rs/git-cliff-core/">
-    <img src="https://img.shields.io/docsrs/git-cliff-core?style=flat&logo=Rust&labelColor=000000&color=CECDCB&logoColor=CECDCB">
+<a href="https://docs.rs/systeroid-core/">
+    <img src="https://img.shields.io/docsrs/systeroid-core?style=flat&logo=Rust&labelColor=000000&color=CECDCB&logoColor=CECDCB">
 </a>
 <br>
 <br>
