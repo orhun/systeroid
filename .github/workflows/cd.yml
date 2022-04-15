@@ -136,6 +136,8 @@ jobs:
           file_glob: true
           overwrite: true
           tag: ${{ github.ref }}
+          body: |
+            See [**CHANGELOG.md**](https://github.com/orhun/systeroid/blob/main/CHANGELOG.md) for release notes.
 
   publish-crates-io:
     name: Publish on crates.io
