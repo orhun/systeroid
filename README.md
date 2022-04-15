@@ -128,6 +128,7 @@ To install the runtime dependencies:
 
 ```sh
 cargo install systeroid
+cargo install systeroid-tui
 ```
 
 ### Binary releases
