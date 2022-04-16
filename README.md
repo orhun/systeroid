@@ -23,7 +23,7 @@
     <img src="https://img.shields.io/github/workflow/status/orhun/systeroid/Continuous%20Deployment?style=flat&logo=GitHub%20Actions&label=deploy&labelColor=000000&color=CECDCB&logoColor=CECDCB">
 </a>
 <a href="https://hub.docker.com/r/orhunp/systeroid">
-    <img src="https://img.shields.io/github/workflow/status/orhun/systeroid/Docker%20Automated%20Builds?style=flat&logo=GitHub%20Actions&label=docker&labelColor=000000&color=CECDCB&logoColor=CECDCB">
+    <img src="https://img.shields.io/github/workflow/status/orhun/systeroid/Docker%20Automated%20Builds?style=flat&logo=Docker&label=docker&labelColor=000000&color=CECDCB&logoColor=CECDCB">
 </a>
 <a href="https://docs.rs/systeroid-core/">
     <img src="https://img.shields.io/docsrs/systeroid-core?style=flat&logo=Rust&labelColor=000000&color=CECDCB&logoColor=CECDCB">
