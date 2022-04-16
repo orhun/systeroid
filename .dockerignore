@@ -9,6 +9,7 @@
 .editorconfig
 .gitignore
 .clippy.toml
+_config.yml
 *.md
 *.yml
 Dockerfile
