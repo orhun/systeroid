@@ -2,7 +2,7 @@
     <img align="left" src="assets/systeroid-logo.jpg" width="256">
 </a>
 
-#### **`systeroid`** — A more powerful alternative to sysctl.
+#### **`systeroid`** — A more powerful alternative to sysctl(8).
 
 [`sysctl(8)`](https://man7.org/linux/man-pages/man8/sysctl.8.html) is a utility on Unix-like operating systems that is used to read and modify the attributes of the kernel such as its version number, maximum limits, and security settings[\*](https://en.wikipedia.org/wiki/Sysctl). **systeroid** is "_sysctl on steroids_". It can do everything that sysctl does and even more. It provides a safer, more performant, and user-friendly CLI/TUI for managing the kernel parameters at runtime.
 
