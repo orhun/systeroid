@@ -13,7 +13,6 @@ status = [
     "Test",
     "Lint",
 ]
-required_approvals = 1
 up_to_date_approvals = true
 delete_merged_branches = true
 update_base_for_deletes = true
