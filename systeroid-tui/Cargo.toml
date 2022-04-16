@@ -4,6 +4,7 @@ version = "0.1.0-rc.1" # managed by release.sh
 description = "A terminal user interface for managing kernel parameters"
 authors = ["Orhun Parmaksız <orhunparmaksiz@gmail.com>"]
 license = "MIT OR Apache-2.0"
+readme = "../README.md"
 homepage = "https://github.com/orhun/systeroid"
 repository = "https://github.com/orhun/systeroid"
 keywords = ["linux", "kernel", "parameter", "sysctl", "tui"]

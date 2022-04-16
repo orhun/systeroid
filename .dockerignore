@@ -3,6 +3,7 @@
 /.github/
 /target/
 /.cargo/
+/assets/
 
 # Files
 .editorconfig
