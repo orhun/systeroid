@@ -108,7 +108,7 @@ jobs:
             artifact_name="$release_dir-${{ matrix.CONFIG.TARGET }}.tar.gz"
           fi
           mkdir -p release/man8
-          cp {LICENSE-APACHE,LICENSE-MIT} release/
+          cp {README.md,LICENSE-*,CHANGELOG.md} release/
           cp man8/* release/man8/
           for bin in 'systeroid' 'systeroid-tui'; do
             cp "target/${{ matrix.CONFIG.TARGET }}/release/$bin" release/
