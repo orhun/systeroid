@@ -192,6 +192,6 @@ jobs:
       - name: Run lychee
         uses: lycheeverse/lychee-action@v1
         with:
-          args: --exclude "repology.org|patreon.com|README.md" -v *.md
+          args: --exclude "repology.org|patreon.com" -v *.md
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
