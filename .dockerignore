@@ -9,7 +9,6 @@
 .editorconfig
 .gitignore
 .clippy.toml
-_config.yml
 *.md
 *.yml
 Dockerfile
@@ -17,3 +16,4 @@ LICENSE*
 rustfmt.toml
 deny.toml
 bors.toml
+CNAME
