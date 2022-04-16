@@ -444,6 +444,8 @@ Use <kbd>left/right</kbd> to scroll the parameter documentation.
 
 Press <kbd>tab</kbd> or <kbd>`</kbd> to toggle the kernel section for filtering entries in the parameter list.
 
+Order of the sections is `all`-`abi`-`fs`-`kernel`-`net`-`sunrpc`-`user`-`vm`.
+
 ![Toggle section](assets/systeroid-tui-toggle-section.gif)
 
 `--section` argument can be used to start **systeroid-tui** with the specified section for filtering.
