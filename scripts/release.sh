@@ -22,6 +22,7 @@ changelog=$(git diff -U0 "$changelog_file" | grep '^[+][^+]' | sed 's/^[+]//;s/^
 
 sed "s/^version = \".*\" $version_suffix$/version = \"${1#v}\" $version_suffix/g" \
     -i -- */Cargo.toml
+cargo build
 
 gawk -i inplace \
     -v date="\"$(date +%Y-%m-%d)\"" \
