@@ -374,6 +374,7 @@ However, this means you need to:
 - either install the kernel documentation package (based on your distribution)
   - on Arch Linux: `pacman -S linux-docs`
   - on Debian/Ubuntu: `apt-get install linux-doc`
+  - on Fedora: `dnf install kernel-doc`
 - or explicitly specify the path of the [kernel documentation](https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/admin-guide).
 
 ```sh
