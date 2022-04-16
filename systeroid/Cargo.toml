@@ -1,6 +1,6 @@
 [package]
 name = "systeroid"
-version = "0.1.0-rc.1" # managed by release.sh
+version = "0.1.0" # managed by release.sh
 description = "A more powerful alternative to sysctl"
 authors = ["Orhun Parmaksız <orhunparmaksiz@gmail.com>"]
 license = "MIT OR Apache-2.0"
@@ -21,5 +21,5 @@ live-tests = []
 getopts = "0.2.21"
 
 [dependencies.systeroid-core]
-version = "0.1.0-rc.1" # managed by release.sh
+version = "0.1.0" # managed by release.sh
 path = "../systeroid-core"
