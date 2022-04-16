@@ -60,6 +60,7 @@ Although **systeroid** does not need the parameter section to be specified expli
 - [Requirements](#requirements)
 - [Installation](#installation)
   - [Cargo](#cargo)
+  - [Arch Linux](#arch-linux)
   - [Binary releases](#binary-releases)
   - [Building from source](#building-from-source)
   - [Docker](#docker)
@@ -131,6 +132,14 @@ To install the runtime dependencies:
 ```sh
 cargo install systeroid
 cargo install systeroid-tui
+```
+
+### Arch Linux
+
+**systeroid** can be installed from the [community repository](https://archlinux.org/packages/community/x86_64/systeroid/) using [pacman](https://wiki.archlinux.org/title/Pacman):
+
+```sh
+pacman -S systeroid
 ```
 
 ### Binary releases
