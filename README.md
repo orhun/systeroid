@@ -52,6 +52,8 @@ Although **systeroid** does not need the parameter section to be specified expli
 | **dev**    | `/proc/sys/dev/`    | device specific information                                   |
 | **debug**  | `/proc/sys/debug/`  | -                                                             |
 
+---
+
 <details>
   <summary>Table of Contents</summary>
 
