@@ -3,7 +3,6 @@ use std::env;
 use std::io::{self, BufRead, Write};
 use std::path::PathBuf;
 use std::process::{Command, Stdio};
-use systeroid_core::cache::Cache;
 use systeroid_core::error::Result;
 use systeroid_core::parseit::globwalk;
 use systeroid_core::parseit::reader;
@@ -18,8 +17,6 @@ use systeroid_core::tree::{Tree, TreeNode};
 pub struct App<'a, Output: Write> {
     /// Sysctl controller.
     sysctl: &'a mut Sysctl,
-    /// Application cache.
-    cache: Cache,
     /// Standard output.
     output: &'a mut Output,
     /// Output type.
@@ -28,17 +25,12 @@ pub struct App<'a, Output: Write> {
 
 impl<'a, Output: Write> App<'a, Output> {
     /// Constructs a new instance.
-    pub fn new(
-        sysctl: &'a mut Sysctl,
-        output: &'a mut Output,
-        output_type: OutputType,
-    ) -> Result<Self> {
-        Ok(Self {
+    pub fn new(sysctl: &'a mut Sysctl, output: &'a mut Output, output_type: OutputType) -> Self {
+        Self {
             sysctl,
-            cache: Cache::init()?,
             output,
             output_type,
-        })
+        }
     }
 
     /// Prints the given parameters to stdout.
@@ -93,13 +85,7 @@ impl<'a, Output: Write> App<'a, Output> {
     }
 
     /// Displays the documentation of a parameter.
-    pub fn display_documentation(
-        &mut self,
-        param_name: &str,
-        kernel_docs: Option<&PathBuf>,
-    ) -> Result<()> {
-        self.sysctl
-            .update_docs_from_cache(kernel_docs, &self.cache)?;
+    pub fn display_documentation(&mut self, param_name: &str) -> Result<()> {
         let no_pager = self.sysctl.config.no_pager;
         for parameter in self.sysctl.get_parameters(param_name) {
             let mut fallback_to_default = false;
@@ -242,6 +228,7 @@ impl<'a, Output: Write> App<'a, Output> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use systeroid_core::cache::Cache;
     use systeroid_core::config::Config;
 
     #[test]
@@ -251,7 +238,9 @@ mod tests {
             no_pager: true,
             ..Config::default()
         })?;
-        let mut app = App::new(&mut sysctl, &mut output, OutputType::Default)?;
+        sysctl.update_docs_from_cache(None, &Cache::init()?)?;
+
+        let mut app = App::new(&mut sysctl, &mut output, OutputType::Default);
 
         app.display_parameters(Regex::new("kernel|vm").ok(), false)?;
         let result = String::from_utf8_lossy(app.output);
@@ -264,7 +253,7 @@ mod tests {
         assert!(String::from_utf8_lossy(app.output).contains("─ osrelease ="));
         app.output.clear();
 
-        app.display_documentation("kernel.acct", None)?;
+        app.display_documentation("kernel.acct")?;
         assert!(String::from_utf8_lossy(app.output).contains("highwater lowwater frequency"));
         app.output.clear();
 
