@@ -170,7 +170,7 @@ impl Parameter {
         if let Some(documentation) = self.get_documentation() {
             writeln!(output, "{}\n", documentation)?;
         } else {
-            writeln!(output, "No documentation available")?;
+            writeln!(output, "No documentation available for {}", self.name)?;
         }
         Ok(())
     }
@@ -267,7 +267,7 @@ mod tests {
         let mut output = Vec::new();
         parameter.display_documentation(&mut output)?;
         assert_eq!(
-            "No documentation available\n",
+            format!("No documentation available for {}\n", parameter.name),
             String::from_utf8_lossy(&output)
         );
 

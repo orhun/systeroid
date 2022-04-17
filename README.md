@@ -385,8 +385,14 @@ systeroid -E user.max_user_namespaces --docs /usr/share/doc/linux
 
 To change the default pager (`less(1)`), you can use the `PAGER` environment variable. Also, you can simply use `--no-pager` flag to disable it.
 
-```
+```sh
 systeroid -E kernel.ctrl-alt-del --no-pager
+```
+
+It is also possible to retrieve information about multiple parameters:
+
+```sh
+systeroid -E --pattern '.*ipv4.*' --no-pager
 ```
 
 ## TUI

@@ -37,7 +37,7 @@ pub fn run<Output: Write>(args: Args, output: &mut Output) -> Result<()> {
     if args.preload_system_files {
         app.preload_from_system()?;
     } else if args.values.is_empty() {
-        app.display_parameters(args.pattern, args.display_deprecated)?;
+        app.display_parameters(args.pattern, args.display_deprecated, args.explain)?;
     } else if args.explain {
         for param in args.values {
             app.display_documentation(&param)?;
