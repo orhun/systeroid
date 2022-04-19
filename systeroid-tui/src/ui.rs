@@ -68,15 +68,16 @@ fn render_parameter_list<B: Backend>(
         .unwrap_or(1);
     let minimize_rows = rect.width < max_width + 10;
     let rows = app.parameter_list.items.iter().map(|item| {
+        let value = item.value.replace('\t', " ");
         Row::new(if minimize_rows {
             vec![Cell::from(Span::styled(
-                format!("{} = {}", item.name, item.value),
+                format!("{} = {}", item.name, value),
                 colors.get_fg_style(),
             ))]
         } else {
             vec![
                 Cell::from(Span::styled(item.name.clone(), colors.get_fg_style())),
-                Cell::from(Span::styled(item.value.clone(), colors.get_fg_style())),
+                Cell::from(Span::styled(value, colors.get_fg_style())),
             ]
         })
         .height(1)
