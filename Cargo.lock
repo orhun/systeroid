@@ -102,9 +102,9 @@ dependencies = [
 
 [[package]]
 name = "colorsys"
-version = "0.6.5"
+version = "0.6.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4dfdf9179d546b55ff3f88c9d93ecfaa3e9760163da5a1080af5243230dbbb70"
+checksum = "52c2ad453c82bd637e3969dc52f06676610db0b20c607bf0634c7e9d840789e8"
 
 [[package]]
 name = "copypasta"
