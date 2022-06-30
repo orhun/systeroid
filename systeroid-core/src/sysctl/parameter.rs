@@ -4,6 +4,7 @@ use crate::sysctl::display::DisplayType;
 use crate::sysctl::section::Section;
 use colored::*;
 use serde::{Deserialize, Serialize};
+use std::fmt::Write as _;
 use std::io::Write;
 use std::path::PathBuf;
 use sysctl::{Ctl, Sysctl as SysctlImpl};
@@ -61,7 +62,8 @@ impl Parameter {
             .enumerate()
             .fold(String::new(), |mut result, (i, v)| {
                 if i != fields.len() - 1 {
-                    result += &format!(
+                    let _ = write!(
+                        result,
                         "{}{}",
                         v.color(section_color),
                         ".".color(config.default_color)
