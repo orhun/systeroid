@@ -222,20 +222,20 @@ mod tests {
             String::from("-A"),
             String::from("-T"),
         ])
-        .unwrap();
+        .expect("failed to parse arguments");
         assert!(args.verbose);
         assert!(args.write);
         assert_eq!(OutputType::Tree, args.output_type);
 
         assert!(!Args::parse(vec![String::new(), String::from("-p")])
-            .unwrap()
+            .expect("failed to parse arguments")
             .values
             .is_empty());
 
         assert_eq!(
             DisplayType::Binary,
             Args::parse(vec![String::new(), String::from("-A"), String::from("-b")])
-                .unwrap()
+                .expect("failed to parse arguments")
                 .display_type
         );
     }

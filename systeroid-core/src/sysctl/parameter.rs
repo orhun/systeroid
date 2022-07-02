@@ -4,6 +4,7 @@ use crate::sysctl::display::DisplayType;
 use crate::sysctl::section::Section;
 use colored::*;
 use serde::{Deserialize, Serialize};
+use std::fmt::Write as _;
 use std::io::Write;
 use std::path::PathBuf;
 use sysctl::{Ctl, Sysctl as SysctlImpl};
@@ -61,7 +62,8 @@ impl Parameter {
             .enumerate()
             .fold(String::new(), |mut result, (i, v)| {
                 if i != fields.len() - 1 {
-                    result += &format!(
+                    let _ = write!(
+                        result,
                         "{}{}",
                         v.color(section_color),
                         ".".color(config.default_color)
@@ -208,9 +210,14 @@ mod tests {
         };
         assert_eq!(Some("test_param"), parameter.get_absolute_name());
 
-        let mut config = Config::default();
-        config.default_color = Color::White;
-        *(config.section_colors.get_mut(&Section::Kernel).unwrap()) = Color::Yellow;
+        let mut config = Config {
+            default_color: Color::White,
+            ..Default::default()
+        };
+        *(config
+            .section_colors
+            .get_mut(&Section::Kernel)
+            .expect("failed to get color")) = Color::Yellow;
         assert_eq!(parameter.name, parameter.get_colored_name(&config));
 
         assert_eq!(
