@@ -23,7 +23,7 @@ unicode-width = "0.1.9"
 thiserror = "1.0.31"
 getopts = "0.2.21"
 copypasta-ext = { version = "0.3.7", optional = true }
-colorsys = "0.6.5"
+colorsys = "0.6.6"
 
 [dependencies.systeroid-core]
 version = "0.1.1" # managed by release.sh
