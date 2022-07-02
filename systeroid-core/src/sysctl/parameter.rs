@@ -210,9 +210,14 @@ mod tests {
         };
         assert_eq!(Some("test_param"), parameter.get_absolute_name());
 
-        let mut config = Config::default();
-        config.default_color = Color::White;
-        *(config.section_colors.get_mut(&Section::Kernel).unwrap()) = Color::Yellow;
+        let mut config = Config {
+            default_color: Color::White,
+            ..Default::default()
+        };
+        *(config
+            .section_colors
+            .get_mut(&Section::Kernel)
+            .expect("failed to get color")) = Color::Yellow;
         assert_eq!(parameter.name, parameter.get_colored_name(&config));
 
         assert_eq!(

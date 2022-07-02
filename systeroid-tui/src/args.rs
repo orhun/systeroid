@@ -136,7 +136,7 @@ mod tests {
             String::from("-q"),
             String::from("test"),
         ])
-        .unwrap();
+        .expect("failed to parse arguments");
 
         assert_eq!(1000, args.tick_rate);
         assert_eq!(Some(PathBuf::from("/docs")), args.kernel_docs);

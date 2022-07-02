@@ -154,7 +154,7 @@ mod tests {
                 "scroll list bottom 1",
             ),
         ] {
-            assert_eq!(command, Command::from_str(value).unwrap());
+            assert_eq!(Ok(command), Command::from_str(value));
         }
         assert!(Command::from_str("---").is_err());
         assert_command_parser! {

@@ -220,12 +220,12 @@ mod tests {
     }
 
     #[test]
-    fn test_tree_output() {
+    fn test_tree_output() -> IoResult<()> {
         let lines = ["a", "a/b/e", "a/b", "a/b/c/d"];
 
         let tree = Tree::from_input(&mut lines.iter(), '/');
         let mut output = Vec::new();
-        tree.print(&mut output, Color::White).unwrap();
+        tree.print(&mut output, Color::White)?;
 
         let expected_output = "\
 a
@@ -235,10 +235,12 @@ a
         └── d\n";
 
         assert_eq!(expected_output, String::from_utf8_lossy(&output));
+
+        Ok(())
     }
 
     #[test]
-    fn test_print_line() {
+    fn test_print_line() -> IoResult<()> {
         let value = String::from("abc\ndef");
 
         let mut output = Vec::new();
@@ -246,8 +248,7 @@ a
             value: value.to_string(),
             childs: Vec::new(),
         }
-        .print_line(&mut output, &[], Color::White)
-        .unwrap();
+        .print_line(&mut output, &[], Color::White)?;
         assert_eq!(b"abc\ndef\n", &*output);
 
         let mut output = Vec::new();
@@ -255,17 +256,17 @@ a
             value: value.to_string(),
             childs: Vec::new(),
         }
-        .print_line(&mut output, &[true, false, true], Color::White)
-        .unwrap();
+        .print_line(&mut output, &[true, false, true], Color::White)?;
         assert_eq!("    │   └── abc\ndef\n".as_bytes(), &*output);
 
         let mut output = Vec::new();
         TreeNode {
-            value: value.to_string(),
+            value,
             childs: Vec::new(),
         }
-        .print_line(&mut output, &[true, false, false], Color::White)
-        .unwrap();
+        .print_line(&mut output, &[true, false, false], Color::White)?;
         assert_eq!("    │   ├── abc\ndef\n".as_bytes(), &*output);
+
+        Ok(())
     }
 }

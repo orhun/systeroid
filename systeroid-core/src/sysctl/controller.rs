@@ -48,7 +48,7 @@ impl Sysctl {
     /// Returns the first found parameter in the available parameters.
     #[cfg(test)]
     fn get_parameter(&self, query: &str) -> Option<&Parameter> {
-        self.get_parameters(query).first().map(|v| *v)
+        self.get_parameters(query).first().copied()
     }
 
     /// Returns the parameters that matches the given query.
@@ -178,21 +178,27 @@ mod tests {
         assert!(sysctl.get_parameter("kernel.hostname").is_some());
         assert!(sysctl.get_parameter("unexisting.param").is_none());
         assert_eq!(
-            "Linux",
-            sysctl.get_parameters("ostype").first().unwrap().value
+            Some(String::from("Linux")),
+            sysctl
+                .get_parameters("ostype")
+                .first()
+                .map(|v| v.value.to_string())
         );
         assert!(sysctl.get_parameters("---").is_empty());
 
         sysctl.update_docs_from_cache(None, &Cache::init()?)?;
 
-        let parameter = sysctl.get_parameter("kernel.hostname").unwrap().clone();
+        let parameter = sysctl
+            .get_parameter("kernel.hostname")
+            .expect("failed to get parameter")
+            .clone();
         let old_value = parameter.docs_title;
         let parameters = sysctl.parameters.clone();
         sysctl
             .parameters
             .iter_mut()
             .find(|param| param.name == parameter.name)
-            .unwrap()
+            .expect("parameter not found")
             .docs_title = String::from("-");
         sysctl.update_params(parameters);
         assert_eq!(
@@ -201,24 +207,24 @@ mod tests {
                 .parameters
                 .iter_mut()
                 .find(|param| param.name == parameter.name)
-                .unwrap()
+                .expect("parameter not found")
                 .docs_title
         );
 
         assert!(sysctl
             .get_parameter("vm.zone_reclaim_mode")
-            .unwrap()
+            .expect("failed to get parameter")
             .description
             .as_ref()
-            .unwrap()
+            .expect("parameter has no description")
             .contains("zone_reclaim_mode is disabled by default."));
 
         assert!(sysctl
             .get_parameter("user.max_user_namespaces")
-            .unwrap()
+            .expect("failed to get parameter")
             .description
             .as_ref()
-            .unwrap()
+            .expect("parameter has no description")
             .contains("The maximum number of user namespaces"));
 
         Ok(())
