@@ -568,7 +568,7 @@ systeroid-tui --tick-rate 500
 
 ### Funding
 
-If you find **systeroid** and/or other projects on my [GitHub profile](https://github.com/orhun/) useful, consider [becoming a patron](https://www.patreon.com/join/orhunp)!
+If you find **systeroid** and/or other projects on my [GitHub profile](https://github.com/orhun/) useful, consider supporting me on [GitHub Sponsors](https://github.com/sponsors/orhun) or [becoming a patron](https://www.patreon.com/join/orhunp)!
 
 [![Support me on Patreon](https://img.shields.io/endpoint.svg?url=https%3A%2F%2Fshieldsio-patreon.vercel.app%2Fapi%3Fusername%3Dorhunp%26type%3Dpatrons&style=flat&logo=Patreon&labelColor=000000&color=CECDCB&logoColor=CECDCB)](https://patreon.com/join/orhunp)
 [![Support me on Patreon](https://img.shields.io/endpoint.svg?url=https%3A%2F%2Fshieldsio-patreon.vercel.app%2Fapi%3Fusername%3Dorhunp%26type%3Dpledges&style=flat&logo=Patreon&labelColor=000000&color=CECDCB&logoColor=CECDCB&label=)](https://patreon.com/join/orhunp)
