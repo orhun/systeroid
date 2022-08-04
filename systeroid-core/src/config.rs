@@ -19,6 +19,8 @@ pub struct Config {
     pub verbose: bool,
     /// Whether if the errors should be ignored.
     pub ignore_errors: bool,
+    /// Whether if the deprecated variables should be included while listing.
+    pub display_deprecated: bool,
     /// Whether if the quiet mode is enabled.
     pub quiet: bool,
     /// Whether if the pager is disabled.
@@ -36,6 +38,7 @@ impl Default for Config {
         Self {
             verbose: false,
             ignore_errors: false,
+            display_deprecated: false,
             quiet: false,
             no_pager: false,
             section_colors: map! {

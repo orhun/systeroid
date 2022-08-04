@@ -415,6 +415,7 @@ systeroid-tui [options]
     --fg-color <color>
                     set the foreground color [default: white]
 -n, --no-docs       do not show the kernel documentation
+    --deprecated    include deprecated variables while listing
 -h, --help          display this help and exit
 -V, --version       output version information and exit
 ```

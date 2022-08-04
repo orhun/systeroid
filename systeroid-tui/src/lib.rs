@@ -34,7 +34,11 @@ use tui::terminal::Terminal;
 
 /// Runs `systeroid-tui`.
 pub fn run<B: Backend>(args: Args, backend: B) -> Result<()> {
-    let mut sysctl = Sysctl::init(Config::default())?;
+    let config = Config {
+        display_deprecated: args.display_deprecated,
+        ..Default::default()
+    };
+    let mut sysctl = Sysctl::init(config)?;
     if !args.no_docs {
         sysctl.update_docs_from_cache(args.kernel_docs.as_ref(), &Cache::init()?)?;
     }

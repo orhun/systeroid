@@ -4,6 +4,7 @@ use crate::error::Result;
 use crate::parsers::{parse_kernel_docs, KERNEL_DOCS_PATH};
 use crate::sysctl::parameter::Parameter;
 use crate::sysctl::section::Section;
+use crate::sysctl::DEPRECATED_PARAMS;
 use crate::sysctl::{DISABLE_CACHE_ENV, PARAMETERS_CACHE_LABEL, PROC_PATH};
 use parseit::globwalk;
 use rayon::prelude::*;
@@ -33,7 +34,17 @@ impl Sysctl {
         }) {
             match Parameter::try_from(&ctl) {
                 Ok(parameter) => {
-                    parameters.push(parameter);
+                    if !config.display_deprecated {
+                        let mut skip_param = false;
+                        if let Some(param_name) = parameter.get_absolute_name() {
+                            skip_param = DEPRECATED_PARAMS.contains(&param_name);
+                        }
+                        if !skip_param {
+                            parameters.push(parameter);
+                        }
+                    } else {
+                        parameters.push(parameter);
+                    }
                 }
                 Err(e) => {
                     if config.verbose {
@@ -119,17 +130,17 @@ impl Sysctl {
     /// Updates the parameters internally using the given list.
     ///
     /// Keeps the original values.
-    fn update_params(&mut self, mut parameters: Vec<Parameter>) {
-        parameters.par_iter_mut().for_each(|parameter| {
-            if let Some(param) = self
-                .parameters
+    fn update_params(&mut self, parameters: Vec<Parameter>) {
+        self.parameters.par_iter_mut().for_each(|parameter| {
+            if let Some(param) = parameters
                 .par_iter()
                 .find_any(|param| param.name == parameter.name)
             {
-                parameter.value = param.value.to_string();
+                parameter.description = param.description.clone();
+                parameter.docs_path = param.docs_path.clone();
+                parameter.docs_title = param.docs_title.clone();
             }
         });
-        self.parameters = parameters;
     }
 
     /// Updates the descriptions of the kernel parameters.

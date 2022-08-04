@@ -23,6 +23,7 @@ pub fn run<Output: Write>(args: Args, output: &mut Output) -> Result<()> {
     let config = Config {
         verbose: args.verbose,
         ignore_errors: args.ignore_errors,
+        display_deprecated: args.display_deprecated,
         quiet: args.quiet,
         no_pager: args.no_pager,
         display_type: args.display_type,
@@ -37,7 +38,7 @@ pub fn run<Output: Write>(args: Args, output: &mut Output) -> Result<()> {
     if args.preload_system_files {
         app.preload_from_system()?;
     } else if args.values.is_empty() {
-        app.display_parameters(args.pattern, args.display_deprecated, args.explain)?;
+        app.display_parameters(args.pattern, args.explain)?;
     } else if args.explain {
         for param in args.values {
             app.display_documentation(&param)?;

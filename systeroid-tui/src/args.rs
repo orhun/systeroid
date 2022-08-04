@@ -30,6 +30,8 @@ pub struct Args {
     pub colors: Colors,
     /// Do not parse/show Linux kernel documentation.
     pub no_docs: bool,
+    /// Whether if the deprecated variables should be included while listing.
+    pub display_deprecated: bool,
 }
 
 impl Args {
@@ -63,6 +65,11 @@ impl Args {
             "<color>",
         );
         opts.optflag("n", "no-docs", "do not show the kernel documentation");
+        opts.optflag(
+            "",
+            "deprecated",
+            "include deprecated variables while listing",
+        );
         opts.optflag("h", "help", "display this help and exit");
         opts.optflag("V", "version", "output version information and exit");
         opts
@@ -106,6 +113,7 @@ impl Args {
                 .map_err(|e| eprintln!("error: `{}`", e))
                 .ok()?,
                 no_docs: matches.opt_present("n"),
+                display_deprecated: matches.opt_present("deprecated"),
             })
         }
     }

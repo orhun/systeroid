@@ -64,21 +64,11 @@ impl<'a, Output: Write> App<'a, Output> {
     }
 
     /// Displays all of the available kernel parameters.
-    pub fn display_parameters(
-        &mut self,
-        pattern: Option<Regex>,
-        display_deprecated: bool,
-        explain: bool,
-    ) -> Result<()> {
+    pub fn display_parameters(&mut self, pattern: Option<Regex>, explain: bool) -> Result<()> {
         let parameters = self.sysctl.parameters.clone();
         let mut parameters = parameters.iter().filter(|parameter| {
             if let Some(pattern) = &pattern {
                 return pattern.is_match(&parameter.name);
-            }
-            if !display_deprecated {
-                if let Some(param_name) = parameter.get_absolute_name() {
-                    return !DEPRECATED_PARAMS.contains(&param_name);
-                }
             }
             true
         });
@@ -247,14 +237,14 @@ mod tests {
 
         let mut app = App::new(&mut sysctl, &mut output, OutputType::Default);
 
-        app.display_parameters(Regex::new("kernel|vm").ok(), false, false)?;
+        app.display_parameters(Regex::new("kernel|vm").ok(), false)?;
         let result = String::from_utf8_lossy(app.output);
         assert!(result.contains("vm.zone_reclaim_mode ="));
         assert!(result.contains("kernel.version ="));
         app.output.clear();
 
         app.output_type = OutputType::Tree;
-        app.display_parameters(None, true, false)?;
+        app.display_parameters(None, false)?;
         assert!(String::from_utf8_lossy(app.output).contains("─ osrelease ="));
         app.output.clear();
 
