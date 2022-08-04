@@ -5,7 +5,7 @@ macro_rules! generate_option {
      $($variant: ident => $str_repr: expr,)+
     ) => {
         /// Available options.
-        #[derive(Clone, Copy, Debug, PartialEq)]
+        #[derive(Clone, Copy, Debug, PartialEq, Eq)]
         pub enum $name {
             $(
                 /// Option.

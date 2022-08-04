@@ -3,7 +3,7 @@ use std::str::FromStr;
 use termion::event::Key;
 
 /// Possible application commands.
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Eq)]
 pub enum Command {
     /// Show help.
     Help,
