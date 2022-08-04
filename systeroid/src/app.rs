@@ -172,7 +172,8 @@ impl<'a, Output: Write> App<'a, Output> {
     /// Processes the parameters in the given file.
     pub fn preload_from_file(&mut self, path: PathBuf) -> Result<()> {
         if path == PathBuf::from("-") {
-            let lines = io::stdin().lock().lines();
+            let stdin = io::stdin();
+            let lines = stdin.lock().lines();
             for line in lines {
                 if let Err(e) = self.process_parameter(line?, true, false) {
                     println!("{}: {}", env!("CARGO_PKG_NAME"), e);
