@@ -1,7 +1,7 @@
-use crate::style::Colors;
 use getopts::Options;
 use std::env;
 use std::path::PathBuf;
+use systeroid_core::config::CONFIG_ENV;
 use systeroid_core::sysctl::section::Section;
 use systeroid_core::sysctl::KERNEL_DOCS_ENV;
 
@@ -18,6 +18,8 @@ For more details see {bin}(8)."#;
 /// Command-line arguments.
 #[derive(Debug, Default)]
 pub struct Args {
+    /// Location of the configuration file.
+    pub config: Option<PathBuf>,
     /// Refresh rate of the terminal.
     pub tick_rate: u64,
     /// Path of the Linux kernel documentation.
@@ -26,8 +28,10 @@ pub struct Args {
     pub section: Option<Section>,
     /// Query to search on startup.
     pub search_query: Option<String>,
-    /// Background/foreground colors.
-    pub colors: Colors,
+    /// Foreground color.
+    pub fg_color: String,
+    /// Background color.
+    pub bg_color: String,
     /// Do not parse/show Linux kernel documentation.
     pub no_docs: bool,
     /// Whether if the deprecated variables should be included while listing.
@@ -70,6 +74,12 @@ impl Args {
             "deprecated",
             "include deprecated variables while listing",
         );
+        opts.optopt(
+            "c",
+            "config",
+            "set the path of the configuration file",
+            "<path>",
+        );
         opts.optflag("h", "help", "display this help and exit");
         opts.optflag("V", "version", "output version information and exit");
         opts
@@ -106,14 +116,18 @@ impl Args {
                     .map(PathBuf::from),
                 section: matches.opt_str("s").map(Section::from),
                 search_query: matches.opt_str("q"),
-                colors: Colors::new(
-                    matches.opt_str("bg-color").as_deref().unwrap_or("black"),
-                    matches.opt_str("fg-color").as_deref().unwrap_or("white"),
-                )
-                .map_err(|e| eprintln!("error: `{}`", e))
-                .ok()?,
+                fg_color: matches
+                    .opt_str("fg-color")
+                    .unwrap_or_else(|| String::from("white")),
+                bg_color: matches
+                    .opt_str("bg-color")
+                    .unwrap_or_else(|| String::from("black")),
                 no_docs: matches.opt_present("n"),
                 display_deprecated: matches.opt_present("deprecated"),
+                config: matches
+                    .opt_str("c")
+                    .or_else(|| env::var(CONFIG_ENV).ok())
+                    .map(PathBuf::from),
             })
         }
     }

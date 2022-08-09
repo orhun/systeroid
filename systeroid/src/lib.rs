@@ -6,8 +6,6 @@
 pub mod app;
 /// Command-line argument parser.
 pub mod args;
-/// Application output types.
-pub mod output;
 
 use crate::app::App;
 use crate::args::Args;
@@ -20,20 +18,23 @@ use systeroid_core::sysctl::controller::Sysctl;
 
 /// Runs `systeroid`.
 pub fn run<Output: Write>(args: Args, output: &mut Output) -> Result<()> {
-    let config = Config {
-        verbose: args.verbose,
-        ignore_errors: args.ignore_errors,
+    let mut config = Config {
         display_deprecated: args.display_deprecated,
-        quiet: args.quiet,
-        no_pager: args.no_pager,
-        display_type: args.display_type,
+        kernel_docs: args.kernel_docs,
         ..Default::default()
     };
+    config.cli.verbose = args.verbose;
+    config.cli.ignore_errors = args.ignore_errors;
+    config.cli.quiet = args.quiet;
+    config.cli.no_pager = args.no_pager;
+    config.cli.display_type = args.display_type;
+    config.cli.output_type = args.output_type;
+    config.parse(args.config)?;
     let mut sysctl = Sysctl::init(config)?;
     if args.explain {
-        sysctl.update_docs_from_cache(args.kernel_docs.as_ref(), &Cache::init()?)?;
+        sysctl.update_docs_from_cache(&Cache::init()?)?;
     }
-    let mut app = App::new(&mut sysctl, output, args.output_type);
+    let mut app = App::new(&mut sysctl, output);
 
     if args.preload_system_files {
         app.preload_from_system()?;

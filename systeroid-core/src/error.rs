@@ -24,6 +24,9 @@ pub enum Error {
     /// Error that may occur while handling sysctl operations.
     #[error("sysctl error: `{0}`")]
     SysctlError(#[from] sysctl::SysctlError),
+    /// Error that may occur while parsing an INI document.
+    #[error("INI parsing error: `{0}`")]
+    IniError(#[from] ini::Error),
 }
 
 /// Type alias for the standard [`Result`] type.

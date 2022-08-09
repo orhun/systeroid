@@ -10,7 +10,7 @@ use parseit::globwalk;
 use rayon::prelude::*;
 use std::convert::TryFrom;
 use std::env;
-use std::path::{Path, PathBuf};
+use std::path::Path;
 use std::result::Result as StdResult;
 use sysctl::{CtlFlags, CtlIter, Sysctl as SysctlImpl};
 
@@ -47,7 +47,7 @@ impl Sysctl {
                     }
                 }
                 Err(e) => {
-                    if config.verbose {
+                    if config.cli.verbose {
                         eprintln!("{} ({})", e, ctl.name()?);
                     }
                 }
@@ -73,7 +73,7 @@ impl Sysctl {
                     || param.get_absolute_name() == Some(&query.replace('/', "."))
             })
             .collect::<Vec<&Parameter>>();
-        if parameters.is_empty() && !self.config.ignore_errors {
+        if parameters.is_empty() && !self.config.cli.ignore_errors {
             eprintln!(
                 "{}: cannot stat {}{}: No such file or directory",
                 env!("CARGO_PKG_NAME").split('-').collect::<Vec<_>>()[0],
@@ -85,12 +85,8 @@ impl Sysctl {
     }
 
     /// Updates the descriptions of the kernel parameters using the given cached data.
-    pub fn update_docs_from_cache(
-        &mut self,
-        kernel_docs: Option<&PathBuf>,
-        cache: &Cache,
-    ) -> Result<()> {
-        let mut kernel_docs_path = if let Some(path) = kernel_docs {
+    pub fn update_docs_from_cache(&mut self, cache: &Cache) -> Result<()> {
+        let mut kernel_docs_path = if let Some(path) = &self.config.kernel_docs {
             vec![path.to_path_buf()]
         } else {
             Vec::new()
@@ -197,7 +193,7 @@ mod tests {
         );
         assert!(sysctl.get_parameters("---").is_empty());
 
-        sysctl.update_docs_from_cache(None, &Cache::init()?)?;
+        sysctl.update_docs_from_cache(&Cache::init()?)?;
 
         let parameter = sysctl
             .get_parameter("kernel.hostname")
