@@ -215,8 +215,10 @@ mod tests {
     use super::*;
     #[test]
     fn test_config() -> Result<()> {
-        let mut config = Config::default();
-        config.display_deprecated = true;
+        let mut config = Config {
+            display_deprecated: true,
+            ..Default::default()
+        };
         config.cli.display_type = DisplayType::Value;
         config.cli.color.default_color = Color::Blue;
         config.cli.color.section_colors = HashMap::new();
@@ -224,7 +226,7 @@ mod tests {
         config.tui.color.fg_color = String::new();
         let path = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
             .parent()
-            .unwrap()
+            .expect("parent directory not found")
             .join("config")
             .join(DEFAULT_CONFIG);
         config.parse(Some(path))?;
