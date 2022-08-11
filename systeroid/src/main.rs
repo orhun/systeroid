@@ -8,6 +8,9 @@ fn main() {
         if args.show_tui {
             let bin = format!("{}-tui", env!("CARGO_PKG_NAME"));
             let mut command = Command::new(&bin);
+            if let Some(config) = args.config {
+                command.arg("--config").arg(config);
+            }
             if let Some(kernel_docs) = args.kernel_docs {
                 command.arg("--docs").arg(kernel_docs);
             }

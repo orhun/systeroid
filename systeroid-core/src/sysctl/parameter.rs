@@ -1,6 +1,6 @@
 use crate::config::Config;
 use crate::error::Result;
-use crate::sysctl::display::DisplayType;
+use crate::sysctl::r#type::DisplayType;
 use crate::sysctl::section::Section;
 use colored::*;
 use serde::{Deserialize, Serialize};
@@ -53,9 +53,11 @@ impl Parameter {
     /// Returns the parameter name with corresponding section colors.
     pub fn get_colored_name(&self, config: &Config) -> String {
         let section_color = *(config
+            .cli
+            .color
             .section_colors
             .get(&self.section)
-            .unwrap_or(&config.default_color));
+            .unwrap_or(&config.cli.color.default_color));
         let fields = self.name.split('.').collect::<Vec<&str>>();
         fields
             .iter()
@@ -66,7 +68,7 @@ impl Parameter {
                         result,
                         "{}{}",
                         v.color(section_color),
-                        ".".color(config.default_color)
+                        ".".color(config.cli.color.default_color)
                     );
                 } else {
                     result += v;
@@ -75,14 +77,16 @@ impl Parameter {
             })
     }
 
-    /// Returns the components of the parameter to contruct a [`Tree`].
+    /// Returns the components of the parameter to construct a [`Tree`].
     ///
     /// [`Tree`]: crate::tree::Tree
     pub fn get_tree_components(&self, config: &Config) -> Vec<String> {
         let section_color = *(config
+            .cli
+            .color
             .section_colors
             .get(&self.section)
-            .unwrap_or(&config.default_color));
+            .unwrap_or(&config.cli.color.default_color));
         let mut components = self
             .name
             .split('.')
@@ -95,11 +99,11 @@ impl Parameter {
             .for_each(|(i, component)| {
                 if i != total_components - 1 {
                     *component = component.color(section_color).to_string();
-                } else if config.display_type != DisplayType::Name {
+                } else if config.cli.display_type != DisplayType::Name {
                     *component = format!(
                         "{} {} {}",
                         component,
-                        "=".color(config.default_color),
+                        "=".color(config.cli.color.default_color),
                         self.value.replace('\n', " ").bold()
                     );
                 }
@@ -109,7 +113,7 @@ impl Parameter {
 
     /// Prints the kernel parameter to given output.
     pub fn display_value<Output: Write>(&self, config: &Config, output: &mut Output) -> Result<()> {
-        match config.display_type {
+        match config.cli.display_type {
             DisplayType::Name => {
                 writeln!(output, "{}", self.get_colored_name(config))?;
             }
@@ -125,7 +129,7 @@ impl Parameter {
                         output,
                         "{} {} {}",
                         self.get_colored_name(config),
-                        "=".color(config.default_color),
+                        "=".color(config.cli.color.default_color),
                         value.bold(),
                     )?;
                 }
@@ -187,7 +191,7 @@ impl Parameter {
         let ctl = Ctl::new(&self.name)?;
         let new_value = ctl.set_value_string(new_value)?;
         self.value = new_value;
-        if !config.quiet {
+        if !config.cli.quiet {
             self.display_value(config, output)?;
         }
         Ok(())
@@ -211,10 +215,12 @@ mod tests {
         assert_eq!(Some("test_param"), parameter.get_absolute_name());
 
         let mut config = Config {
-            default_color: Color::White,
             ..Default::default()
         };
+        config.cli.color.default_color = Color::White;
         *(config
+            .cli
+            .color
             .section_colors
             .get_mut(&Section::Kernel)
             .expect("failed to get color")) = Color::Yellow;
@@ -237,7 +243,7 @@ mod tests {
         );
 
         output.clear();
-        config.display_type = DisplayType::Name;
+        config.cli.display_type = DisplayType::Name;
         parameter.display_value(&config, &mut output)?;
         assert_eq!(
             "kernel.fictional.test_param\n",
@@ -245,12 +251,12 @@ mod tests {
         );
 
         output.clear();
-        config.display_type = DisplayType::Value;
+        config.cli.display_type = DisplayType::Value;
         parameter.display_value(&config, &mut output)?;
         assert_eq!("1\n", String::from_utf8_lossy(&output));
 
         output.clear();
-        config.display_type = DisplayType::Binary;
+        config.cli.display_type = DisplayType::Binary;
         parameter.display_value(&config, &mut output)?;
         assert_eq!("1", String::from_utf8_lossy(&output));
 

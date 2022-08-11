@@ -4,8 +4,8 @@ pub mod controller;
 /// Sysctl section.
 pub mod section;
 
-/// Sysctl display options.
-pub mod display;
+/// Sysctl display/output options.
+pub mod r#type;
 
 /// Kernel parameter.
 pub mod parameter;

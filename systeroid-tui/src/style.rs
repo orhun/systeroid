@@ -76,13 +76,13 @@ impl FromStr for Color {
                 "magenta" => TuiColor::Magenta,
                 "cyan" => TuiColor::Cyan,
                 "gray" => TuiColor::Gray,
-                "darkgray" => TuiColor::DarkGray,
-                "lightred" => TuiColor::LightRed,
-                "lightgreen" => TuiColor::LightGreen,
-                "lightyellow" => TuiColor::LightYellow,
-                "lightblue" => TuiColor::LightBlue,
-                "lightmagenta" => TuiColor::LightMagenta,
-                "lightcyan" => TuiColor::LightCyan,
+                "darkgray" | "dark gray" => TuiColor::DarkGray,
+                "lightred" | "light red" => TuiColor::LightRed,
+                "lightgreen" | "light green" => TuiColor::LightGreen,
+                "lightyellow" | "light yellow" => TuiColor::LightYellow,
+                "lightblue" | "light blue" => TuiColor::LightBlue,
+                "lightmagenta" | "light magenta" => TuiColor::LightMagenta,
+                "lightcyan" | "light cyan" => TuiColor::LightCyan,
                 "white" => TuiColor::White,
                 _ => {
                     let rgb = Rgb::from_hex_str(&format!("#{}", s))?;
@@ -102,6 +102,8 @@ mod tests {
         assert_eq!(TuiColor::Gray, Color::from_str("gray")?.get());
         assert_eq!(TuiColor::Black, Color::from_str("black")?.get());
         assert_eq!(TuiColor::Green, Color::from_str("green")?.get());
+        assert_eq!(TuiColor::LightRed, Color::from_str("light red")?.get());
+        assert_eq!(TuiColor::LightBlue, Color::from_str("lightblue")?.get());
         assert_eq!(
             TuiColor::Rgb(152, 157, 69),
             Color::from_str("989D45")?.get()
