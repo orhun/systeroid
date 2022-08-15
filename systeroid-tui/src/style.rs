@@ -5,7 +5,7 @@ use std::str::FromStr;
 use tui::style::{Color as TuiColor, Style};
 
 /// Color configuration.
-#[derive(Clone, Copy, Debug, Default, PartialEq)]
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub struct Colors {
     /// Background color.
     bg: Color,
@@ -39,7 +39,7 @@ impl Colors {
 }
 
 /// Wrapper for widget colors.
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct Color {
     /// Inner type.
     inner: TuiColor,
