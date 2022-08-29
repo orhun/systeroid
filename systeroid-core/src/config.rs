@@ -15,7 +15,7 @@ pub const CONFIG_ENV: &str = "SYSTEROID_CONFIG";
 lazy_static! {
     /// Default locations for the configuration file.
     pub static ref DEFAULT_CONFIG_PATHS: Vec<Option<PathBuf>> = vec![
-        dirs::config_dir().map(|p| p.join("systeroid").join(DEFAULT_CONFIG)),
+        dirs_next::config_dir().map(|p| p.join("systeroid").join(DEFAULT_CONFIG)),
         dirs_next::home_dir().map(|p| p.join(".systeroid").join(DEFAULT_CONFIG)),
     ];
 }
