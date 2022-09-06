@@ -1,7 +1,6 @@
-use {
-    systeroid::args::Args, systeroid_core::error::Result,
-    systeroid_core::sysctl::display::DisplayType,
-};
+use systeroid::args::Args;
+use systeroid_core::error::Result;
+use systeroid_core::sysctl::r#type::DisplayType;
 
 #[cfg_attr(not(feature = "live-tests"), ignore)]
 #[test]

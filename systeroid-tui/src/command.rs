@@ -3,7 +3,7 @@ use std::str::FromStr;
 use termion::event::Key;
 
 /// Possible application commands.
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Eq)]
 pub enum Command {
     /// Show help.
     Help,
@@ -47,17 +47,14 @@ impl FromStr for Command {
             "exit" | "quit" | "q" | "q!" => Ok(Command::Exit),
             _ => {
                 if s.starts_with("set") {
-                    let values: Vec<&str> = s
-                        .trim_start_matches("set")
-                        .trim()
-                        .split_whitespace()
-                        .collect();
+                    let values: Vec<&str> =
+                        s.trim_start_matches("set").split_whitespace().collect();
                     Ok(Command::Set(
                         values.first().ok_or(())?.to_string(),
                         values[1..].join(" "),
                     ))
                 } else if s.starts_with("scroll") {
-                    let mut values = s.trim_start_matches("scroll").trim().split_whitespace();
+                    let mut values = s.trim_start_matches("scroll").split_whitespace();
                     Ok(Command::Scroll(
                         ScrollArea::try_from(values.next().ok_or(())?)?,
                         Direction::try_from(values.next().ok_or(())?)?,
@@ -157,7 +154,7 @@ mod tests {
                 "scroll list bottom 1",
             ),
         ] {
-            assert_eq!(command, Command::from_str(value).unwrap());
+            assert_eq!(Ok(command), Command::from_str(value));
         }
         assert!(Command::from_str("---").is_err());
         assert_command_parser! {

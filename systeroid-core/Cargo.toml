@@ -1,6 +1,6 @@
 [package]
 name = "systeroid-core"
-version = "0.1.1" # managed by release.sh
+version = "0.2.1" # managed by release.sh
 description = "Core library of systeroid"
 authors = ["Orhun Parmaksız <orhunparmaksiz@gmail.com>"]
 license = "MIT OR Apache-2.0"
@@ -12,12 +12,13 @@ edition = "2021"
 rust-version = "1.56.1"
 
 [dependencies]
-sysctl = "0.4.4"
-thiserror = "1.0.29"
+sysctl = "0.5.2"
+thiserror = "1.0.34"
 lazy_static = "1.4.0"
-rayon = "1.5.2"
+rayon = "1.5.3"
 colored = "2.0.0"
-serde = { version = "1.0.136", features = ["derive"] }
-serde_json = "1.0.79"
+serde = { version = "1.0.144", features = ["derive"] }
+serde_json = "1.0.85"
 dirs-next = "2.0.0"
-parseit = { version = "0.1.0", features = ["gzip"] }
+parseit = { version = "0.1.1", features = ["gzip"] }
+rust-ini = "0.18.0"
