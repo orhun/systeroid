@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.2.0] - 2022-08-11
 ### Features
-- Add a configuration file ([#12](https://github.com/orhun/git-cliff/issues/12))
+- Add a configuration file ([#12](https://github.com/orhun/systeroid/issues/12))
   - See [configuration](https://github.com/orhun/systeroid#configuration) and [`systeroid.conf`](https://github.com/orhun/systeroid/blob/main/config/systeroid.conf)
 - (tui) Show deprecated values optionally via `--deprecated` flag
 
