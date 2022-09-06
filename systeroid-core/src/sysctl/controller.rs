@@ -4,12 +4,13 @@ use crate::error::Result;
 use crate::parsers::{parse_kernel_docs, KERNEL_DOCS_PATH};
 use crate::sysctl::parameter::Parameter;
 use crate::sysctl::section::Section;
+use crate::sysctl::DEPRECATED_PARAMS;
 use crate::sysctl::{DISABLE_CACHE_ENV, PARAMETERS_CACHE_LABEL, PROC_PATH};
 use parseit::globwalk;
 use rayon::prelude::*;
 use std::convert::TryFrom;
 use std::env;
-use std::path::{Path, PathBuf};
+use std::path::Path;
 use std::result::Result as StdResult;
 use sysctl::{CtlFlags, CtlIter, Sysctl as SysctlImpl};
 
@@ -33,10 +34,20 @@ impl Sysctl {
         }) {
             match Parameter::try_from(&ctl) {
                 Ok(parameter) => {
-                    parameters.push(parameter);
+                    if !config.display_deprecated {
+                        let mut skip_param = false;
+                        if let Some(param_name) = parameter.get_absolute_name() {
+                            skip_param = DEPRECATED_PARAMS.contains(&param_name);
+                        }
+                        if !skip_param {
+                            parameters.push(parameter);
+                        }
+                    } else {
+                        parameters.push(parameter);
+                    }
                 }
                 Err(e) => {
-                    if config.verbose {
+                    if config.cli.verbose {
                         eprintln!("{} ({})", e, ctl.name()?);
                     }
                 }
@@ -48,21 +59,22 @@ impl Sysctl {
     /// Returns the first found parameter in the available parameters.
     #[cfg(test)]
     fn get_parameter(&self, query: &str) -> Option<&Parameter> {
-        self.get_parameters(query).first().map(|v| *v)
+        self.get_parameters(query).first().copied()
     }
 
     /// Returns the parameters that matches the given query.
     pub fn get_parameters(&self, query: &str) -> Vec<&Parameter> {
+        let query = query.replace('/', ".");
         let parameters = self
             .parameters
             .iter()
             .filter(|param| {
-                param.name == query.replace('/', ".")
-                    || param.section.to_string() == query
-                    || param.get_absolute_name() == Some(&query.replace('/', "."))
+                param.name == query
+                    || param.get_absolute_name() == Some(&query)
+                    || param.is_in_section(&query)
             })
             .collect::<Vec<&Parameter>>();
-        if parameters.is_empty() && !self.config.ignore_errors {
+        if parameters.is_empty() && !self.config.cli.ignore_errors {
             eprintln!(
                 "{}: cannot stat {}{}: No such file or directory",
                 env!("CARGO_PKG_NAME").split('-').collect::<Vec<_>>()[0],
@@ -74,12 +86,8 @@ impl Sysctl {
     }
 
     /// Updates the descriptions of the kernel parameters using the given cached data.
-    pub fn update_docs_from_cache(
-        &mut self,
-        kernel_docs: Option<&PathBuf>,
-        cache: &Cache,
-    ) -> Result<()> {
-        let mut kernel_docs_path = if let Some(path) = kernel_docs {
+    pub fn update_docs_from_cache(&mut self, cache: &Cache) -> Result<()> {
+        let mut kernel_docs_path = if let Some(path) = &self.config.kernel_docs {
             vec![path.to_path_buf()]
         } else {
             Vec::new()
@@ -119,17 +127,17 @@ impl Sysctl {
     /// Updates the parameters internally using the given list.
     ///
     /// Keeps the original values.
-    fn update_params(&mut self, mut parameters: Vec<Parameter>) {
-        parameters.par_iter_mut().for_each(|parameter| {
-            if let Some(param) = self
-                .parameters
+    fn update_params(&mut self, parameters: Vec<Parameter>) {
+        self.parameters.par_iter_mut().for_each(|parameter| {
+            if let Some(param) = parameters
                 .par_iter()
                 .find_any(|param| param.name == parameter.name)
             {
-                parameter.value = param.value.to_string();
+                parameter.description = param.description.clone();
+                parameter.docs_path = param.docs_path.clone();
+                parameter.docs_title = param.docs_title.clone();
             }
         });
-        self.parameters = parameters;
     }
 
     /// Updates the descriptions of the kernel parameters.
@@ -178,21 +186,27 @@ mod tests {
         assert!(sysctl.get_parameter("kernel.hostname").is_some());
         assert!(sysctl.get_parameter("unexisting.param").is_none());
         assert_eq!(
-            "Linux",
-            sysctl.get_parameters("ostype").first().unwrap().value
+            Some(String::from("Linux")),
+            sysctl
+                .get_parameters("ostype")
+                .first()
+                .map(|v| v.value.to_string())
         );
         assert!(sysctl.get_parameters("---").is_empty());
 
-        sysctl.update_docs_from_cache(None, &Cache::init()?)?;
+        sysctl.update_docs_from_cache(&Cache::init()?)?;
 
-        let parameter = sysctl.get_parameter("kernel.hostname").unwrap().clone();
+        let parameter = sysctl
+            .get_parameter("kernel.hostname")
+            .expect("failed to get parameter")
+            .clone();
         let old_value = parameter.docs_title;
         let parameters = sysctl.parameters.clone();
         sysctl
             .parameters
             .iter_mut()
             .find(|param| param.name == parameter.name)
-            .unwrap()
+            .expect("parameter not found")
             .docs_title = String::from("-");
         sysctl.update_params(parameters);
         assert_eq!(
@@ -201,24 +215,24 @@ mod tests {
                 .parameters
                 .iter_mut()
                 .find(|param| param.name == parameter.name)
-                .unwrap()
+                .expect("parameter not found")
                 .docs_title
         );
 
         assert!(sysctl
             .get_parameter("vm.zone_reclaim_mode")
-            .unwrap()
+            .expect("failed to get parameter")
             .description
             .as_ref()
-            .unwrap()
+            .expect("parameter has no description")
             .contains("zone_reclaim_mode is disabled by default."));
 
         assert!(sysctl
             .get_parameter("user.max_user_namespaces")
-            .unwrap()
+            .expect("failed to get parameter")
             .description
             .as_ref()
-            .unwrap()
+            .expect("parameter has no description")
             .contains("The maximum number of user namespaces"));
 
         Ok(())

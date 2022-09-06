@@ -1,9 +1,10 @@
-use crate::output::OutputType;
 use getopts::Options;
 use std::env;
 use std::path::PathBuf;
+use systeroid_core::config::CONFIG_ENV;
 use systeroid_core::parseit::regex::Regex;
-use systeroid_core::sysctl::display::DisplayType;
+use systeroid_core::sysctl::r#type::DisplayType;
+use systeroid_core::sysctl::r#type::OutputType;
 use systeroid_core::sysctl::{DEFAULT_PRELOAD, KERNEL_DOCS_ENV};
 
 /// Help message for the arguments.
@@ -19,6 +20,8 @@ For more details see {bin}(8)."#;
 /// Command-line arguments.
 #[derive(Debug, Default)]
 pub struct Args {
+    /// Location of the configuration file.
+    pub config: Option<PathBuf>,
     /// Whether if the verbose logging is enabled.
     pub verbose: bool,
     /// Whether if the quiet mode is enabled.
@@ -97,6 +100,12 @@ impl Args {
         opts.optflag("P", "no-pager", "do not pipe output into a pager");
         opts.optflag("v", "verbose", "enable verbose logging");
         opts.optflag("", "tui", "show terminal user interface");
+        opts.optopt(
+            "c",
+            "config",
+            "set the path of the configuration file",
+            "<path>",
+        );
         opts.optflag("h", "help", "display this help and exit (-d)");
         opts.optflag("V", "version", "output version information and exit");
         opts
@@ -195,6 +204,10 @@ impl Args {
                 explain: matches.opt_present("E"),
                 output_type,
                 show_tui: matches.opt_present("tui"),
+                config: matches
+                    .opt_str("c")
+                    .or_else(|| env::var(CONFIG_ENV).ok())
+                    .map(PathBuf::from),
                 values: matches.free,
             })
         }
@@ -222,20 +235,20 @@ mod tests {
             String::from("-A"),
             String::from("-T"),
         ])
-        .unwrap();
+        .expect("failed to parse arguments");
         assert!(args.verbose);
         assert!(args.write);
         assert_eq!(OutputType::Tree, args.output_type);
 
         assert!(!Args::parse(vec![String::new(), String::from("-p")])
-            .unwrap()
+            .expect("failed to parse arguments")
             .values
             .is_empty());
 
         assert_eq!(
             DisplayType::Binary,
             Args::parse(vec![String::new(), String::from("-A"), String::from("-b")])
-                .unwrap()
+                .expect("failed to parse arguments")
                 .display_type
         );
     }

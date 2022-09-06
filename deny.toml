@@ -8,7 +8,8 @@ allow = [
     "Apache-2.0",
     "BSL-1.0",
     "MPL-2.0",
-    "ISC"
+    "ISC",
+    "Unicode-DFS-2016"
 ]
 
 [sources]

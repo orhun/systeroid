@@ -93,6 +93,7 @@ Although **systeroid** does not need the parameter section to be specified expli
     - [Changing the colors](#changing-the-colors)
     - [Viewing the parameter documentation](#viewing-the-parameter-documentation)
     - [Setting the refresh rate](#setting-the-refresh-rate)
+- [Configuration](#configuration)
 - [Resources](#resources)
   - [References](#references)
   - [Logo](#logo)
@@ -215,6 +216,7 @@ systeroid [options] [variable[=value] ...] --load[=<file>]
 -P, --no-pager      do not pipe output into a pager
 -v, --verbose       enable verbose logging
     --tui           show terminal user interface
+-c, --config <path> set the path of the configuration file
 -h, --help          display this help and exit (-d)
 -V, --version       output version information and exit
 ```
@@ -415,6 +417,8 @@ systeroid-tui [options]
     --fg-color <color>
                     set the foreground color [default: white]
 -n, --no-docs       do not show the kernel documentation
+    --deprecated    include deprecated variables while listing
+-c, --config <path> set the path of the configuration file
 -h, --help          display this help and exit
 -V, --version       output version information and exit
 ```
@@ -547,6 +551,28 @@ It is possible to specify a value in milliseconds via `--tick-rate` argument for
 systeroid-tui --tick-rate 500
 ```
 
+## Configuration
+
+**systeroid** can be configured with a configuration file that uses the [INI format](https://en.wikipedia.org/wiki/INI_file). It can be specified via `--config` or `SYSTEROID_CONFIG` environment variable. It can also be placed in one of the following global locations:
+
+- `$HOME/.config/systeroid/systeroid.conf`
+- `$HOME/.systeroid/systeroid.conf`
+
+```sh
+# set the config path via argument
+systeroid --config config/systeroid.conf
+
+# set the config path via env
+SYSTEROID_CONFIG=config/systeroid.conf systeroid
+
+# use a global path
+mkdir -p "$HOME/.config/systeroid"
+cp config/systeroid.conf "$HOME/.config/systeroid"
+systeroid
+```
+
+See the example [systeroid.conf](./config/systeroid.conf) for the configuration options.
+
 ## Resources
 
 ### References
@@ -557,9 +583,7 @@ systeroid-tui --tick-rate 500
 
 ### Logo
 
-**systeroid** logo was originally painted by [Ryan Tippery](https://www.ryantippery.com/about) as a part of the [Compositions](https://www.ryantippery.com/compositions/) art collection and it is put together by me using the [Filled Spots](https://www.fontspace.com/filled-spots-font-f30755) font. Shout out to Ryan for letting me use his painting for the logo! **<3**
-
-Check out his [store](https://www.ryantippery.com/store) for a fine piece of similar art. Kudos!
+**systeroid** logo was originally painted by [Ryan Tippery](https://ryantippery.com) as a part of the [Compositions](https://ryantippery.com/art/compositions) art collection and it is put together by me using the [Filled Spots](https://www.fontspace.com/filled-spots-font-f30755) font. Shout out to Ryan for letting me use his painting for the logo! **<3** Kudos!
 
 ### Social Links
 
@@ -570,7 +594,7 @@ Check out his [store](https://www.ryantippery.com/store) for a fine piece of sim
 
 ### Funding
 
-If you find **systeroid** and/or other projects on my [GitHub profile](https://github.com/orhun/) useful, consider [becoming a patron](https://www.patreon.com/join/orhunp)!
+If you find **systeroid** and/or other projects on my [GitHub profile](https://github.com/orhun/) useful, consider supporting me on [GitHub Sponsors](https://github.com/sponsors/orhun) or [becoming a patron](https://www.patreon.com/join/orhunp)!
 
 [![Support me on Patreon](https://img.shields.io/endpoint.svg?url=https%3A%2F%2Fshieldsio-patreon.vercel.app%2Fapi%3Fusername%3Dorhunp%26type%3Dpatrons&style=flat&logo=Patreon&labelColor=000000&color=CECDCB&logoColor=CECDCB)](https://patreon.com/join/orhunp)
 [![Support me on Patreon](https://img.shields.io/endpoint.svg?url=https%3A%2F%2Fshieldsio-patreon.vercel.app%2Fapi%3Fusername%3Dorhunp%26type%3Dpledges&style=flat&logo=Patreon&labelColor=000000&color=CECDCB&logoColor=CECDCB&label=)](https://patreon.com/join/orhunp)
