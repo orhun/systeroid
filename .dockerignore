@@ -4,6 +4,7 @@
 /target/
 /.cargo/
 /assets/
+/config/
 
 # Files
 .editorconfig

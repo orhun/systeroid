@@ -1,4 +1,3 @@
-use crate::output::OutputType;
 use std::env;
 use std::io::{self, BufRead, Write};
 use std::path::PathBuf;
@@ -9,6 +8,7 @@ use systeroid_core::parseit::reader;
 use systeroid_core::parseit::regex::Regex;
 use systeroid_core::sysctl::controller::Sysctl;
 use systeroid_core::sysctl::parameter::Parameter;
+use systeroid_core::sysctl::r#type::OutputType;
 use systeroid_core::sysctl::{DEPRECATED_PARAMS, SYSTEM_PRELOAD};
 use systeroid_core::tree::{Tree, TreeNode};
 
@@ -19,18 +19,12 @@ pub struct App<'a, Output: Write> {
     sysctl: &'a mut Sysctl,
     /// Standard output.
     output: &'a mut Output,
-    /// Output type.
-    output_type: OutputType,
 }
 
 impl<'a, Output: Write> App<'a, Output> {
     /// Constructs a new instance.
-    pub fn new(sysctl: &'a mut Sysctl, output: &'a mut Output, output_type: OutputType) -> Self {
-        Self {
-            sysctl,
-            output,
-            output_type,
-        }
+    pub fn new(sysctl: &'a mut Sysctl, output: &'a mut Output) -> Self {
+        Self { sysctl, output }
     }
 
     /// Prints the given parameters to stdout.
@@ -38,7 +32,7 @@ impl<'a, Output: Write> App<'a, Output> {
     where
         I: Iterator<Item = &'b Parameter>,
     {
-        match self.output_type {
+        match self.sysctl.config.cli.output_type {
             OutputType::Default => {
                 parameters.try_for_each(|parameter| {
                     parameter.display_value(&self.sysctl.config, self.output)
@@ -54,7 +48,8 @@ impl<'a, Output: Write> App<'a, Output> {
                             .map(|v| v.as_ref()),
                     );
                 });
-                Tree::new(root_node.childs).print(self.output, self.sysctl.config.default_color)?;
+                Tree::new(root_node.childs)
+                    .print(self.output, self.sysctl.config.cli.color.default_color)?;
             }
             OutputType::Json => {
                 Parameter::display_bulk_json(parameters.collect(), self.output)?;
@@ -64,21 +59,11 @@ impl<'a, Output: Write> App<'a, Output> {
     }
 
     /// Displays all of the available kernel parameters.
-    pub fn display_parameters(
-        &mut self,
-        pattern: Option<Regex>,
-        display_deprecated: bool,
-        explain: bool,
-    ) -> Result<()> {
+    pub fn display_parameters(&mut self, pattern: Option<Regex>, explain: bool) -> Result<()> {
         let parameters = self.sysctl.parameters.clone();
         let mut parameters = parameters.iter().filter(|parameter| {
             if let Some(pattern) = &pattern {
                 return pattern.is_match(&parameter.name);
-            }
-            if !display_deprecated {
-                if let Some(param_name) = parameter.get_absolute_name() {
-                    return !DEPRECATED_PARAMS.contains(&param_name);
-                }
             }
             true
         });
@@ -91,7 +76,7 @@ impl<'a, Output: Write> App<'a, Output> {
 
     /// Displays the documentation of a parameter.
     pub fn display_documentation(&mut self, param_name: &str) -> Result<()> {
-        let no_pager = self.sysctl.config.no_pager;
+        let no_pager = self.sysctl.config.cli.no_pager;
         for parameter in self.sysctl.get_parameters(param_name) {
             let mut fallback_to_default = false;
             if no_pager {
@@ -182,7 +167,9 @@ impl<'a, Output: Write> App<'a, Output> {
     /// Processes the parameters in the given file.
     pub fn preload_from_file(&mut self, path: PathBuf) -> Result<()> {
         if path == PathBuf::from("-") {
-            for line in io::stdin().lock().lines() {
+            let stdin = io::stdin();
+            let lines = stdin.lock().lines();
+            for line in lines {
                 if let Err(e) = self.process_parameter(line?, true, false) {
                     println!("{}: {}", env!("CARGO_PKG_NAME"), e);
                 }
@@ -239,22 +226,21 @@ mod tests {
     #[test]
     fn test_app() -> Result<()> {
         let mut output = Vec::new();
-        let mut sysctl = Sysctl::init(Config {
-            no_pager: true,
-            ..Config::default()
-        })?;
-        sysctl.update_docs_from_cache(None, &Cache::init()?)?;
+        let mut config = Config::default();
+        config.cli.no_pager = true;
+        let mut sysctl = Sysctl::init(config)?;
+        sysctl.update_docs_from_cache(&Cache::init()?)?;
 
-        let mut app = App::new(&mut sysctl, &mut output, OutputType::Default);
+        let mut app = App::new(&mut sysctl, &mut output);
 
-        app.display_parameters(Regex::new("kernel|vm").ok(), false, false)?;
+        app.display_parameters(Regex::new("kernel|vm").ok(), false)?;
         let result = String::from_utf8_lossy(app.output);
         assert!(result.contains("vm.zone_reclaim_mode ="));
         assert!(result.contains("kernel.version ="));
         app.output.clear();
 
-        app.output_type = OutputType::Tree;
-        app.display_parameters(None, true, false)?;
+        app.sysctl.config.cli.output_type = OutputType::Tree;
+        app.display_parameters(None, false)?;
         assert!(String::from_utf8_lossy(app.output).contains("─ osrelease ="));
         app.output.clear();
 
@@ -263,7 +249,7 @@ mod tests {
         app.output.clear();
 
         let param_name = String::from("kernel.version");
-        app.output_type = OutputType::Default;
+        app.sysctl.config.cli.output_type = OutputType::Default;
         app.process_parameter(param_name.clone(), true, false)?;
         let result = String::from_utf8_lossy(app.output);
         assert_eq!(1, result.lines().count());
@@ -271,7 +257,7 @@ mod tests {
         app.output.clear();
 
         let param_name = String::from("kernel.version");
-        app.output_type = OutputType::Json;
+        app.sysctl.config.cli.output_type = OutputType::Json;
         app.process_parameter(param_name.clone(), true, false)?;
         let result = String::from_utf8_lossy(app.output);
         assert!(result.contains("\"section\":\"kernel\""));
