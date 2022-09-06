@@ -58,13 +58,14 @@ impl EventHandler {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::error::Result;
     use std::char;
     use std::time::Instant;
 
     const TICK_RATE_MS: u64 = 100;
 
     #[test]
-    fn test_event() {
+    fn test_event() -> Result<()> {
         let start_time = Instant::now();
         let event_handler = EventHandler::new(TICK_RATE_MS);
         let mut tick_count = 0;
@@ -73,9 +74,9 @@ mod tests {
             thread::spawn(move || {
                 let key = Key::Char(char::from_digit(i, 10).unwrap_or('9'));
                 let event = Event::KeyPress(key);
-                sender.send(event).unwrap();
+                sender.send(event).expect("failed to send event");
             });
-            match event_handler.next().unwrap() {
+            match event_handler.next()? {
                 Event::KeyPress(key) => {
                     if key == Key::Char('9') {
                         break;
@@ -88,5 +89,6 @@ mod tests {
             }
         }
         assert!(start_time.elapsed() > Duration::from_millis(tick_count * TICK_RATE_MS));
+        Ok(())
     }
 }
