@@ -196,6 +196,22 @@ impl Parameter {
         }
         Ok(())
     }
+
+    /// Performs a search for given query and returns true if
+    /// the parameter is in the given sub/section.
+    pub fn is_in_section(&self, query: &str) -> bool {
+        let mut subsection = self.section.to_string();
+        let mut components = self.name.split('.').skip(1).peekable();
+        while let Some(component) = components.next() {
+            if query == subsection {
+                return true;
+            }
+            if components.peek().is_some() {
+                subsection = format!("{}.{}", subsection, component)
+            }
+        }
+        false
+    }
 }
 
 #[cfg(test)]
@@ -287,6 +303,19 @@ mod tests {
         assert!(parameter
             .update_value("0", &config, &mut Vec::new())
             .is_err());
+
+        parameter.name = String::from("kernel.fictional.testing.xyz.parameter");
+        assert!(parameter.is_in_section(&parameter.section.to_string()));
+        assert!(parameter.is_in_section("kernel"));
+        assert!(parameter.is_in_section("kernel.fictional"));
+        assert!(parameter.is_in_section("kernel.fictional.testing"));
+        assert!(parameter.is_in_section("kernel.fictional.testing.xyz"));
+        assert!(!parameter.is_in_section("xyz"));
+        assert!(!parameter.is_in_section("test"));
+        assert!(!parameter.is_in_section("ker"));
+        assert!(!parameter.is_in_section("kernel.fi"));
+        assert!(!parameter.is_in_section("kernel.fictional.tes"));
+        assert!(!parameter.is_in_section(&parameter.name));
 
         Ok(())
     }

@@ -64,13 +64,14 @@ impl Sysctl {
 
     /// Returns the parameters that matches the given query.
     pub fn get_parameters(&self, query: &str) -> Vec<&Parameter> {
+        let query = query.replace('/', ".");
         let parameters = self
             .parameters
             .iter()
             .filter(|param| {
-                param.name == query.replace('/', ".")
-                    || param.section.to_string() == query
-                    || param.get_absolute_name() == Some(&query.replace('/', "."))
+                param.name == query
+                    || param.get_absolute_name() == Some(&query)
+                    || param.is_in_section(&query)
             })
             .collect::<Vec<&Parameter>>();
         if parameters.is_empty() && !self.config.cli.ignore_errors {
