@@ -27,7 +27,7 @@ impl<Data> CacheData<Data> {
 
     /// Returns the last modification date of given file as UNIX timestamp.
     pub fn get_timestamp(path: &Path) -> Result<u64> {
-        Ok(fs::metadata(&path)?
+        Ok(fs::metadata(path)?
             .modified()?
             .duration_since(SystemTime::UNIX_EPOCH)?
             .as_secs())
