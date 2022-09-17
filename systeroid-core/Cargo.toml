@@ -13,7 +13,7 @@ rust-version = "1.56.1"
 
 [dependencies]
 sysctl = "0.5.2"
-thiserror = "1.0.34"
+thiserror = "1.0.35"
 lazy_static = "1.4.0"
 rayon = "1.5.3"
 colored = "2.0.0"
