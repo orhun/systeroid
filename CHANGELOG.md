@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.0] - 2022-09-17
+### Features
+- (tui) Support saving changed values ([#13](https://github.com/orhun/git-cliff/issues/13))
+  - Press <kbd>s</kbd> to set a parameter value and also save it to a file.
+  - See https://github.com/orhun/systeroid#saving-values
+- (tui) Make help list selection functional
+  - Press <kbd>enter</kbd> on help menu to run the selected command.
+
+### Miscellaneous Tasks
+- Bump dependencies
+
 ## [0.2.2] - 2022-09-06
 ### Features
 - Support listing parameters by subsection ([#44](https://github.com/orhun/systeroid/issues/44))
