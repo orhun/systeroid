@@ -20,6 +20,9 @@ Use this option to set the tick rate of the terminal. [default: 250]
 \fB\-D\fR, \fB\-\-docs\fR <path>
 Use this option to set a custom path for the kernel documentation.
 .TP
+\fB\-\-save\-path\fR <path>
+Use this option to set the path for saving the changed parameters.
+.TP
 \fB\-s\fR, \fB\-\-section\fR <section>
 Use this option to set the section to filter.
 .HP
@@ -56,12 +59,14 @@ systeroid-tui \-\-bg-color ffff99 \-\-fg-color 003366
 .br
 systeroid-tui \-D /usr/share/doc/linux
 .br
+systeroid-tui \-\-save-path 99-local.conf
+.br
 systeroid-tui -n
 
 .SH KEY BINDINGS
 .TS
 tab(@);
-l l.
+lw(47.2n) lw(22.8n).
 T{
 Key
 T}@T{
@@ -99,7 +104,7 @@ T}@T{
 command
 T}
 T{
-/, s
+/
 T}@T{
 search
 T}
@@ -107,6 +112,11 @@ T{
 enter
 T}@T{
 select / set parameter value
+T}
+T{
+s
+T}@T{
+save parameter value
 T}
 T{
 c

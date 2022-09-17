@@ -88,6 +88,7 @@ Although **systeroid** does not need the parameter section to be specified expli
     - [Toggling the kernel section](#toggling-the-kernel-section)
     - [Searching](#searching)
     - [Setting values](#setting-values-1)
+    - [Saving values](#saving-values)
     - [Running commands](#running-commands)
     - [Copying to clipboard](#copying-to-clipboard)
     - [Changing the colors](#changing-the-colors)
@@ -409,6 +410,8 @@ systeroid-tui [options]
 -t, --tick-rate <ms>
                     set the tick rate of the terminal [default: 250]
 -D, --docs <path>   set the path of the kernel documentation
+    --save-path <path>
+                    set the path for saving the changed parameters
 -s, --section <section>
                     set the section to filter
 -q, --query <query> set the query to search
@@ -433,8 +436,9 @@ systeroid-tui [options]
 | <kbd>left/right</kbd>, <kbd>h/l</kbd>                      | scroll documentation         |
 | <kbd>tab</kbd>, <kbd>`</kbd>                               | next/previous section        |
 | <kbd>:</kbd>                                               | command                      |
-| <kbd>/</kbd>, <kbd>s</kbd>                                 | search                       |
+| <kbd>/</kbd>                                               | search                       |
 | <kbd>enter</kbd>                                           | select / set parameter value |
+| <kbd>s</kbd>                                               | save parameter value         |
 | <kbd>c</kbd>                                               | copy to clipboard            |
 | <kbd>r</kbd>, <kbd>f5</kbd>                                | refresh                      |
 | <kbd>esc</kbd>                                             | cancel / exit                |
@@ -500,6 +504,20 @@ Press <kbd>enter</kbd> to select a parameter and set its value via command promp
 
 You can press <kbd>r</kbd> to refresh the values in the parameter list.
 
+#### Saving values
+
+Press <kbd>s</kbd> to set a parameter value via command prompt and save its value to a file specified via `--save-path`.
+
+![Save value](assets/systeroid-tui-save-value.gif)
+
+Default save path is `/etc/sysctl.conf` and the values can be loaded via `systeroid --load`.
+
+```sh
+$ systeroid-tui --save-path /etc/sysctl.d/custom.conf
+
+$ systeroid --system
+```
+
 #### Running commands
 
 Press <kbd>:</kbd> to open the command prompt for running a command. Available commands are:
@@ -510,6 +528,7 @@ Press <kbd>:</kbd> to open the command prompt for running a command. Available c
 | `:search`                             | Enable search                                                                                                                 |
 | `:select`                             | Select the current parameter in the list                                                                                      |
 | `:set <name> <value>`                 | Set parameter value                                                                                                           |
+| `:save <name> <value>`                | Save parameter value to file                                                                                                  |
 | `:scroll [area] [direction] <amount>` | Scroll the list or text<br>- areas: `list`, `docs`, `section`<br>- directions: `up`, `down`, `top`, `bottom`, `right`, `left` |
 | `:copy`                               | Copy to clipboard                                                                                                             |
 | `:refresh`                            | Refresh values                                                                                                                |

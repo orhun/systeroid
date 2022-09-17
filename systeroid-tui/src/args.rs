@@ -24,6 +24,8 @@ pub struct Args {
     pub tick_rate: u64,
     /// Path of the Linux kernel documentation.
     pub kernel_docs: Option<PathBuf>,
+    /// Path for the changed parameters.
+    pub save_path: Option<PathBuf>,
     /// Sysctl section to filter.
     pub section: Option<Section>,
     /// Query to search on startup.
@@ -52,6 +54,12 @@ impl Args {
             "D",
             "docs",
             "set the path of the kernel documentation",
+            "<path>",
+        );
+        opts.optopt(
+            "",
+            "save-path",
+            "set the path for saving the changed parameters",
             "<path>",
         );
         opts.optopt("s", "section", "set the section to filter", "<section>");
@@ -114,6 +122,7 @@ impl Args {
                     .opt_str("D")
                     .or_else(|| env::var(KERNEL_DOCS_ENV).ok())
                     .map(PathBuf::from),
+                save_path: matches.opt_str("save-path").map(PathBuf::from),
                 section: matches.opt_str("s").map(Section::from),
                 search_query: matches.opt_str("q"),
                 fg_color: matches

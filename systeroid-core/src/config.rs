@@ -86,6 +86,8 @@ pub struct TuiConfig {
     pub tick_rate: u64,
     /// Do not parse/show Linux kernel documentation.
     pub no_docs: bool,
+    /// Path for saving the changed kernel parameters.
+    pub save_path: Option<PathBuf>,
     /// Color configuration.
     pub color: TuiColorConfig,
 }
@@ -157,6 +159,9 @@ impl Config {
                 if let Some(tick_rate) = section.get("tick_rate").and_then(|v| v.parse().ok()) {
                     self.tui.tick_rate = tick_rate;
                 }
+                if let Some(save_path) = section.get("save_path") {
+                    self.tui.save_path = Some(PathBuf::from(save_path));
+                }
                 parse_ini_flag!(self, tui, section, no_docs);
             }
             if let Some(section) = ini.section(Some("tui.colors")) {
@@ -201,6 +206,7 @@ impl Default for Config {
             tui: TuiConfig {
                 tick_rate: 250,
                 no_docs: false,
+                save_path: None,
                 color: TuiColorConfig {
                     fg_color: String::from("white"),
                     bg_color: String::from("black"),

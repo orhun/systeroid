@@ -68,6 +68,10 @@ pub const KEY_BINDINGS: &[&KeyBinding] = &[
         action: "select / set value",
     },
     &KeyBinding {
+        key: "s",
+        action: "save value to file",
+    },
+    &KeyBinding {
         key: "c",
         action: "copy to clipboard",
     },
@@ -266,7 +270,14 @@ impl<'a> App<'a> {
                     self.input = Some(format!("set {} {}", parameter.name, parameter.value));
                 }
             }
-            Command::Set(param_name, new_value) => {
+            Command::Save => {
+                if let Some(parameter) = self.parameter_list.selected() {
+                    self.search_mode = false;
+                    self.input_time = None;
+                    self.input = Some(format!("save {} {}", parameter.name, parameter.value));
+                }
+            }
+            Command::Set(param_name, new_value, save_to_file) => {
                 if let Some(parameter) = self
                     .parameter_list
                     .items
@@ -281,6 +292,21 @@ impl<'a> App<'a> {
                             self.input = Some(e.to_string());
                             self.input_time = Some(Instant::now());
                         }
+                    }
+                    if save_to_file {
+                        match self.sysctl.save_to_file(
+                            param_name,
+                            new_value,
+                            &self.sysctl.config.tui.save_path,
+                        ) {
+                            Ok(path) => {
+                                self.input = Some(format!("Saved to file: {:?}", path));
+                            }
+                            Err(e) => {
+                                self.input = Some(format!("Failed to save: {}", e));
+                            }
+                        }
+                        self.input_time = Some(Instant::now());
                     }
                 } else {
                     self.input = Some(String::from("Unknown parameter"));

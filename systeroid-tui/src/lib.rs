@@ -41,6 +41,7 @@ pub fn run<B: Backend>(args: Args, backend: B) -> Result<()> {
         ..Default::default()
     };
     config.tui.tick_rate = args.tick_rate;
+    config.tui.save_path = args.save_path;
     config.tui.no_docs = args.no_docs;
     config.tui.color.fg_color = args.fg_color;
     config.tui.color.bg_color = args.bg_color;

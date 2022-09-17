@@ -9,8 +9,10 @@ pub enum Command {
     Help,
     /// Perform an action based on the selected entry.
     Select,
+    /// Save the value of a parameter to a file.
+    Save,
     /// Set the value of a parameter.
-    Set(String, String),
+    Set(String, String, bool),
     /// Scroll the widget.
     Scroll(ScrollArea, Direction, u8),
     /// Move cursor..
@@ -46,12 +48,16 @@ impl FromStr for Command {
             "refresh" => Ok(Command::Refresh),
             "exit" | "quit" | "q" | "q!" => Ok(Command::Exit),
             _ => {
-                if s.starts_with("set") {
-                    let values: Vec<&str> =
-                        s.trim_start_matches("set").split_whitespace().collect();
+                if s.starts_with("set") || s.starts_with("save") {
+                    let values: Vec<&str> = s
+                        .trim_start_matches("set")
+                        .trim_start_matches("save")
+                        .split_whitespace()
+                        .collect();
                     Ok(Command::Set(
                         values.first().ok_or(())?.to_string(),
                         values[1..].join(" "),
+                        s.starts_with("save"),
                     ))
                 } else if s.starts_with("scroll") {
                     let mut values = s.trim_start_matches("scroll").split_whitespace();
@@ -100,7 +106,8 @@ impl Command {
                 Key::Char('`') => Command::Scroll(ScrollArea::Section, Direction::Left, 1),
                 Key::Char('\t') => Command::Scroll(ScrollArea::Section, Direction::Right, 1),
                 Key::Char(':') => Command::UpdateInput(' '),
-                Key::Char('/') | Key::Char('s') => Command::Search,
+                Key::Char('s') => Command::Save,
+                Key::Char('/') => Command::Search,
                 Key::Char('\n') => Command::Select,
                 Key::Char('c') => Command::Copy,
                 Key::Char('r') | Key::F(5) => Command::Refresh,
@@ -134,8 +141,12 @@ mod tests {
             (Command::Refresh, "refresh"),
             (Command::Exit, "quit"),
             (
-                Command::Set(String::from("a"), String::from("b c")),
+                Command::Set(String::from("a"), String::from("b c"), false),
                 "set a b c",
+            ),
+            (
+                Command::Set(String::from("a"), String::from("b c"), true),
+                "save a b c",
             ),
             (
                 Command::Scroll(ScrollArea::List, Direction::Up, 1),

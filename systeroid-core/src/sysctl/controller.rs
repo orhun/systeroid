@@ -4,13 +4,17 @@ use crate::error::Result;
 use crate::parsers::{parse_kernel_docs, KERNEL_DOCS_PATH};
 use crate::sysctl::parameter::Parameter;
 use crate::sysctl::section::Section;
-use crate::sysctl::DEPRECATED_PARAMS;
-use crate::sysctl::{DISABLE_CACHE_ENV, PARAMETERS_CACHE_LABEL, PROC_PATH};
+use crate::sysctl::{
+    DEFAULT_PRELOAD, DEPRECATED_PARAMS, DISABLE_CACHE_ENV, PARAMETERS_CACHE_LABEL, PROC_PATH,
+};
 use parseit::globwalk;
+use parseit::reader;
 use rayon::prelude::*;
 use std::convert::TryFrom;
 use std::env;
-use std::path::Path;
+use std::fs::{File, OpenOptions};
+use std::io::Write;
+use std::path::{Path, PathBuf};
 use std::result::Result as StdResult;
 use sysctl::{CtlFlags, CtlIter, Sysctl as SysctlImpl};
 
@@ -171,6 +175,38 @@ impl Sysctl {
                 }
             });
         Ok(())
+    }
+
+    /// Saves the parameter values to the given file.
+    pub fn save_to_file(
+        &self,
+        param_name: String,
+        new_value: String,
+        save_path: &Option<PathBuf>,
+    ) -> Result<PathBuf> {
+        let save_path = save_path
+            .clone()
+            .unwrap_or_else(|| PathBuf::from(DEFAULT_PRELOAD));
+        let data = format!("{} = {}", param_name, new_value);
+        if save_path.exists() {
+            let contents = reader::read_to_string(&save_path)?;
+            let mut lines = contents.split('\n').collect::<Vec<&str>>();
+            if let Some(line) = lines.iter_mut().find(|v| v.starts_with(&param_name)) {
+                *line = &data;
+            } else {
+                lines.push(&data);
+            }
+            let mut file = OpenOptions::new()
+                .write(true)
+                .create(false)
+                .truncate(false)
+                .open(&save_path)?;
+            file.write_all(lines.join("\n").as_bytes())?;
+        } else {
+            let mut file = File::create(&save_path)?;
+            file.write_all(data.as_bytes())?;
+        }
+        Ok(save_path)
     }
 }
 
