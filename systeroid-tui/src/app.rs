@@ -17,6 +17,8 @@ pub struct KeyBinding<'a> {
     pub key: &'a str,
     /// Action to perform.
     pub action: &'a str,
+    /// Corresponding command.
+    pub command: Option<&'a str>,
 }
 
 /// Help text to show.
@@ -38,54 +40,67 @@ pub const KEY_BINDINGS: &[&KeyBinding] = &[
     &KeyBinding {
         key: "[?], f1",
         action: "show help",
+        command: None,
     },
     &KeyBinding {
         key: "up/down, k/j, pgup/pgdown",
         action: "scroll list",
+        command: None,
     },
     &KeyBinding {
         key: "t/b",
         action: "scroll to top/bottom",
+        command: Some("scroll list top"),
     },
     &KeyBinding {
         key: "left/right, h/l",
         action: "scroll documentation",
+        command: Some("scroll docs down 1"),
     },
     &KeyBinding {
         key: "tab, [`]",
         action: "next/previous section",
+        command: Some("scroll section right"),
     },
     &KeyBinding {
         key: "[:]",
         action: "command",
+        command: None,
     },
     &KeyBinding {
         key: "[/]",
         action: "search",
+        command: Some("search"),
     },
     &KeyBinding {
         key: "enter",
         action: "select / set value",
+        command: None,
     },
     &KeyBinding {
         key: "s",
         action: "save value to file",
+        command: None,
     },
     &KeyBinding {
         key: "c",
         action: "copy to clipboard",
+        command: None,
     },
     &KeyBinding {
         key: "r, f5",
         action: "refresh",
+        command: Some("refresh"),
     },
     &KeyBinding {
         key: "esc",
         action: "cancel / exit",
+        command: Some("exit"),
     },
     &KeyBinding {
         key: "q, ctrl-c/ctrl-d",
         action: "exit",
+        command: Some("exit"),
     },
 ];
 
@@ -263,6 +278,14 @@ impl<'a> App<'a> {
                     self.copy_to_clipboard(copy_option)?;
                     self.options = None;
                 } else if self.show_help {
+                    if let Some(command) = self
+                        .key_bindings
+                        .selected()
+                        .and_then(|v| v.command)
+                        .and_then(|v| Command::from_str(v).ok())
+                    {
+                        self.run_command(command)?;
+                    }
                     self.key_bindings.state.select(None);
                 } else if let Some(parameter) = self.parameter_list.selected() {
                     self.search_mode = false;
