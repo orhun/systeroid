@@ -492,7 +492,7 @@ impl<'a> App<'a> {
                 if let Some(input) = &self.input {
                     if direction == Direction::Right {
                         if let Some(cursor_position) = self.input_cursor.checked_sub(1) {
-                            self.input_cursor = cursor_position as u16;
+                            self.input_cursor = cursor_position;
                         }
                     } else if self.input_cursor != input.width() as u16 {
                         self.input_cursor += 1;
