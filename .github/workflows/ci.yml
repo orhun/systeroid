@@ -43,7 +43,7 @@ jobs:
           override: true
 
       - name: Cache Cargo dependencies
-        uses: Swatinem/rust-cache@v1
+        uses: Swatinem/rust-cache@v2
 
       - name: Build
         uses: actions-rs/cargo@v1
@@ -78,7 +78,7 @@ jobs:
           override: true
 
       - name: Cache Cargo dependencies
-        uses: Swatinem/rust-cache@v1
+        uses: Swatinem/rust-cache@v2
 
       - name: Setup cargo-tarpaulin
         shell: bash
