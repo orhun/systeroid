@@ -17,7 +17,7 @@ fn main() {
             match command.spawn().map(|mut child| child.wait()) {
                 Ok(_) => process::exit(0),
                 Err(e) => {
-                    eprintln!("Cannot run `{}` ({})", bin, e);
+                    eprintln!("Cannot run `{bin}` ({e})");
                     process::exit(1)
                 }
             }
@@ -26,7 +26,7 @@ fn main() {
             match systeroid::run(args, &mut stdout) {
                 Ok(_) => process::exit(0),
                 Err(e) => {
-                    eprintln!("{}", e);
+                    eprintln!("{e}");
                     process::exit(1)
                 }
             }

@@ -85,7 +85,7 @@ impl FromStr for Color {
                 "lightcyan" | "light cyan" => TuiColor::LightCyan,
                 "white" => TuiColor::White,
                 _ => {
-                    let rgb = Rgb::from_hex_str(&format!("#{}", s))?;
+                    let rgb = Rgb::from_hex_str(&format!("#{s}"))?;
                     TuiColor::Rgb(rgb.red() as u8, rgb.green() as u8, rgb.blue() as u8)
                 }
             },

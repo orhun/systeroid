@@ -98,7 +98,7 @@ impl Args {
         let opts = Self::get_options();
         let matches = opts
             .parse(&env_args[1..])
-            .map_err(|e| eprintln!("error: `{}`", e))
+            .map_err(|e| eprintln!("error: `{e}`"))
             .ok()?;
         if matches.opt_present("h") {
             let usage = opts.usage_with_format(|opts| {
@@ -106,7 +106,7 @@ impl Args {
                     .replace("{bin}", env!("CARGO_PKG_NAME"))
                     .replace("{usage}", &opts.collect::<Vec<String>>().join("\n"))
             });
-            println!("{}", usage);
+            println!("{usage}");
             None
         } else if matches.opt_present("V") {
             println!("{} {}", env!("CARGO_PKG_NAME"), env!("CARGO_PKG_VERSION"));
@@ -115,7 +115,7 @@ impl Args {
             Some(Args {
                 tick_rate: matches
                     .opt_get("t")
-                    .map_err(|e| eprintln!("error: `{}`", e))
+                    .map_err(|e| eprintln!("error: `{e}`"))
                     .ok()?
                     .unwrap_or(250),
                 kernel_docs: matches

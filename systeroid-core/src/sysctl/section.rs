@@ -27,7 +27,7 @@ impl Section {
     /// Returns the section of the given parameter name.
     pub fn from_name(name: String) -> Self {
         for section in Self::variants() {
-            if name.starts_with(&format!("{}.", section)) {
+            if name.starts_with(&format!("{section}.")) {
                 return *section;
             }
         }
@@ -64,7 +64,7 @@ impl<'a> From<&'a Path> for Section {
 
 impl Display for Section {
     fn fmt(&self, f: &mut Formatter) -> fmt::Result {
-        write!(f, "{}", format!("{:?}", self).to_lowercase())
+        write!(f, "{}", format!("{self:?}").to_lowercase())
     }
 }
 

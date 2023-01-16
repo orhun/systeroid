@@ -185,7 +185,7 @@ fn render_section_text<B: Backend>(
     section: &str,
     colors: &Colors,
 ) {
-    let section = format!("|{}|", section);
+    let section = format!("|{section}|");
     let text_width: u16 = section.width().try_into().unwrap_or(1);
     let vertical_area = Layout::default()
         .direction(Direction::Vertical)
@@ -423,7 +423,7 @@ fn render_input_prompt<B: Backend>(
     let text = match app.input.clone() {
         Some(mut input) => {
             if app.input_time.is_some() {
-                format!("MSG: {}", input)
+                format!("MSG: {input}")
             } else {
                 let mut skip_chars = 0;
                 if let Some(width_overflow) = (input.width() as u16 + 4)

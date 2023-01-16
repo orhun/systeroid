@@ -18,7 +18,7 @@ fn main() -> Result<()> {
         match systeroid_tui::run(args, backend) {
             Ok(_) => process::exit(0),
             Err(e) => {
-                eprintln!("{}", e);
+                eprintln!("{e}");
                 process::exit(1)
             }
         }

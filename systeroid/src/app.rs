@@ -95,7 +95,7 @@ impl<'a, Output: Write> App<'a, Output> {
                 }
                 Err(e) => {
                     if !pager.is_empty() {
-                        eprintln!("pager error: `{}`", e);
+                        eprintln!("pager error: `{e}`");
                     }
                     fallback_to_default = true;
                 }
@@ -261,7 +261,7 @@ mod tests {
         app.process_parameter(param_name.clone(), true, false)?;
         let result = String::from_utf8_lossy(app.output);
         assert!(result.contains("\"section\":\"kernel\""));
-        assert!(result.contains(&format!("\"name\":\"{}\"", param_name)));
+        assert!(result.contains(&format!("\"name\":\"{param_name}\"")));
 
         Ok(())
     }

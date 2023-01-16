@@ -36,7 +36,7 @@ impl<'a> TryFrom<&'a Ctl> for Parameter {
             description: ctl
                 .description()
                 .ok()
-                .and_then(|v| (v == "[N/A]").then(|| None)?),
+                .and_then(|v| (v == "[N/A]").then_some(None)?),
             section: Section::from_name(ctl.name()?),
             docs_path: PathBuf::new(),
             docs_title: String::new(),
@@ -174,7 +174,7 @@ impl Parameter {
     /// Prints the description of the kernel parameter to the given output.
     pub fn display_documentation<Output: Write>(&self, output: &mut Output) -> Result<()> {
         if let Some(documentation) = self.get_documentation() {
-            writeln!(output, "{}\n", documentation)?;
+            writeln!(output, "{documentation}\n")?;
         } else {
             writeln!(output, "No documentation available for {}", self.name)?;
         }
@@ -207,7 +207,7 @@ impl Parameter {
                 return true;
             }
             if components.peek().is_some() {
-                subsection = format!("{}.{}", subsection, component)
+                subsection = format!("{subsection}.{component}")
             }
         }
         false

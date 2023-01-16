@@ -187,7 +187,7 @@ impl Sysctl {
         let save_path = save_path
             .clone()
             .unwrap_or_else(|| PathBuf::from(DEFAULT_PRELOAD));
-        let data = format!("{} = {}", param_name, new_value);
+        let data = format!("{param_name} = {new_value}");
         if save_path.exists() {
             let contents = reader::read_to_string(&save_path)?;
             let mut lines = contents.split('\n').collect::<Vec<&str>>();

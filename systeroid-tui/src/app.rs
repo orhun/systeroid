@@ -323,10 +323,10 @@ impl<'a> App<'a> {
                             &self.sysctl.config.tui.save_path,
                         ) {
                             Ok(path) => {
-                                self.input = Some(format!("Saved to file: {:?}", path));
+                                self.input = Some(format!("Saved to file: {path:?}"));
                             }
                             Err(e) => {
-                                self.input = Some(format!("Failed to save: {}", e));
+                                self.input = Some(format!("Failed to save: {e}"));
                             }
                         }
                         self.input_time = Some(Instant::now());
