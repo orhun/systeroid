@@ -3,7 +3,7 @@ use crate::error::Result;
 use crate::options::{CopyOption, Direction, ScrollArea};
 use crate::widgets::SelectableList;
 #[cfg(feature = "clipboard")]
-use copypasta_ext::{display::DisplayServer, prelude::ClipboardProvider};
+use copypasta_ext::{display::DisplayServer, ClipboardProviderExt};
 use std::str::FromStr;
 use std::time::Instant;
 use systeroid_core::sysctl::controller::Sysctl;
@@ -133,7 +133,7 @@ pub struct App<'a> {
     pub key_bindings: SelectableList<&'a KeyBinding<'a>>,
     #[cfg(feature = "clipboard")]
     /// Clipboard context.
-    clipboard: Option<Box<dyn ClipboardProvider>>,
+    clipboard: Option<Box<dyn ClipboardProviderExt>>,
     /// Sysctl controller.
     sysctl: &'a mut Sysctl,
 }
