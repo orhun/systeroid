@@ -115,7 +115,7 @@ jobs:
           done
           mv release/ "$release_dir/"
           tar -czvf "$artifact_name" "$release_dir/"
-          echo "::set-output name=artifact_name::$artifact_name"
+          echo "artifact_name=$artifact_name" >> $GITHUB_OUTPUT
 
       - name: Sign assets & generate checksums
         run: |
