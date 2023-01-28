@@ -1,6 +1,17 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.3.1] - 2023-01-28
+### Bug Fixes
+- Apply clippy suggestions
+
+### Documentation
+- Fix badge links
+- Update copyright years
+
+### Miscellaneous Tasks
+- Bump dependencies
+
 ## [0.3.0] - 2022-09-17
 ### Features
 - (tui) Support saving changed values ([#13](https://github.com/orhun/git-cliff/issues/13))

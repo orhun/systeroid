@@ -785,7 +785,7 @@ dependencies = [
 
 [[package]]
 name = "systeroid"
-version = "0.3.0"
+version = "0.3.1"
 dependencies = [
  "getopts",
  "systeroid-core",
@@ -793,7 +793,7 @@ dependencies = [
 
 [[package]]
 name = "systeroid-core"
-version = "0.3.0"
+version = "0.3.1"
 dependencies = [
  "colored",
  "dirs-next",
@@ -809,7 +809,7 @@ dependencies = [
 
 [[package]]
 name = "systeroid-tui"
-version = "0.3.0"
+version = "0.3.1"
 dependencies = [
  "colorsys",
  "copypasta-ext",
