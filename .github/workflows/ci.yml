@@ -160,9 +160,9 @@ jobs:
         shell: bash
         run: |
           curl -s 'https://api.github.com/repos/foresterre/cargo-msrv/releases' | \
-            jq -r ".[0].assets[] | select(.name | contains (\"Linux_x86_64\")).browser_download_url" | \
+            jq -r "[.[] | select(.prerelease == false)][0].assets[] | select(.name | ascii_downcase | test(\"linux.*x86_64|x86_64.*linux\")).browser_download_url" | \
             wget -qi -
-          tar -xvf cargo-msrv*_Linux_x86_64.tar -C  ~/.cargo/bin/ cargo-msrv
+          tar -xvf cargo-msrv*.tar* -C  ~/.cargo/bin/ cargo-msrv
           for package in $(cargo metadata --format-version 1 | jq -r ".workspace_members[]" | awk '{print $1}'); do
             printf "Checking MSRV for $package..."
             cargo msrv --output-format json --path "$package" verify | tail -n 1 | jq --exit-status '.success'
