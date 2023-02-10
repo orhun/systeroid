@@ -99,6 +99,7 @@ Although **systeroid** does not need the parameter section to be specified expli
   - [References](#references)
   - [Logo](#logo)
   - [Social Links](#social-links)
+  - [In The Media](#in-the-media)
   - [Funding](#funding)
 - [Contributing](#contributing)
 - [License](#license)
@@ -610,6 +611,10 @@ See the example [systeroid.conf](./config/systeroid.conf) for the configuration 
 - [![https://orhun.dev](https://img.shields.io/badge/author-orhun-000000?style=flat&logo=Rust&labelColor=000000&color=CECDCB&logoColor=CECDCB)](https://orhun.dev)
   - [![Follow @orhun](https://img.shields.io/github/followers/orhun?label=follow%20%40orhun&style=flat&logo=GitHub&labelColor=000000&color=CECDCB&logoColor=CECDCB)](https://github.com/orhun)
   - [![Follow @orhunp_](https://img.shields.io/twitter/follow/orhunp_?style=flat&logo=twitter&labelColor=000000&color=CECDCB&logoColor=CECDCB)](https://twitter.com/orhunp_)
+
+## In The Media
+
+- [Systeroid: Best Way To Set Linux Kernel Parameters (YouTube / Brodie Smith)](https://www.youtube.com/watch?v=v3q707TRIIs)
 
 ### Funding
 
