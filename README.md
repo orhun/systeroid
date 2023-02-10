@@ -614,7 +614,7 @@ See the example [systeroid.conf](./config/systeroid.conf) for the configuration 
 
 ## In The Media
 
-- [Systeroid: Best Way To Set Linux Kernel Parameters (YouTube / Brodie Smith)](https://www.youtube.com/watch?v=v3q707TRIIs)
+- [Systeroid: Best Way To Set Linux Kernel Parameters (YouTube / Brodie Robertson)](https://www.youtube.com/watch?v=v3q707TRIIs)
 
 ### Funding
 
