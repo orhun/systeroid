@@ -79,8 +79,9 @@ jobs:
         run: echo "RELEASE_VERSION=${GITHUB_REF:11}" >> $GITHUB_ENV
 
       - name: Install Rust
-        uses: dtolnay/rust-toolchain@${{ matrix.TOOLCHAIN }}
+        uses: dtolnay/rust-toolchain@master
         with:
+          toolchain: ${{ matrix.TOOLCHAIN }}
           targets: ${{ matrix.TARGET }}
 
       - name: Build

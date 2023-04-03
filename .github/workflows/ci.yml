@@ -35,8 +35,9 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Install Rust
-        uses: dtolnay/rust-toolchain@${{ matrix.TOOLCHAIN }}
+        uses: dtolnay/rust-toolchain@master
         with:
+          toolchain: ${{ matrix.TOOLCHAIN }}
           targets: ${{ matrix.TARGET }}
 
       - name: Cache Cargo dependencies
