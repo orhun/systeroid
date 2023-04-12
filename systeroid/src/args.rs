@@ -1,8 +1,8 @@
 use getopts::Options;
+use parseit::regex::Regex;
 use std::env;
 use std::path::PathBuf;
 use systeroid_core::config::CONFIG_ENV;
-use systeroid_core::parseit::regex::Regex;
 use systeroid_core::sysctl::r#type::DisplayType;
 use systeroid_core::sysctl::r#type::OutputType;
 use systeroid_core::sysctl::{DEFAULT_PRELOAD, KERNEL_DOCS_ENV};

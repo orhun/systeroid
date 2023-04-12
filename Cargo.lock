@@ -813,6 +813,7 @@ name = "systeroid"
 version = "0.3.1"
 dependencies = [
  "getopts",
+ "parseit",
  "systeroid-core",
 ]
 

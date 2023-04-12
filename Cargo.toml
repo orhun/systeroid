@@ -1,9 +1,8 @@
 [workspace]
-members = [
-    "systeroid-core",
-    "systeroid-tui",
-    "systeroid"
-]
+members = ["systeroid-core", "systeroid-tui", "systeroid"]
+
+[workspace.dependencies]
+parseit = { version = "0.1.2", features = ["gzip"] }
 
 [profile.dev]
 opt-level = 0
