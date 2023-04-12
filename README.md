@@ -54,8 +54,7 @@ Although **systeroid** does not need the parameter section to be specified expli
 
 ---
 
-<details>
-  <summary>Table of Contents</summary>
+<!-- vim-markdown-toc GFM -->
 
 - [Requirements](#requirements)
 - [Installation](#installation)
@@ -105,7 +104,7 @@ Although **systeroid** does not need the parameter section to be specified expli
 - [License](#license)
 - [Copyright](#copyright)
 
-</details>
+<!-- vim-markdown-toc -->
 
 ## Requirements
 
@@ -612,7 +611,7 @@ See the example [systeroid.conf](./config/systeroid.conf) for the configuration 
   - [![Follow @orhun](https://img.shields.io/github/followers/orhun?label=follow%20%40orhun&style=flat&logo=GitHub&labelColor=000000&color=CECDCB&logoColor=CECDCB)](https://github.com/orhun)
   - [![Follow @orhunp_](https://img.shields.io/twitter/follow/orhunp_?style=flat&logo=twitter&labelColor=000000&color=CECDCB&logoColor=CECDCB)](https://twitter.com/orhunp_)
 
-## In The Media
+### In The Media
 
 - [Systeroid: Best Way To Set Linux Kernel Parameters (YouTube / Brodie Robertson)](https://www.youtube.com/watch?v=v3q707TRIIs)
 
