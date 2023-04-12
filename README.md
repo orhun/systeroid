@@ -108,7 +108,7 @@ Although **systeroid** does not need the parameter section to be specified expli
 
 ## Requirements
 
-- [`Rust`](https://www.rust-lang.org/) (`>=1.56.1`) (see [building from source](#building-from-source))
+- [`Rust`](https://www.rust-lang.org/) (`>=1.63.0`) (see [building from source](#building-from-source))
 - [`libxcb`](https://gitlab.freedesktop.org/xorg/lib/libxcb) (for [clipboard support](#copying-to-clipboard))
 - [`linux-documentation`](https://www.kernel.org/doc/) (for [viewing the documentation](#viewing-the-parameter-documentation))
 
