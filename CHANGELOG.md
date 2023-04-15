@@ -1,6 +1,31 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.3.2] - 2023-04-15
+
+### Documentation
+
+- Add in-the-media section (https://youtu.be/v3q707TRIIs)
+- Update MSRV to 1.64.0
+
+### Features
+
+- Generate SBOM attestation for the Docker image
+- Scan the Docker image using Syft
+
+### Miscellaneous Tasks
+
+- Switch to ratatui for tui rendering
+- Switch to dtolnay/rust-toolchain action
+- Update runner versions
+- Update funding options
+- Check dependency updates daily
+- Bump dependencies
+
+### Refactor
+
+- Use parseit as a workspace dependency
+
 ## [0.3.1] - 2023-01-28
 ### Bug Fixes
 - Apply clippy suggestions
