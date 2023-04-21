@@ -4,11 +4,13 @@ use crate::options::{CopyOption, Direction, ScrollArea};
 use crate::widgets::SelectableList;
 #[cfg(feature = "clipboard")]
 use copypasta_ext::{display::DisplayServer, ClipboardProviderExt};
+use log::{Level, LevelFilter};
 use std::str::FromStr;
 use std::time::Instant;
 use systeroid_core::sysctl::controller::Sysctl;
 use systeroid_core::sysctl::parameter::Parameter;
 use systeroid_core::sysctl::section::Section;
+use tui_logger::TuiWidgetState;
 use unicode_width::UnicodeWidthStr;
 
 /// Representation of a key binding.
@@ -88,6 +90,11 @@ pub const KEY_BINDINGS: &[&KeyBinding] = &[
         command: None,
     },
     &KeyBinding {
+        key: "ctrl-l, f2",
+        action: "show logs",
+        command: Some("logs"),
+    },
+    &KeyBinding {
         key: "r, f5",
         action: "refresh",
         command: Some("refresh"),
@@ -113,6 +120,10 @@ pub struct App<'a> {
     pub running: bool,
     /// Whether if the help message is shown.
     pub show_help: bool,
+    /// Whether if the logs are shown.
+    pub show_logs: bool,
+    /// Logger state.
+    pub logger_state: TuiWidgetState,
     /// Input buffer.
     pub input: Option<String>,
     /// Time tracker for measuring the time for clearing the input.
@@ -144,6 +155,8 @@ impl<'a> App<'a> {
         let mut app = Self {
             running: true,
             show_help: false,
+            show_logs: false,
+            logger_state: TuiWidgetState::new().set_default_display_level(LevelFilter::Trace),
             input: None,
             input_time: None,
             input_cursor: 0,
@@ -167,16 +180,16 @@ impl<'a> App<'a> {
         app.parameter_list.items = app.sysctl.parameters.clone();
         #[cfg(feature = "clipboard")]
         {
-            app.clipboard = match DisplayServer::select().try_context() {
-                None => {
-                    app.input = Some(String::from(
+            app.clipboard =
+                match DisplayServer::select().try_context() {
+                    None => {
+                        app.log(Level::Error, String::from(
                         "Failed to initialize clipboard, no suitable clipboard provider found",
                     ));
-                    app.input_time = Some(Instant::now());
-                    None
+                        None
+                    }
+                    clipboard => clipboard,
                 }
-                clipboard => clipboard,
-            }
         }
         app
     }
@@ -184,6 +197,13 @@ impl<'a> App<'a> {
     /// Returns true if the app is in input mode.
     pub fn is_input_mode(&self) -> bool {
         self.input.is_some() && self.input_time.is_none()
+    }
+
+    /// Sets the log message for the application.
+    pub fn log(&mut self, level: Level, message: String) {
+        log::log!(level, "{message}");
+        self.input = Some(message);
+        self.input_time = Some(Instant::now());
     }
 
     /// Performs a search operation in the kernel parameter list.
@@ -228,7 +248,7 @@ impl<'a> App<'a> {
     /// Copies the selected entry to the clipboard.
     #[cfg(feature = "clipboard")]
     fn copy_to_clipboard(&mut self, copy_option: CopyOption) -> Result<()> {
-        self.input = Some(if let Some(clipboard) = self.clipboard.as_mut() {
+        if let Some(clipboard) = self.clipboard.as_mut() {
             if let Some(parameter) = self.parameter_list.selected() {
                 match copy_option {
                     CopyOption::Name => clipboard.set_contents(parameter.name.clone()),
@@ -238,22 +258,23 @@ impl<'a> App<'a> {
                     }
                 }
                 .map_err(|e| crate::error::Error::ClipboardError(e.to_string()))?;
-                String::from("Copied to clipboard!")
+                self.log(Level::Info, String::from("Copied to clipboard!"));
             } else {
-                String::from("No parameter is selected")
+                self.log(Level::Warn, String::from("No parameter is selected"));
             }
         } else {
-            String::from("Clipboard is not initialized")
-        });
-        self.input_time = Some(Instant::now());
+            self.log(Level::Error, String::from("Clipboard is not initialized"));
+        }
         Ok(())
     }
 
     /// Shows a message about clipboard being not enabled.
     #[cfg(not(feature = "clipboard"))]
     fn copy_to_clipboard(&mut self, _: CopyOption) -> Result<()> {
-        self.input = Some(String::from("Clipboard support is not enabled"));
-        self.input_time = Some(Instant::now());
+        self.log(
+            Level::Warn,
+            String::from("Clipboard support is not enabled"),
+        );
         Ok(())
     }
 
@@ -267,6 +288,12 @@ impl<'a> App<'a> {
                 self.key_bindings.state.select(None);
                 self.show_help = true;
                 hide_popup = false;
+            }
+            Command::Logs => {
+                self.show_logs = !self.show_logs;
+            }
+            Command::LoggerEvent(event) => {
+                self.logger_state.transition(&event.0);
             }
             Command::Select => {
                 if let Some(copy_option) = self
@@ -312,8 +339,7 @@ impl<'a> App<'a> {
                             self.run_command(Command::Refresh)?;
                         }
                         Err(e) => {
-                            self.input = Some(e.to_string());
-                            self.input_time = Some(Instant::now());
+                            self.log(Level::Error, e.to_string());
                         }
                     }
                     if save_to_file {
@@ -323,17 +349,15 @@ impl<'a> App<'a> {
                             &self.sysctl.config.tui.save_path,
                         ) {
                             Ok(path) => {
-                                self.input = Some(format!("Saved to file: {path:?}"));
+                                self.log(Level::Info, format!("Saved to file: {path:?}"));
                             }
                             Err(e) => {
-                                self.input = Some(format!("Failed to save: {e}"));
+                                self.log(Level::Error, format!("Failed to save: {e}"));
                             }
                         }
-                        self.input_time = Some(Instant::now());
                     }
                 } else {
-                    self.input = Some(String::from("Unknown parameter"));
-                    self.input_time = Some(Instant::now());
+                    self.log(Level::Warn, String::from("Unknown parameter"));
                 }
             }
             Command::Scroll(ScrollArea::List, Direction::Up, amount) => {
@@ -442,8 +466,7 @@ impl<'a> App<'a> {
                         self.run_command(command)?;
                         hide_popup = false;
                     } else {
-                        self.input = Some(String::from("Unknown command"));
-                        self.input_time = Some(Instant::now());
+                        self.log(Level::Warn, String::from("Unknown command"));
                     }
                 }
             }
@@ -516,8 +539,7 @@ impl<'a> App<'a> {
                     hide_popup = false;
                     self.show_help = false;
                 } else {
-                    self.input = Some(String::from("No parameter is selected"));
-                    self.input_time = Some(Instant::now());
+                    self.log(Level::Warn, String::from("No parameter is selected"));
                 }
             }
             Command::Refresh => {

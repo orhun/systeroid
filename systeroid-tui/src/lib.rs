@@ -27,6 +27,7 @@ use crate::command::Command;
 use crate::error::Result;
 use crate::event::{Event, EventHandler};
 use crate::style::Colors;
+use command::LoggerCommand;
 use systeroid_core::cache::Cache;
 use systeroid_core::config::Config;
 use systeroid_core::sysctl::controller::Sysctl;
@@ -75,7 +76,12 @@ pub fn run<B: Backend>(args: Args, backend: B) -> Result<()> {
         terminal.draw(|frame| ui::render(frame, &mut app, &colors))?;
         match event_handler.next()? {
             Event::KeyPress(key) => {
-                let command = Command::parse(key, app.is_input_mode());
+                let mut command = Command::parse(key, app.is_input_mode());
+                if app.show_logs {
+                    command = LoggerCommand::parse(key)
+                        .map(Command::LoggerEvent)
+                        .unwrap_or(command);
+                }
                 app.run_command(command)?;
             }
             #[cfg(not(test))]

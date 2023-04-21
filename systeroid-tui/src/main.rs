@@ -1,3 +1,4 @@
+use log::LevelFilter;
 use std::env;
 use std::io;
 use std::process;
@@ -15,6 +16,9 @@ fn main() -> Result<()> {
         let output = MouseTerminal::from(output);
         let output = output.into_alternate_screen()?;
         let backend = TermionBackend::new(output);
+        tui_logger::init_logger(LevelFilter::Trace)?;
+        tui_logger::set_default_level(LevelFilter::Trace);
+        // tui_logger::set_log_file("systeroid.log")?;
         match systeroid_tui::run(args, backend) {
             Ok(_) => process::exit(0),
             Err(e) => {

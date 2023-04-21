@@ -15,6 +15,9 @@ pub enum Error {
     /// Error that may occur while parsing a color.
     #[error(transparent)]
     ColorParseError(#[from] colorsys::ParseError),
+    /// Error that may occur if the logger is already set.
+    #[error(transparent)]
+    LoggerError(#[from] log::SetLoggerError),
     /// Error that may occur in the core library.
     #[error(transparent)]
     SysctlError(#[from] systeroid_core::error::Error),
