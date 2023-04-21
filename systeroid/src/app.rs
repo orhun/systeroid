@@ -95,7 +95,7 @@ impl<'a, Output: Write> App<'a, Output> {
                 }
                 Err(e) => {
                     if !pager.is_empty() {
-                        eprintln!("pager error: `{e}`");
+                        log::error!("pager error: `{e}`");
                     }
                     fallback_to_default = true;
                 }
@@ -130,7 +130,7 @@ impl<'a, Output: Write> App<'a, Output> {
             if parameters.len() == 1 {
                 let param = parameters[0];
                 if DEPRECATED_PARAMS.contains(&param.get_absolute_name().unwrap_or_default()) {
-                    eprintln!(
+                    log::error!(
                         "{}: {} is deprecated, value not set",
                         env!("CARGO_PKG_NAME"),
                         parameter
@@ -145,14 +145,14 @@ impl<'a, Output: Write> App<'a, Output> {
                     param.update_value(&new_value, &config, self.output)?;
                 }
             } else {
-                eprintln!(
+                log::error!(
                     "{}: ambiguous parameter name: {}",
                     env!("CARGO_PKG_NAME"),
                     parameter
                 );
             }
         } else if write_mode {
-            eprintln!(
+            log::error!(
                 "{}: {:?} must be in the format: name=value",
                 env!("CARGO_PKG_NAME"),
                 parameter
@@ -171,13 +171,13 @@ impl<'a, Output: Write> App<'a, Output> {
             let lines = stdin.lock().lines();
             for line in lines {
                 if let Err(e) = self.process_parameter(line?, true, false) {
-                    println!("{}: {}", env!("CARGO_PKG_NAME"), e);
+                    log::info!("{}: {}", env!("CARGO_PKG_NAME"), e);
                 }
             }
             return Ok(());
         }
         if !path.exists() {
-            eprintln!(
+            log::error!(
                 "{}: cannot open {:?}: No such file or directory",
                 env!("CARGO_PKG_NAME"),
                 path
@@ -194,7 +194,7 @@ impl<'a, Output: Write> App<'a, Output> {
             if !parameter.starts_with('-') {
                 process_result?;
             } else if let Err(e) = process_result {
-                eprintln!("{}: {}", env!("CARGO_PKG_NAME"), e);
+                log::error!("{}: {}", env!("CARGO_PKG_NAME"), e);
             }
         }
         Ok(())
@@ -208,7 +208,7 @@ impl<'a, Output: Write> App<'a, Output> {
         {
             if let Ok(glob_walker) = globwalk::glob(preload_path.to_string_lossy()) {
                 for file in glob_walker.filter_map(|v| v.ok()) {
-                    println!("* Applying {} ...", file.path().display());
+                    log::info!("* Applying {} ...", file.path().display());
                     self.preload_from_file(file.path().to_path_buf())?;
                 }
             }
