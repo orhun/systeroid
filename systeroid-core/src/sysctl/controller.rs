@@ -52,7 +52,7 @@ impl Sysctl {
                 }
                 Err(e) => {
                     if config.cli.verbose {
-                        eprintln!("{} ({})", e, ctl.name()?);
+                        log::error!("{} ({})", e, ctl.name()?);
                     }
                 }
             }
@@ -79,7 +79,7 @@ impl Sysctl {
             })
             .collect::<Vec<&Parameter>>();
         if parameters.is_empty() && !self.config.cli.ignore_errors {
-            eprintln!(
+            log::error!(
                 "{}: cannot stat {}{}: No such file or directory",
                 env!("CARGO_PKG_NAME").split('-').collect::<Vec<_>>()[0],
                 PROC_PATH,
@@ -123,7 +123,7 @@ impl Sysctl {
                 )?;
             }
         } else {
-            eprintln!("warning: `Linux kernel documentation cannot be found. Please specify a path via '-D' argument`");
+            log::error!("warning: `Linux kernel documentation cannot be found. Please specify a path via '-D' argument`");
         }
         Ok(())
     }
