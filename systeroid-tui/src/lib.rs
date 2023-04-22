@@ -55,6 +55,7 @@ pub fn run<B: Backend>(args: Args, backend: B) -> Result<()> {
     if let Some(ref log_file) = config.tui.log_file {
         tui_logger::set_log_file(log_file)?;
     }
+    log::trace!("{:?}", config);
     let mut sysctl = Sysctl::init(config)?;
     if !sysctl.config.tui.no_docs {
         sysctl.update_docs_from_cache(&Cache::init()?)?;

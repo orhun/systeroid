@@ -30,7 +30,6 @@ pub struct Sysctl {
 impl Sysctl {
     /// Constructs a new instance by fetching the available kernel parameters.
     pub fn init(config: Config) -> Result<Self> {
-        log::trace!("{:?}", config);
         let mut parameters = Vec::new();
         for ctl in CtlIter::root().filter_map(StdResult::ok).filter(|ctl| {
             ctl.flags()
@@ -121,6 +120,7 @@ impl Sysctl {
             }
             self.update_docs(path)?;
             if env::var(DISABLE_CACHE_ENV).is_err() {
+                log::trace!("Writing cache to {:?}", cache);
                 cache.write(
                     CacheData::new(&self.parameters, path)?,
                     PARAMETERS_CACHE_LABEL,
