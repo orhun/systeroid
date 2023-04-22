@@ -248,6 +248,7 @@ impl<'a> App<'a> {
     /// Copies the selected entry to the clipboard.
     #[cfg(feature = "clipboard")]
     fn copy_to_clipboard(&mut self, copy_option: CopyOption) -> Result<()> {
+        log::debug!("Copying to clipboard: {:?}", copy_option);
         if let Some(clipboard) = self.clipboard.as_mut() {
             if let Some(parameter) = self.parameter_list.selected() {
                 match copy_option {
@@ -553,6 +554,7 @@ impl<'a> App<'a> {
                         parameter.value = param.value.to_string();
                     }
                 });
+                self.log(Level::Info, String::from("Refreshed!"));
             }
             Command::Cancel => {
                 if self.input.is_some() {
