@@ -1,15 +1,12 @@
 use env_logger::Builder as LoggerBuilder;
-use log::LevelFilter;
 use std::env;
 use std::io::{self, Write};
 use std::process::{self, Command};
 use systeroid::args::Args;
 
 fn main() {
-    let mut builder = LoggerBuilder::from_default_env();
-    builder
+    LoggerBuilder::from_default_env()
         .format(|buf, record| writeln!(buf, "{}", record.args()))
-        .filter(None, LevelFilter::Info)
         .init();
     if let Some(args) = Args::parse(env::args().collect()) {
         if args.show_tui {
