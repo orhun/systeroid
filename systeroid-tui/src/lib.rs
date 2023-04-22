@@ -28,6 +28,7 @@ use crate::error::Result;
 use crate::event::{Event, EventHandler};
 use crate::style::Colors;
 use command::LoggerCommand;
+use log::LevelFilter;
 use systeroid_core::cache::Cache;
 use systeroid_core::config::Config;
 use systeroid_core::sysctl::controller::Sysctl;
@@ -43,11 +44,17 @@ pub fn run<B: Backend>(args: Args, backend: B) -> Result<()> {
     };
     config.tui.tick_rate = args.tick_rate;
     config.tui.save_path = args.save_path;
+    config.tui.log_file = args.log_file;
     config.tui.no_docs = args.no_docs;
     config.tui.color.fg_color = args.fg_color;
     config.tui.color.bg_color = args.bg_color;
     config.parse(args.config)?;
     let colors = Colors::new(&config.tui.color.bg_color, &config.tui.color.fg_color)?;
+    tui_logger::init_logger(LevelFilter::Trace)?;
+    tui_logger::set_default_level(LevelFilter::Trace);
+    if let Some(ref log_file) = config.tui.log_file {
+        tui_logger::set_log_file(log_file)?;
+    }
     let mut sysctl = Sysctl::init(config)?;
     if !sysctl.config.tui.no_docs {
         sysctl.update_docs_from_cache(&Cache::init()?)?;

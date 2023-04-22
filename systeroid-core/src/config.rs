@@ -88,6 +88,8 @@ pub struct TuiConfig {
     pub no_docs: bool,
     /// Path for saving the changed kernel parameters.
     pub save_path: Option<PathBuf>,
+    /// File to save the logs.
+    pub log_file: Option<String>,
     /// Color configuration.
     pub color: TuiColorConfig,
 }
@@ -162,6 +164,9 @@ impl Config {
                 if let Some(save_path) = section.get("save_path") {
                     self.tui.save_path = Some(PathBuf::from(save_path));
                 }
+                if let Some(log_file) = section.get("log_file") {
+                    self.tui.log_file = Some(log_file.to_string());
+                }
                 parse_ini_flag!(self, tui, section, no_docs);
             }
             if let Some(section) = ini.section(Some("tui.colors")) {
@@ -207,6 +212,7 @@ impl Default for Config {
                 tick_rate: 250,
                 no_docs: false,
                 save_path: None,
+                log_file: None,
                 color: TuiColorConfig {
                     fg_color: String::from("white"),
                     bg_color: String::from("black"),
