@@ -30,6 +30,7 @@ pub struct Sysctl {
 impl Sysctl {
     /// Constructs a new instance by fetching the available kernel parameters.
     pub fn init(config: Config) -> Result<Self> {
+        log::trace!("{:?}", config);
         let mut parameters = Vec::new();
         for ctl in CtlIter::root().filter_map(StdResult::ok).filter(|ctl| {
             ctl.flags()
@@ -68,6 +69,7 @@ impl Sysctl {
 
     /// Returns the parameters that matches the given query.
     pub fn get_parameters(&self, query: &str) -> Vec<&Parameter> {
+        log::trace!("Querying parameters: {:?}", query);
         let query = query.replace('/', ".");
         let parameters = self
             .parameters
@@ -91,6 +93,7 @@ impl Sysctl {
 
     /// Updates the descriptions of the kernel parameters using the given cached data.
     pub fn update_docs_from_cache(&mut self, cache: &Cache) -> Result<()> {
+        log::trace!("{:?}", cache);
         let mut kernel_docs_path = if let Some(path) = &self.config.kernel_docs {
             vec![path.to_path_buf()]
         } else {
@@ -109,6 +112,7 @@ impl Sysctl {
         }
         if let Some(path) = kernel_docs_path.iter().find(|path| path.exists()) {
             if cache.exists(PARAMETERS_CACHE_LABEL) {
+                log::trace!("Cache hit for {:?}", path);
                 let cache_data = cache.read(PARAMETERS_CACHE_LABEL)?;
                 if cache_data.timestamp == CacheData::<()>::get_timestamp(path)? {
                     self.update_params(cache_data.data);
@@ -146,6 +150,7 @@ impl Sysctl {
 
     /// Updates the descriptions of the kernel parameters.
     fn update_docs(&mut self, kernel_docs: &Path) -> Result<()> {
+        log::trace!("Parsing the kernel documentation from {:?}", kernel_docs);
         let documents = parse_kernel_docs(kernel_docs)?;
         self.parameters
             .par_iter_mut()
@@ -187,6 +192,12 @@ impl Sysctl {
         let save_path = save_path
             .clone()
             .unwrap_or_else(|| PathBuf::from(DEFAULT_PRELOAD));
+        log::trace!(
+            "Writing the new value ({:?}) of {:?} to {:?}",
+            new_value,
+            param_name,
+            save_path
+        );
         let data = format!("{param_name} = {new_value}");
         if save_path.exists() {
             let contents = reader::read_to_string(&save_path)?;

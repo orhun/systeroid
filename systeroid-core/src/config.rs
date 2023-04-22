@@ -106,6 +106,7 @@ pub struct TuiColorConfig {
 impl Config {
     /// Parses the configuration file and overrides values.
     pub fn parse(&mut self, path: Option<PathBuf>) -> Result<()> {
+        log::trace!("Parsing configuration from {:?}", path);
         let mut config_paths = DEFAULT_CONFIG_PATHS.clone();
         if path.is_some() {
             config_paths.insert(0, path);
