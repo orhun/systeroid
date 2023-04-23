@@ -29,6 +29,8 @@ use crate::event::{Event, EventHandler};
 use crate::style::Colors;
 use command::LoggerCommand;
 use log::LevelFilter;
+use std::env;
+use std::str::FromStr;
 use systeroid_core::cache::Cache;
 use systeroid_core::config::Config;
 use systeroid_core::sysctl::controller::Sysctl;
@@ -50,7 +52,11 @@ pub fn run<B: Backend>(args: Args, backend: B) -> Result<()> {
     config.tui.color.bg_color = args.bg_color;
     config.parse(args.config)?;
     let colors = Colors::new(&config.tui.color.bg_color, &config.tui.color.fg_color)?;
-    tui_logger::init_logger(LevelFilter::Trace)?;
+    tui_logger::init_logger(if let Ok(log_level) = env::var("RUST_LOG") {
+        LevelFilter::from_str(&log_level)?
+    } else {
+        LevelFilter::Trace
+    })?;
     tui_logger::set_default_level(LevelFilter::Trace);
     if let Some(ref log_file) = config.tui.log_file {
         tui_logger::set_log_file(log_file)?;
