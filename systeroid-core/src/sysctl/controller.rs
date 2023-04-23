@@ -51,9 +51,7 @@ impl Sysctl {
                     }
                 }
                 Err(e) => {
-                    if config.cli.verbose {
-                        log::error!("{} ({})", e, ctl.name()?);
-                    }
+                    log::trace!("{} ({})", e, ctl.name()?);
                 }
             }
         }

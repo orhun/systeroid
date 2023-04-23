@@ -1,14 +1,19 @@
 use env_logger::Builder as LoggerBuilder;
+use log::LevelFilter;
 use std::env;
 use std::io::{self, Write};
 use std::process::{self, Command};
 use systeroid::args::Args;
 
 fn main() {
-    LoggerBuilder::from_default_env()
-        .format(|buf, record| writeln!(buf, "{}", record.args()))
-        .init();
     if let Some(args) = Args::parse(env::args().collect()) {
+        let mut builder = LoggerBuilder::from_default_env();
+        if args.verbose {
+            builder.filter(None, LevelFilter::Trace);
+        }
+        builder
+            .format(|buf, record| writeln!(buf, "{}", record.args()))
+            .init();
         if args.show_tui {
             let bin = format!("{}-tui", env!("CARGO_PKG_NAME"));
             let mut command = Command::new(&bin);

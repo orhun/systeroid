@@ -23,7 +23,6 @@ pub fn run<Output: Write>(args: Args, output: &mut Output) -> Result<()> {
         kernel_docs: args.kernel_docs,
         ..Default::default()
     };
-    config.cli.verbose = args.verbose;
     config.cli.ignore_errors = args.ignore_errors;
     config.cli.quiet = args.quiet;
     config.cli.no_pager = args.no_pager;

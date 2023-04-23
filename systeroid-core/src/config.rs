@@ -54,8 +54,6 @@ pub struct Config {
 /// CLI configuration.
 #[derive(Clone, Debug)]
 pub struct CliConfig {
-    /// Whether if the verbose logging is enabled.
-    pub verbose: bool,
     /// Whether if the errors should be ignored.
     pub ignore_errors: bool,
     /// Whether if the quiet mode is enabled.
@@ -106,7 +104,6 @@ pub struct TuiColorConfig {
 impl Config {
     /// Parses the configuration file and overrides values.
     pub fn parse(&mut self, path: Option<PathBuf>) -> Result<()> {
-        log::trace!("Parsing configuration from {:?}", path);
         let mut config_paths = DEFAULT_CONFIG_PATHS.clone();
         if path.is_some() {
             config_paths.insert(0, path);
@@ -119,6 +116,7 @@ impl Config {
             }
         }
         if let Some(path) = config_path {
+            log::trace!("Parsing configuration from {:?}", path);
             let ini = Ini::load_from_file(path)?;
             if let Some(general_section) = ini.section(Some("general")) {
                 if let Some(display_deprecated) = general_section.get("display_deprecated") {
@@ -129,7 +127,6 @@ impl Config {
                 }
             }
             if let Some(section) = ini.section(Some("cli")) {
-                parse_ini_flag!(self, cli, section, verbose);
                 parse_ini_flag!(self, cli, section, ignore_errors);
                 parse_ini_flag!(self, cli, section, quiet);
                 parse_ini_flag!(self, cli, section, no_pager);
@@ -189,7 +186,6 @@ impl Default for Config {
             display_deprecated: false,
             kernel_docs: None,
             cli: CliConfig {
-                verbose: false,
                 ignore_errors: false,
                 quiet: false,
                 no_pager: false,
