@@ -1,6 +1,15 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.4.0] - 2023-04-24
+
+### Features
+- Improve logging
+  - Press `Ctrl-L` on TUI to view and analyze logs!
+  - You can use `--log-file` argument to save logs to a file.
+  - Both CLI and TUI now support `RUST_LOG` environment variable for setting log level.
+  - See https://github.com/orhun/systeroid#logging
+
 ## [0.3.2] - 2023-04-15
 
 ### Documentation
