@@ -116,7 +116,7 @@ impl Config {
             }
         }
         if let Some(path) = config_path {
-            log::trace!("Parsing configuration from {:?}", path);
+            log::trace!(target: "config", "Parsing configuration from {:?}", path);
             let ini = Ini::load_from_file(path)?;
             if let Some(general_section) = ini.section(Some("general")) {
                 if let Some(display_deprecated) = general_section.get("display_deprecated") {

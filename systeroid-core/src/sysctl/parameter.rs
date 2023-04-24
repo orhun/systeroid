@@ -188,7 +188,7 @@ impl Parameter {
         config: &Config,
         output: &mut Output,
     ) -> Result<()> {
-        log::trace!("Setting the value of {:?} to {:?}", self.name, new_value);
+        log::trace!(target: "param", "Setting the value of {:?} to {:?}", self.name, new_value);
         let ctl = Ctl::new(&self.name)?;
         let new_value = ctl.set_value_string(new_value)?;
         self.value = new_value;

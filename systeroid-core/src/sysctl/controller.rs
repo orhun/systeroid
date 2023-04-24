@@ -51,7 +51,7 @@ impl Sysctl {
                     }
                 }
                 Err(e) => {
-                    log::trace!("{} ({})", e, ctl.name()?);
+                    log::trace!(target: "sysctl", "{} ({})", e, ctl.name()?);
                 }
             }
         }
@@ -66,7 +66,7 @@ impl Sysctl {
 
     /// Returns the parameters that matches the given query.
     pub fn get_parameters(&self, query: &str) -> Vec<&Parameter> {
-        log::trace!("Querying parameters: {:?}", query);
+        log::trace!(target: "sysctl", "Querying parameters: {:?}", query);
         let query = query.replace('/', ".");
         let parameters = self
             .parameters
@@ -79,6 +79,7 @@ impl Sysctl {
             .collect::<Vec<&Parameter>>();
         if parameters.is_empty() && !self.config.cli.ignore_errors {
             log::error!(
+                target: "sysctl",
                 "{}: cannot stat {}{}: No such file or directory",
                 env!("CARGO_PKG_NAME").split('-').collect::<Vec<_>>()[0],
                 PROC_PATH,
@@ -90,7 +91,7 @@ impl Sysctl {
 
     /// Updates the descriptions of the kernel parameters using the given cached data.
     pub fn update_docs_from_cache(&mut self, cache: &Cache) -> Result<()> {
-        log::trace!("{:?}", cache);
+        log::trace!(target: "cache", "{:?}", cache);
         let mut kernel_docs_path = if let Some(path) = &self.config.kernel_docs {
             vec![path.to_path_buf()]
         } else {
@@ -109,7 +110,7 @@ impl Sysctl {
         }
         if let Some(path) = kernel_docs_path.iter().find(|path| path.exists()) {
             if cache.exists(PARAMETERS_CACHE_LABEL) {
-                log::trace!("Cache hit for {:?}", path);
+                log::trace!(target: "cache", "Cache hit for {:?}", path);
                 let cache_data = cache.read(PARAMETERS_CACHE_LABEL)?;
                 if cache_data.timestamp == CacheData::<()>::get_timestamp(path)? {
                     self.update_params(cache_data.data);
@@ -118,14 +119,14 @@ impl Sysctl {
             }
             self.update_docs(path)?;
             if env::var(DISABLE_CACHE_ENV).is_err() {
-                log::trace!("Writing cache to {:?}", cache);
+                log::trace!(target: "cache", "Writing cache to {:?}", cache);
                 cache.write(
                     CacheData::new(&self.parameters, path)?,
                     PARAMETERS_CACHE_LABEL,
                 )?;
             }
         } else {
-            log::error!("warning: `Linux kernel documentation cannot be found. Please specify a path via '-D' argument`");
+            log::error!(target: "sysctl", "warning: `Linux kernel documentation cannot be found. Please specify a path via '-D' argument`");
         }
         Ok(())
     }
@@ -148,7 +149,7 @@ impl Sysctl {
 
     /// Updates the descriptions of the kernel parameters.
     fn update_docs(&mut self, kernel_docs: &Path) -> Result<()> {
-        log::trace!("Parsing the kernel documentation from {:?}", kernel_docs);
+        log::trace!(target: "sysctl", "Parsing the kernel documentation from {:?}", kernel_docs);
         let documents = parse_kernel_docs(kernel_docs)?;
         self.parameters
             .par_iter_mut()
@@ -191,6 +192,7 @@ impl Sysctl {
             .clone()
             .unwrap_or_else(|| PathBuf::from(DEFAULT_PRELOAD));
         log::trace!(
+            target: "param",
             "Writing the new value ({:?}) of {:?} to {:?}",
             new_value,
             param_name,

@@ -201,7 +201,7 @@ impl<'a> App<'a> {
 
     /// Sets the log message for the application.
     pub fn log(&mut self, level: Level, message: String) {
-        log::log!(level, "{message}");
+        log::log!(target: "tui", level, "{message}");
         self.input = Some(message);
         self.input_time = Some(Instant::now());
     }
@@ -248,7 +248,7 @@ impl<'a> App<'a> {
     /// Copies the selected entry to the clipboard.
     #[cfg(feature = "clipboard")]
     fn copy_to_clipboard(&mut self, copy_option: CopyOption) -> Result<()> {
-        log::debug!("Copying to clipboard: {:?}", copy_option);
+        log::debug!(target: "tui", "Copying to clipboard: {:?}", copy_option);
         if let Some(clipboard) = self.clipboard.as_mut() {
             if let Some(parameter) = self.parameter_list.selected() {
                 match copy_option {
