@@ -23,13 +23,13 @@ pub fn run<Output: Write>(args: Args, output: &mut Output) -> Result<()> {
         kernel_docs: args.kernel_docs,
         ..Default::default()
     };
-    config.cli.verbose = args.verbose;
     config.cli.ignore_errors = args.ignore_errors;
     config.cli.quiet = args.quiet;
     config.cli.no_pager = args.no_pager;
     config.cli.display_type = args.display_type;
     config.cli.output_type = args.output_type;
     config.parse(args.config)?;
+    log::trace!("{:?}", config);
     let mut sysctl = Sysctl::init(config)?;
     if args.explain {
         sysctl.update_docs_from_cache(&Cache::init()?)?;

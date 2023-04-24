@@ -3,9 +3,11 @@ use crate::style::Colors;
 use crate::widgets::SelectableList;
 use tui::backend::Backend;
 use tui::layout::{Alignment, Constraint, Direction, Layout, Rect};
+use tui::style::{Color as TuiColor, Style};
 use tui::text::{Span, Text};
 use tui::widgets::{Block, BorderType, Borders, Cell, Clear, Paragraph, Row, Table, Wrap};
 use tui::Frame;
+use tui_logger::{TuiLoggerLevelOutput, TuiLoggerSmartWidget};
 use unicode_width::UnicodeWidthStr;
 
 /// Renders the user interface.
@@ -16,35 +18,48 @@ pub fn render<B: Backend>(frame: &mut Frame<'_, B>, app: &mut App, colors: &Colo
         .and_then(|parameter| parameter.get_documentation());
     let rect = frame.size();
     let chunks = Layout::default()
-        .direction(Direction::Horizontal)
-        .constraints(if documentation.is_some() {
-            [Constraint::Percentage(50), Constraint::Percentage(50)]
+        .direction(Direction::Vertical)
+        .constraints(if app.show_logs {
+            [Constraint::Percentage(60), Constraint::Percentage(40)]
         } else {
             [Constraint::Percentage(100), Constraint::Min(0)]
         })
         .split(rect);
     {
         let chunks = Layout::default()
-            .direction(Direction::Vertical)
-            .constraints(if app.input.is_some() {
-                [Constraint::Min(rect.height - 3), Constraint::Min(3)]
+            .direction(Direction::Horizontal)
+            .constraints(if documentation.is_some() {
+                [Constraint::Percentage(50), Constraint::Percentage(50)]
             } else {
                 [Constraint::Percentage(100), Constraint::Min(0)]
             })
             .split(chunks[0]);
-        render_parameter_list(frame, chunks[0], app, colors);
-        if app.input.is_some() {
-            render_input_prompt(frame, chunks[1], rect.height - 2, app, colors);
+        {
+            let chunks = Layout::default()
+                .direction(Direction::Vertical)
+                .constraints(if app.input.is_some() {
+                    [Constraint::Min(chunks[0].height - 3), Constraint::Min(3)]
+                } else {
+                    [Constraint::Percentage(100), Constraint::Min(0)]
+                })
+                .split(chunks[0]);
+            render_parameter_list(frame, chunks[0], app, colors);
+            if app.input.is_some() {
+                render_input_prompt(frame, chunks[1], chunks[0].height + 1, app, colors);
+            }
+        }
+        if let Some(documentation) = documentation {
+            render_parameter_documentation(
+                frame,
+                chunks[1],
+                documentation,
+                &mut app.docs_scroll_amount,
+                colors,
+            );
         }
     }
-    if let Some(documentation) = documentation {
-        render_parameter_documentation(
-            frame,
-            chunks[1],
-            documentation,
-            &mut app.docs_scroll_amount,
-            colors,
-        );
+    if app.show_logs {
+        render_log_view(frame, chunks[1], app, colors);
     }
     if app.show_help {
         render_help_text(frame, rect, &mut app.key_bindings, colors);
@@ -462,4 +477,25 @@ fn render_input_prompt<B: Backend>(
         ),
         rect,
     );
+}
+
+/// Renders the log view.
+fn render_log_view<B: Backend>(frame: &mut Frame<'_, B>, rect: Rect, app: &App, colors: &Colors) {
+    let logger_widget = TuiLoggerSmartWidget::default()
+        .style_trace(Style::default().fg(TuiColor::DarkGray))
+        .style_debug(Style::default().fg(TuiColor::Blue))
+        .style_warn(Style::default().fg(TuiColor::Yellow))
+        .style_error(Style::default().fg(TuiColor::Red))
+        .style_info(Style::default().fg(TuiColor::Green))
+        .highlight_style(colors.get_fg_style())
+        .border_style(colors.get_fg_style())
+        .style(colors.get_bg_style())
+        .output_separator(':')
+        .output_timestamp(Some("%H:%M:%S".to_string()))
+        .output_level(Some(TuiLoggerLevelOutput::Long))
+        .output_target(true)
+        .output_file(true)
+        .output_line(true)
+        .state(&app.logger_state);
+    frame.render_widget(logger_widget, rect);
 }

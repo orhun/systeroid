@@ -10,7 +10,7 @@ repository = "https://github.com/orhun/systeroid"
 keywords = ["linux", "kernel", "parameter", "sysctl", "tui"]
 categories = ["command-line-utilities"]
 edition = "2021"
-rust-version = "1.64.0"
+rust-version = "1.68.2"
 
 [features]
 # clipboard support is enabled as default
@@ -24,6 +24,7 @@ thiserror = "1.0.40"
 getopts = "0.2.21"
 copypasta-ext = { version = "0.4.4", optional = true }
 colorsys = "0.6.7"
+log.workspace = true
 
 [dependencies.systeroid-core]
 version = "0.3.2" # managed by release.sh
@@ -34,6 +35,11 @@ package = "ratatui"
 version = "0.20.1"
 default-features = false
 features = ["termion"]
+
+[dependencies.tui-logger]
+version = "0.9.0"
+default-features = false
+features = ["ratatui-support"]
 
 # metadata for cargo-binstall to get the right artifacts
 [package.metadata.binstall]

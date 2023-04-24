@@ -26,6 +26,8 @@ pub struct Args {
     pub kernel_docs: Option<PathBuf>,
     /// Path for the changed parameters.
     pub save_path: Option<PathBuf>,
+    /// File to save the logs.
+    pub log_file: Option<String>,
     /// Sysctl section to filter.
     pub section: Option<Section>,
     /// Query to search on startup.
@@ -62,6 +64,7 @@ impl Args {
             "set the path for saving the changed parameters",
             "<path>",
         );
+        opts.optopt("l", "log-file", "set the file to save the logs", "<path>");
         opts.optopt("s", "section", "set the section to filter", "<section>");
         opts.optopt("q", "query", "set the query to search", "<query>");
         opts.optopt(
@@ -123,6 +126,7 @@ impl Args {
                     .or_else(|| env::var(KERNEL_DOCS_ENV).ok())
                     .map(PathBuf::from),
                 save_path: matches.opt_str("save-path").map(PathBuf::from),
+                log_file: matches.opt_str("l"),
                 section: matches.opt_str("s").map(Section::from),
                 search_query: matches.opt_str("q"),
                 fg_color: matches

@@ -10,7 +10,7 @@ repository = "https://github.com/orhun/systeroid"
 keywords = ["linux", "kernel", "parameter", "sysctl"]
 categories = ["command-line-utilities"]
 edition = "2021"
-default-run="systeroid"
+default-run = "systeroid"
 rust-version = "1.64.0"
 
 [features]
@@ -18,8 +18,10 @@ rust-version = "1.64.0"
 live-tests = []
 
 [dependencies]
-getopts = "0.2.21"
 parseit.workspace = true
+log.workspace = true
+env_logger = "0.10.0"
+getopts = "0.2.21"
 
 [dependencies.systeroid-core]
 version = "0.3.2" # managed by release.sh

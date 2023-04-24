@@ -54,8 +54,6 @@ pub struct Config {
 /// CLI configuration.
 #[derive(Clone, Debug)]
 pub struct CliConfig {
-    /// Whether if the verbose logging is enabled.
-    pub verbose: bool,
     /// Whether if the errors should be ignored.
     pub ignore_errors: bool,
     /// Whether if the quiet mode is enabled.
@@ -88,6 +86,8 @@ pub struct TuiConfig {
     pub no_docs: bool,
     /// Path for saving the changed kernel parameters.
     pub save_path: Option<PathBuf>,
+    /// File to save the logs.
+    pub log_file: Option<String>,
     /// Color configuration.
     pub color: TuiColorConfig,
 }
@@ -116,6 +116,7 @@ impl Config {
             }
         }
         if let Some(path) = config_path {
+            log::trace!(target: "config", "Parsing configuration from {:?}", path);
             let ini = Ini::load_from_file(path)?;
             if let Some(general_section) = ini.section(Some("general")) {
                 if let Some(display_deprecated) = general_section.get("display_deprecated") {
@@ -126,7 +127,6 @@ impl Config {
                 }
             }
             if let Some(section) = ini.section(Some("cli")) {
-                parse_ini_flag!(self, cli, section, verbose);
                 parse_ini_flag!(self, cli, section, ignore_errors);
                 parse_ini_flag!(self, cli, section, quiet);
                 parse_ini_flag!(self, cli, section, no_pager);
@@ -162,6 +162,9 @@ impl Config {
                 if let Some(save_path) = section.get("save_path") {
                     self.tui.save_path = Some(PathBuf::from(save_path));
                 }
+                if let Some(log_file) = section.get("log_file") {
+                    self.tui.log_file = Some(log_file.to_string());
+                }
                 parse_ini_flag!(self, tui, section, no_docs);
             }
             if let Some(section) = ini.section(Some("tui.colors")) {
@@ -183,7 +186,6 @@ impl Default for Config {
             display_deprecated: false,
             kernel_docs: None,
             cli: CliConfig {
-                verbose: false,
                 ignore_errors: false,
                 quiet: false,
                 no_pager: false,
@@ -207,6 +209,7 @@ impl Default for Config {
                 tick_rate: 250,
                 no_docs: false,
                 save_path: None,
+                log_file: None,
                 color: TuiColorConfig {
                     fg_color: String::from("white"),
                     bg_color: String::from("black"),

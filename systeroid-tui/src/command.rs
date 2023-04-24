@@ -1,12 +1,44 @@
 use crate::options::{Direction, ScrollArea};
 use std::str::FromStr;
 use termion::event::Key;
+use tui_logger::TuiWidgetEvent;
+
+/// Possible logger widget commands.
+#[derive(Debug, PartialEq)]
+pub struct LoggerCommand(pub TuiWidgetEvent);
+
+impl Eq for LoggerCommand {}
+
+impl LoggerCommand {
+    /// Parses a logger command from the given key.
+    pub fn parse(key: Key) -> Option<Self> {
+        match key {
+            Key::Char(' ') => Some(Self(TuiWidgetEvent::SpaceKey)),
+            Key::Esc => Some(Self(TuiWidgetEvent::EscapeKey)),
+            Key::PageUp => Some(Self(TuiWidgetEvent::PrevPageKey)),
+            Key::PageDown => Some(Self(TuiWidgetEvent::NextPageKey)),
+            Key::Up => Some(Self(TuiWidgetEvent::UpKey)),
+            Key::Down => Some(Self(TuiWidgetEvent::DownKey)),
+            Key::Left => Some(Self(TuiWidgetEvent::LeftKey)),
+            Key::Right => Some(Self(TuiWidgetEvent::RightKey)),
+            Key::Char('+') => Some(Self(TuiWidgetEvent::PlusKey)),
+            Key::Char('-') => Some(Self(TuiWidgetEvent::MinusKey)),
+            Key::Char('h') => Some(Self(TuiWidgetEvent::HideKey)),
+            Key::Char('f') => Some(Self(TuiWidgetEvent::FocusKey)),
+            _ => None,
+        }
+    }
+}
 
 /// Possible application commands.
 #[derive(Debug, PartialEq, Eq)]
 pub enum Command {
     /// Show help.
     Help,
+    /// Show logs.
+    Logs,
+    /// Logger event.
+    LoggerEvent(LoggerCommand),
     /// Perform an action based on the selected entry.
     Select,
     /// Save the value of a parameter to a file.
@@ -42,6 +74,7 @@ impl FromStr for Command {
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
             "help" => Ok(Command::Help),
+            "logs" => Ok(Command::Logs),
             "search" => Ok(Command::Search),
             "select" => Ok(Command::Select),
             "copy" => Ok(Command::Copy),
@@ -91,6 +124,7 @@ impl Command {
         } else {
             match key {
                 Key::Char('?') | Key::F(1) => Command::Help,
+                Key::Ctrl('l') | Key::F(2) => Command::Logs,
                 Key::Up | Key::Char('k') => Command::Scroll(ScrollArea::List, Direction::Up, 1),
                 Key::Down | Key::Char('j') => Command::Scroll(ScrollArea::List, Direction::Down, 1),
                 Key::PageUp => Command::Scroll(ScrollArea::List, Direction::Up, 4),
@@ -135,6 +169,7 @@ mod tests {
     fn test_command() {
         for (command, value) in vec![
             (Command::Help, "help"),
+            (Command::Logs, "logs"),
             (Command::Search, "search"),
             (Command::Select, "select"),
             (Command::Copy, "copy"),
@@ -181,6 +216,7 @@ mod tests {
         assert_command_parser! {
             input_mode: false,
             Key::Char('?') => Command::Help,
+            Key::Ctrl('l') => Command::Logs,
             Key::Up => Command::Scroll(ScrollArea::List, Direction::Up, 1),
             Key::Down => Command::Scroll(ScrollArea::List, Direction::Down, 1),
             Key::PageUp => Command::Scroll(ScrollArea::List, Direction::Up, 4),
