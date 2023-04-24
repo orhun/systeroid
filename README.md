@@ -77,6 +77,7 @@ Although **systeroid** does not need the parameter section to be specified expli
     - [Loading values from the system directories](#loading-values-from-the-system-directories)
     - [Searching parameters](#searching-parameters)
     - [Showing information about parameters](#showing-information-about-parameters)
+    - [Verbose logging](#verbose-logging)
 - [TUI](#tui)
   - [Usage](#usage-2)
   - [Key Bindings](#key-bindings)
@@ -93,6 +94,7 @@ Although **systeroid** does not need the parameter section to be specified expli
     - [Changing the colors](#changing-the-colors)
     - [Viewing the parameter documentation](#viewing-the-parameter-documentation)
     - [Setting the refresh rate](#setting-the-refresh-rate)
+    - [Logging](#logging)
 - [Configuration](#configuration)
 - [Resources](#resources)
   - [References](#references)
@@ -398,6 +400,20 @@ It is also possible to retrieve information about multiple parameters:
 systeroid -E --pattern '.*ipv4.*' --no-pager
 ```
 
+#### Verbose logging
+
+`--verbose` flag can be used to enable verbose logging:
+
+```sh
+systeroid --verbose
+```
+
+Also, `RUST_LOG` environment variable can be set accordingly to filter based on different log levels.
+
+```sh
+RUST_LOG=trace systeroid
+```
+
 ## TUI
 
 ### Usage
@@ -440,6 +456,7 @@ systeroid-tui [options]
 | <kbd>enter</kbd>                                           | select / set parameter value |
 | <kbd>s</kbd>                                               | save parameter value         |
 | <kbd>c</kbd>                                               | copy to clipboard            |
+| <kbd>ctrl-l</kbd>, <kbd>f2</kbd>                           | show logs                    |
 | <kbd>r</kbd>, <kbd>f5</kbd>                                | refresh                      |
 | <kbd>esc</kbd>                                             | cancel / exit                |
 | <kbd>q</kbd>, <kbd>ctrl-c/ctrl-d</kbd>                     | exit                         |
@@ -524,15 +541,16 @@ Press <kbd>:</kbd> to open the command prompt for running a command. Available c
 
 | Command                               | Description                                                                                                                   |
 | ------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
-| `:help`                               | Show help                                                                                                                     |
-| `:search`                             | Enable search                                                                                                                 |
-| `:select`                             | Select the current parameter in the list                                                                                      |
-| `:set <name> <value>`                 | Set parameter value                                                                                                           |
-| `:save <name> <value>`                | Save parameter value to file                                                                                                  |
-| `:scroll [area] [direction] <amount>` | Scroll the list or text<br>- areas: `list`, `docs`, `section`<br>- directions: `up`, `down`, `top`, `bottom`, `right`, `left` |
-| `:copy`                               | Copy to clipboard                                                                                                             |
-| `:refresh`                            | Refresh values                                                                                                                |
-| `:quit`, `:q`                         | Quit                                                                                                                          |
+| `:help`                               | show help                                                                                                                     |
+| `:search`                             | enable search                                                                                                                 |
+| `:select`                             | select the current parameter in the list                                                                                      |
+| `:set <name> <value>`                 | set parameter value                                                                                                           |
+| `:save <name> <value>`                | save parameter value to file                                                                                                  |
+| `:scroll [area] [direction] <amount>` | scroll the list or text<br>- areas: `list`, `docs`, `section`<br>- directions: `up`, `down`, `top`, `bottom`, `right`, `left` |
+| `:copy`                               | copy to clipboard                                                                                                             |
+| `:logs`                               | show logs                                                                                                                     |
+| `:refresh`                            | refresh values                                                                                                                |
+| `:quit`, `:q`                         | quit                                                                                                                          |
 
 #### Copying to clipboard
 
@@ -568,6 +586,55 @@ It is possible to specify a value in milliseconds via `--tick-rate` argument for
 
 ```sh
 systeroid-tui --tick-rate 500
+```
+
+#### Logging
+
+To view the log messages, press <kbd>ctrl-l</kbd>. It will bring up a pane in the TUI for analyzing the logs:
+
+![Logs](assets/systeroid-tui-logs.gif)
+
+This pane consists of two parts. Left is the target selector and on the right side the logging messages view scrolling up.
+
+The target selector controls:
+
+- Capturing of log messages by the logger.
+- Selection of levels for display in the logging message view.
+
+The two columns have the following meaning:
+
+- Code `EWIDT`: `E` stands for Error, `W` for Warn, and similarly Info, Debug and Trace.
+  - Inverted characters (EWIDT) are enabled log levels in the view.
+  - Normal characters show enabled capturing of a log level per target.
+  - If any of EWIDT are not shown, then the respective log level is not captured.
+
+This logger pane has the following key bindings and they are only activated while the logs are being shown:
+
+| Key                 | Action                                                         |
+| ------------------- | -------------------------------------------------------------- |
+| <kbd>h</kbd>        | toggles target selector widget hidden/visible                  |
+| <kbd>f</kbd>        | toggle focus on the selected target only                       |
+| <kbd>up</kbd>       | select previous target in target selector widget               |
+| <kbd>down</kbd>     | select next target in target selector widget                   |
+| <kbd>left</kbd>     | reduce SHOWN (!) log messages by one level                     |
+| <kbd>right</kbd>    | increase SHOWN (!) log messages by one level                   |
+| <kbd>-</kbd>        | reduce CAPTURED (!) log messages by one level                  |
+| <kbd>+</kbd>        | increase CAPTURED (!) log messages by one level                |
+| <kbd>pageup</kbd>   | enter Page Mode and scroll approx. half page up in log history |
+| <kbd>pagedown</kbd> | only in page mode: scroll 10 events down in log history        |
+| <kbd>escape</kbd>   | exit page mode and go back to scrolling mode                   |
+| <kbd>space</kbd>    | toggles hiding of targets, which have logfilter set to off     |
+
+For saving the logs to a file, you can use the `--log-file` argument:
+
+```sh
+systeroid-tui --log-file systeroid.log
+```
+
+`RUST_LOG` environment variable can be used to set the log level accordingly.
+
+```sh
+RUST_LOG=debug systeroid-tui
 ```
 
 ## Configuration
