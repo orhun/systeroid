@@ -4,10 +4,8 @@ use termion::event::Key;
 use tui_logger::TuiWidgetEvent;
 
 /// Possible logger widget commands.
-#[derive(Debug, PartialEq)]
+#[derive(Debug, Eq, PartialEq)]
 pub struct LoggerCommand(pub TuiWidgetEvent);
-
-impl Eq for LoggerCommand {}
 
 impl LoggerCommand {
     /// Parses a logger command from the given key.
