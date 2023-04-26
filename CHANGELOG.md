@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.4.1] - 2023-04-26
+
+### Miscellaneous Tasks
+
+- Bump tui-logger from 0.9.0 to 0.9.1
+  - Fixes RUSTSEC-2020-0071
+
+### Styling
+
+- Specify the border type for logger widget
+
 ## [0.4.0] - 2023-04-24
 
 ### Features
