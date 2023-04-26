@@ -489,6 +489,7 @@ fn render_log_view<B: Backend>(frame: &mut Frame<'_, B>, rect: Rect, app: &App, 
         .style_info(Style::default().fg(TuiColor::Green))
         .highlight_style(colors.get_fg_style())
         .border_style(colors.get_fg_style())
+        .border_type(BorderType::Rounded)
         .style(colors.get_bg_style())
         .output_separator(':')
         .output_timestamp(Some("%H:%M:%S".to_string()))
