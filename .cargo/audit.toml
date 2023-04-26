@@ -1,8 +1,0 @@
-[advisories]
-ignore = [
-  "RUSTSEC-2020-0071", # `chrono` - Potential segfault in the time crate
-]
-
-[output]
-quiet = false
-deny = ["warnings"]
