@@ -9,7 +9,8 @@ allow = [
     "BSL-1.0",
     "MPL-2.0",
     "ISC",
-    "Unicode-DFS-2016"
+    "Unicode-DFS-2016",
+    "CC0-1.0",
 ]
 
 [sources]
