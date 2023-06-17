@@ -1,6 +1,6 @@
 [package]
 name = "systeroid-core"
-version = "0.4.1" # managed by release.sh
+version = "0.4.2" # managed by release.sh
 description = "Core library of systeroid"
 authors = ["Orhun Parmaksız <orhunparmaksiz@gmail.com>"]
 license = "MIT OR Apache-2.0"

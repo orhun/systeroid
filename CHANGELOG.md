@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.4.2] - 2023-06-17
+
+### Miscellaneous Tasks
+
+- Bump dependencies
+  - `ratatui` -> `0.21.0`
+- Add CC0-1.0 to cargo-deny config
+
 ## [0.4.1] - 2023-04-26
 
 ### Miscellaneous Tasks
