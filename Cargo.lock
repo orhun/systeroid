@@ -148,12 +148,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "colorsys"
-version = "0.6.7"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "54261aba646433cb567ec89844be4c4825ca92a4f8afba52fc4dd88436e31bbd"
-
-[[package]]
 name = "const-random"
 version = "0.1.15"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -891,9 +885,9 @@ dependencies = [
 
 [[package]]
 name = "ratatui"
-version = "0.20.1"
+version = "0.21.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "dcc0d032bccba900ee32151ec0265667535c230169f5a011154cdcd984e16829"
+checksum = "ce841e0486e7c2412c3740168ede33adeba8e154a15107b879d8162d77c7174e"
 dependencies = [
  "bitflags",
  "cassowary",
@@ -1160,7 +1154,6 @@ dependencies = [
 name = "systeroid-tui"
 version = "0.4.1"
 dependencies = [
- "colorsys",
  "copypasta-ext",
  "getopts",
  "log",
@@ -1234,9 +1227,9 @@ dependencies = [
 
 [[package]]
 name = "tui-logger"
-version = "0.9.1"
+version = "0.9.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "aad9900f2273f4a3c3d78405dfc48fa0197c276a139f4d87a5805a7a50223528"
+checksum = "556a427e71dc2dc7193c0ab9d02707cf8a284158d287e60d3b0b384b217438bb"
 dependencies = [
  "chrono",
  "fxhash",

@@ -23,7 +23,6 @@ unicode-width = "0.1.10"
 thiserror = "1.0.40"
 getopts = "0.2.21"
 copypasta-ext = { version = "0.4.4", optional = true }
-colorsys = "0.6.7"
 log.workspace = true
 
 [dependencies.systeroid-core]
@@ -32,12 +31,12 @@ path = "../systeroid-core"
 
 [dependencies.tui]
 package = "ratatui"
-version = "0.20.1"
+version = "0.21.0"
 default-features = false
 features = ["termion"]
 
 [dependencies.tui-logger]
-version = "0.9.1"
+version = "0.9.2"
 default-features = false
 features = ["ratatui-support"]
 
