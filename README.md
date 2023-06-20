@@ -60,6 +60,7 @@ Although **systeroid** does not need the parameter section to be specified expli
 - [Installation](#installation)
   - [Cargo](#cargo)
   - [Arch Linux](#arch-linux)
+  - [Alpine Linux](#alpine-linux)
   - [Binary releases](#binary-releases)
   - [Building from source](#building-from-source)
   - [Docker](#docker)
@@ -144,6 +145,14 @@ cargo install systeroid-tui
 
 ```sh
 pacman -S systeroid
+```
+
+### Alpine Linux
+
+**systeroid** is available for [Alpine Edge](https://pkgs.alpinelinux.org/packages?name=systeroid&branch=edge). It can be installed via [apk](https://wiki.alpinelinux.org/wiki/Alpine_Package_Keeper) after enabling the [community repository](https://wiki.alpinelinux.org/wiki/Repositories).
+
+```sh
+apk add systeroid
 ```
 
 ### Binary releases
