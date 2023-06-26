@@ -2,7 +2,7 @@ use crate::config::Config;
 use crate::error::Result;
 use crate::sysctl::r#type::DisplayType;
 use crate::sysctl::section::Section;
-use owo_colors::colored::*;
+use owo_colors::{OwoColorize, Stream::Stdout};
 use serde::{Deserialize, Serialize};
 use std::fmt::Write as _;
 use std::io::Write;
@@ -67,8 +67,8 @@ impl Parameter {
                     let _ = write!(
                         result,
                         "{}{}",
-                        v.color(section_color),
-                        ".".color(config.cli.color.default_color)
+                        v.if_supports_color(Stdout, |v| v.color(section_color)),
+                        ".".if_supports_color(Stdout, |v| v.color(config.cli.color.default_color))
                     );
                 } else {
                     result += v;
@@ -98,13 +98,17 @@ impl Parameter {
             .enumerate()
             .for_each(|(i, component)| {
                 if i != total_components - 1 {
-                    *component = component.color(section_color).to_string();
+                    *component = component
+                        .if_supports_color(Stdout, |v| v.color(section_color))
+                        .to_string();
                 } else if config.cli.display_type != DisplayType::Name {
                     *component = format!(
                         "{} {} {}",
                         component,
-                        "=".color(config.cli.color.default_color),
-                        self.value.replace('\n', " ").bold()
+                        "=".if_supports_color(Stdout, |v| v.color(config.cli.color.default_color)),
+                        self.value
+                            .replace('\n', " ")
+                            .if_supports_color(Stdout, |v| v.bold())
                     );
                 }
             });
@@ -118,10 +122,18 @@ impl Parameter {
                 writeln!(output, "{}", self.get_colored_name(config))?;
             }
             DisplayType::Value => {
-                writeln!(output, "{}", self.value.bold())?;
+                writeln!(
+                    output,
+                    "{}",
+                    self.value.if_supports_color(Stdout, |v| v.bold())
+                )?;
             }
             DisplayType::Binary => {
-                write!(output, "{}", self.value.bold())?;
+                write!(
+                    output,
+                    "{}",
+                    self.value.if_supports_color(Stdout, |v| v.bold())
+                )?;
             }
             DisplayType::Default => {
                 for value in self.value.lines() {
@@ -129,8 +141,8 @@ impl Parameter {
                         output,
                         "{} {} {}",
                         self.get_colored_name(config),
-                        "=".color(config.cli.color.default_color),
-                        value.bold(),
+                        "=".if_supports_color(Stdout, |v| v.color(config.cli.color.default_color)),
+                        value.if_supports_color(Stdout, |v| v.bold()),
                     )?;
                 }
             }
