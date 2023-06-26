@@ -2,7 +2,7 @@ use crate::config::Config;
 use crate::error::Result;
 use crate::sysctl::r#type::DisplayType;
 use crate::sysctl::section::Section;
-use colored::*;
+use owo_colors::colored::*;
 use serde::{Deserialize, Serialize};
 use std::fmt::Write as _;
 use std::io::Write;

@@ -1,8 +1,8 @@
 use crate::error::Result;
 use crate::sysctl::r#type::{DisplayType, OutputType};
 use crate::sysctl::section::Section;
-use colored::Color;
 use ini::Ini;
+use owo_colors::colored::Color;
 use std::collections::HashMap;
 use std::path::PathBuf;
 

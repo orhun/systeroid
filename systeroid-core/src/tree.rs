@@ -1,4 +1,4 @@
-use colored::*;
+use owo_colors::colored::*;
 use std::fmt::Display;
 use std::io::{Result as IoResult, Write};
 
