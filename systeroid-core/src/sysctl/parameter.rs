@@ -230,6 +230,7 @@ impl Parameter {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use owo_colors::colored::Color;
 
     #[test]
     fn test_sysctl_parameter() -> Result<()> {
