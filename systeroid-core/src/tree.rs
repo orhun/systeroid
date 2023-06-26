@@ -1,4 +1,5 @@
-use owo_colors::colored::*;
+use owo_colors::colored::Color;
+use owo_colors::{OwoColorize, Stream::Stdout};
 use std::fmt::Display;
 use std::io::{Result as IoResult, Write};
 
@@ -79,13 +80,22 @@ impl TreeNode {
                 write!(
                     output,
                     "{}   ",
-                    if *last { " " } else { VERTICAL_STR }.color(connector_color)
+                    if *last { " " } else { VERTICAL_STR }
+                        .if_supports_color(Stdout, |v| v.color(connector_color))
                 )?;
             }
             if *last_connector {
-                write!(output, "{} ", LAST_HORIZONTAL_STR.color(connector_color))?;
+                write!(
+                    output,
+                    "{} ",
+                    LAST_HORIZONTAL_STR.if_supports_color(Stdout, |v| v.color(connector_color))
+                )?;
             } else {
-                write!(output, "{} ", HORIZONTAL_STR.color(connector_color))?;
+                write!(
+                    output,
+                    "{} ",
+                    HORIZONTAL_STR.if_supports_color(Stdout, |v| v.color(connector_color))
+                )?;
             }
         }
         writeln!(output, "{}", self.value)?;
