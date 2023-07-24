@@ -20,7 +20,7 @@ clipboard = ["copypasta-ext"]
 [dependencies]
 termion = "2.0.1"
 unicode-width = "0.1.10"
-thiserror = "1.0.43"
+thiserror = "1.0.44"
 getopts = "0.2.21"
 copypasta-ext = { version = "0.4.4", optional = true }
 log.workspace = true
