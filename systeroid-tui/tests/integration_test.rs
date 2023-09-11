@@ -1,3 +1,6 @@
+use ratatui::backend::{Backend, TestBackend};
+use ratatui::buffer::Buffer;
+use ratatui::Terminal;
 use std::path::PathBuf;
 use std::thread;
 use std::time::Duration;
@@ -11,9 +14,6 @@ use systeroid_tui::error::Result;
 use systeroid_tui::options::{Direction, ScrollArea};
 use systeroid_tui::style::Colors;
 use systeroid_tui::ui::render;
-use tui::backend::{Backend, TestBackend};
-use tui::buffer::Buffer;
-use tui::Terminal;
 
 fn assert_buffer(mut buffer: Buffer, backend: &TestBackend) -> Result<()> {
     assert_eq!(buffer.area, backend.size()?);

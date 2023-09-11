@@ -839,19 +839,6 @@ dependencies = [
 
 [[package]]
 name = "ratatui"
-version = "0.21.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ce841e0486e7c2412c3740168ede33adeba8e154a15107b879d8162d77c7174e"
-dependencies = [
- "bitflags 1.3.2",
- "cassowary",
- "termion",
- "unicode-segmentation",
- "unicode-width",
-]
-
-[[package]]
-name = "ratatui"
 version = "0.22.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8285baa38bdc9f879d92c0e37cb562ef38aa3aeefca22b3200186bc39242d3d5"
@@ -860,6 +847,7 @@ dependencies = [
  "cassowary",
  "indoc",
  "paste",
+ "termion",
  "unicode-segmentation",
  "unicode-width",
 ]
@@ -1138,7 +1126,7 @@ dependencies = [
  "copypasta-ext",
  "getopts",
  "log",
- "ratatui 0.21.0",
+ "ratatui",
  "systeroid-core",
  "termion",
  "thiserror",
@@ -1217,7 +1205,7 @@ dependencies = [
  "lazy_static",
  "log",
  "parking_lot",
- "ratatui 0.22.0",
+ "ratatui",
 ]
 
 [[package]]

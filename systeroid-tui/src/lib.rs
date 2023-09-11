@@ -29,13 +29,13 @@ use crate::event::{Event, EventHandler};
 use crate::style::Colors;
 use command::LoggerCommand;
 use log::LevelFilter;
+use ratatui::backend::Backend;
+use ratatui::terminal::Terminal;
 use std::env;
 use std::str::FromStr;
 use systeroid_core::cache::Cache;
 use systeroid_core::config::Config;
 use systeroid_core::sysctl::controller::Sysctl;
-use tui::backend::Backend;
-use tui::terminal::Terminal;
 
 /// Runs `systeroid-tui`.
 pub fn run<B: Backend>(args: Args, backend: B) -> Result<()> {
@@ -114,7 +114,7 @@ pub fn run<B: Backend>(args: Args, backend: B) -> Result<()> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use tui::backend::TestBackend;
+    use ratatui::backend::TestBackend;
 
     #[test]
     fn test_systeroid_tui() -> Result<()> {

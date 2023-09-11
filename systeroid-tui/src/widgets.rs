@@ -1,4 +1,4 @@
-use tui::widgets::TableState as State;
+use ratatui::widgets::TableState as State;
 
 /// List widget with TUI controlled states.
 #[derive(Debug)]

@@ -1,6 +1,6 @@
 use crate::error::Result;
+use ratatui::style::{Color as TuiColor, Style};
 use std::str::FromStr;
-use tui::style::{Color as TuiColor, Style};
 
 /// Color configuration.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]

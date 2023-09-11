@@ -1,3 +1,4 @@
+use ratatui::backend::TermionBackend;
 use std::env;
 use std::io;
 use std::process;
@@ -6,7 +7,6 @@ use systeroid_tui::error::Result;
 use termion::input::MouseTerminal;
 use termion::raw::IntoRawMode;
 use termion::screen::IntoAlternateScreen;
-use tui::backend::TermionBackend;
 
 fn main() -> Result<()> {
     if let Some(args) = Args::parse(env::args().collect()) {

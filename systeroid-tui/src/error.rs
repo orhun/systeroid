@@ -14,7 +14,7 @@ pub enum Error {
     ClipboardError(String),
     /// Error that may occur while parsing a color.
     #[error(transparent)]
-    ColorParseError(#[from] tui::style::ParseColorError),
+    ColorParseError(#[from] ratatui::style::ParseColorError),
     /// Error that may occur if the logger is already set.
     #[error(transparent)]
     LoggerSetError(#[from] log::SetLoggerError),

@@ -1,12 +1,12 @@
 use crate::app::{App, KeyBinding, HELP_TEXT};
 use crate::style::Colors;
 use crate::widgets::SelectableList;
-use tui::backend::Backend;
-use tui::layout::{Alignment, Constraint, Direction, Layout, Rect};
-use tui::style::{Color as TuiColor, Style};
-use tui::text::{Span, Text};
-use tui::widgets::{Block, BorderType, Borders, Cell, Clear, Paragraph, Row, Table, Wrap};
-use tui::Frame;
+use ratatui::backend::Backend;
+use ratatui::layout::{Alignment, Constraint, Direction, Layout, Rect};
+use ratatui::style::{Color as TuiColor, Style};
+use ratatui::text::{Span, Text};
+use ratatui::widgets::{Block, BorderType, Borders, Cell, Clear, Paragraph, Row, Table, Wrap};
+use ratatui::Frame;
 use tui_logger::{TuiLoggerLevelOutput, TuiLoggerSmartWidget};
 use unicode_width::UnicodeWidthStr;
 
