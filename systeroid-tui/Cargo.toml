@@ -30,7 +30,7 @@ version = "0.4.2" # managed by release.sh
 path = "../systeroid-core"
 
 [dependencies.ratatui]
-version = "0.23.0"
+version = "=0.22.0"
 default-features = false
 features = ["termion"]
 
