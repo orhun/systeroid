@@ -10,9 +10,15 @@ tagger_name="systeroid project"
 tagger_email="systeroid@protonmail.com"
 signing_key="03598A29AA9D297B8D6D94F1EBEB8A69FDA3720E"
 
-usage() { printf "usage: %s <tag>\n" "${BASH_SOURCE[0]##*/}"; exit 0; }
+usage() {
+    printf "usage: %s <tag>\n" "${BASH_SOURCE[0]##*/}"
+    exit 0
+}
 
-bail() { printf "error: %s\n" "$1" "${@:2}"; exit 1; }
+bail() {
+    printf "error: %s\n" "$1" "${@:2}"
+    exit 1
+}
 
 tag=$1
 [ -z "$tag" ] && usage
