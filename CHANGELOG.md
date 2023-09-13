@@ -75,7 +75,7 @@ All notable changes to this project will be documented in this file.
 
 ### Features
 
-- (tui) Support saving changed values ([#13](https://github.com/orhun/git-cliff/issues/13))
+- (tui) Support saving changed values ([#13](https://github.com/orhun/systeroid/issues/13))
   - Press <kbd>s</kbd> to set a parameter value and also save it to a file.
   - See https://github.com/orhun/systeroid#saving-values
 - (tui) Make help list selection functional
