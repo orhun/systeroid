@@ -31,7 +31,11 @@ impl Colors {
 
     /// Returns the background/foreground colors with default style.
     pub fn get_style(&self) -> Style {
-        Style::default().bg(self.fg).fg(self.bg)
+        if self.bg == TuiColor::Reset {
+            Style::default().bg(TuiColor::White).fg(TuiColor::Black)
+        } else {
+            Style::default().bg(self.fg).fg(self.bg)
+        }
     }
 
     /// Returns the background color with default style.
