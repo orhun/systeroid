@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.4.3] - 2023-09-14
+
+### Features
+
+- Add a panic hook to reset terminal upon panic
+
+### Documentation
+
+- Add instructions for installing on Alpine Linux
+
+### Miscellaneous Tasks
+
+- Switch to `owo-colors` for fixing `RUSTSEC-2021-0145`
+- Add mergify config for automatic merge
+- Bump the Rust version in Dockerfile
+
+### Styling
+
+- Use better colors when background color is set to `reset`
+
 ## [0.4.2] - 2023-06-17
 
 ### Miscellaneous Tasks
