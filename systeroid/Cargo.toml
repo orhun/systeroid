@@ -1,6 +1,6 @@
 [package]
 name = "systeroid"
-version = "0.4.3" # managed by release.sh
+version = "0.4.4" # managed by release.sh
 description = "A more powerful alternative to sysctl"
 authors = ["Orhun Parmaksız <orhunparmaksiz@gmail.com>"]
 license = "MIT OR Apache-2.0"
@@ -24,7 +24,7 @@ env_logger = "0.10.0"
 getopts = "0.2.21"
 
 [dependencies.systeroid-core]
-version = "0.4.3" # managed by release.sh
+version = "0.4.4" # managed by release.sh
 path = "../systeroid-core"
 
 # metadata for cargo-binstall to get the right artifacts

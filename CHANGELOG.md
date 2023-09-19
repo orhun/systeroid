@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.4.4] - 2023-09-19
+
+### Miscellaneous Tasks
+
+- Bump `ratatui` to 0.23.0
+
 ## [0.4.3] - 2023-09-14
 
 ### Features
