@@ -86,7 +86,7 @@ jobs:
         run: |
           NO_COLOR=1 cargo tarpaulin \
             --no-default-features \
-            --out Xml --verbose
+            --out xml --verbose
           mv cobertura.xml test-output.xml
 
       - name: Run tests [live]
@@ -96,7 +96,7 @@ jobs:
             cargo tarpaulin \
               --no-default-features \
               --features live-tests \
-              --out Xml --verbose \
+              --out xml --verbose \
               -- "test_systeroid"
           ./.github/fixtures/check_vars.sh systeroid/sysctl.conf
           mv cobertura.xml live-test-output.xml
