@@ -19,7 +19,7 @@ clipboard = ["copypasta-ext"]
 
 [dependencies]
 termion = "2.0.1"
-unicode-width = "0.1.10"
+unicode-width = "0.1.11"
 thiserror = "1.0.48"
 getopts = "0.2.21"
 copypasta-ext = { version = "0.4.4", optional = true }
