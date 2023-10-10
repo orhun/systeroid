@@ -15,7 +15,7 @@ rust-version = "1.64.0"
 parseit.workspace = true
 log.workspace = true
 sysctl = "0.5.4"
-thiserror = "1.0.48"
+thiserror = "1.0.49"
 lazy_static = "1.4.0"
 rayon = "1.8.0"
 owo-colors = { version = "3.5.0", features = ["supports-colors"] }
