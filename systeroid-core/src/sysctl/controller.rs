@@ -38,16 +38,12 @@ impl Sysctl {
         }) {
             match Parameter::try_from(&ctl) {
                 Ok(parameter) => {
-                    if !config.display_deprecated {
-                        let skip_param = parameter
+                    if config.display_deprecated
+                        || parameter
                             .get_absolute_name()
                             .map(|pname| DEPRECATED_PARAMS.contains(&pname))
-                            .unwrap_or(false);
-
-                        if !skip_param {
-                            parameters.push(parameter);
-                        }
-                    } else {
+                            .unwrap_or(false)
+                    {
                         parameters.push(parameter);
                     }
                 }
