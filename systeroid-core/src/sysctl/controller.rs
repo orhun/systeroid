@@ -101,11 +101,13 @@ impl Sysctl {
     /// Updates the descriptions of the kernel parameters using the given cached data.
     pub fn update_docs_from_cache(&mut self, cache: &Cache) -> Result<()> {
         log::trace!(target: "cache", "{:?}", cache);
-        let mut kernel_docs_path = if let Some(path) = &self.config.kernel_docs {
-            vec![path.to_path_buf()]
-        } else {
-            Vec::new()
-        };
+        let mut kernel_docs_path = self
+            .config
+            .kernel_docs
+            .as_ref()
+            .map(|p| vec![p.to_path_buf()])
+            .unwrap_or_default();
+
         for path in KERNEL_DOCS_PATH {
             if let Some(mut path) = globwalk::glob(path).ok().and_then(|glob| {
                 glob.filter_map(StdResult::ok)
