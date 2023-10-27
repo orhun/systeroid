@@ -108,14 +108,7 @@ impl Config {
         if path.is_some() {
             config_paths.insert(0, path);
         }
-        let mut config_path = None;
-        for path in config_paths.into_iter().flatten() {
-            if path.exists() {
-                config_path = Some(path);
-                break;
-            }
-        }
-        if let Some(path) = config_path {
+        if let Some(path) = config_paths.into_iter().flatten().find(|p| p.exists()) {
             log::trace!(target: "config", "Parsing configuration from {:?}", path);
             let ini = Ini::load_from_file(path)?;
             if let Some(general_section) = ini.section(Some("general")) {
