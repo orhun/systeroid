@@ -39,10 +39,11 @@ impl Sysctl {
             match Parameter::try_from(&ctl) {
                 Ok(parameter) => {
                     if !config.display_deprecated {
-                        let mut skip_param = false;
-                        if let Some(param_name) = parameter.get_absolute_name() {
-                            skip_param = DEPRECATED_PARAMS.contains(&param_name);
-                        }
+                        let skip_param = parameter
+                            .get_absolute_name()
+                            .map(|pname| DEPRECATED_PARAMS.contains(&pname))
+                            .unwrap_or(false);
+
                         if !skip_param {
                             parameters.push(parameter);
                         }
