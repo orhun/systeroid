@@ -30,28 +30,40 @@ pub struct Sysctl {
 impl Sysctl {
     /// Constructs a new instance by fetching the available kernel parameters.
     pub fn init(config: Config) -> Result<Self> {
-        let mut parameters = Vec::new();
-        for ctl in CtlIter::root().filter_map(StdResult::ok).filter(|ctl| {
-            ctl.flags()
-                .map(|flags| !flags.contains(CtlFlags::SKIP))
-                .unwrap_or(false)
-        }) {
-            match Parameter::try_from(&ctl) {
+        let parameters = CtlIter::root()
+            .filter_map(StdResult::ok)
+            .filter(|ctl| {
+                ctl.flags()
+                    .map(|flags| !flags.contains(CtlFlags::SKIP))
+                    .unwrap_or(false)
+            })
+            .filter_map(|ctl| match Parameter::try_from(&ctl) {
                 Ok(parameter) => {
-                    if config.display_deprecated
-                        || parameter
+                    if !config.display_deprecated {
+                        let skip_param = parameter
                             .get_absolute_name()
                             .map(|pname| DEPRECATED_PARAMS.contains(&pname))
-                            .unwrap_or(false)
-                    {
-                        parameters.push(parameter);
+                            .unwrap_or(false);
+
+                        if !skip_param {
+                            Some(Ok(parameter))
+                        } else {
+                            None
+                        }
+                    } else {
+                        Some(Ok(parameter))
                     }
                 }
-                Err(e) => {
-                    log::trace!(target: "sysctl", "{} ({})", e, ctl.name()?);
-                }
-            }
-        }
+                Err(e) => match ctl.name() {
+                    Ok(name) => {
+                        log::trace!(target: "sysctl", "{} ({})", e, name);
+                        None
+                    }
+                    Err(e) => Some(Err(crate::error::Error::from(e))),
+                },
+            })
+            .collect::<Result<Vec<_>>>()?;
+
         Ok(Self { parameters, config })
     }
 
