@@ -14,6 +14,7 @@ use std::convert::TryFrom;
 use std::env;
 use std::fs::{File, OpenOptions};
 use std::io::Write;
+use std::ops::Not;
 use std::path::{Path, PathBuf};
 use std::result::Result as StdResult;
 use sysctl::{CtlFlags, CtlIter, Sysctl as SysctlImpl};
@@ -40,16 +41,12 @@ impl Sysctl {
             .filter_map(|ctl| match Parameter::try_from(&ctl) {
                 Ok(parameter) => {
                     if !config.display_deprecated {
-                        let skip_param = parameter
+                        parameter
                             .get_absolute_name()
                             .map(|pname| DEPRECATED_PARAMS.contains(&pname))
-                            .unwrap_or(false);
-
-                        if !skip_param {
-                            Some(Ok(parameter))
-                        } else {
-                            None
-                        }
+                            .unwrap_or(false)
+                            .not()
+                            .then_some(Ok(parameter))
                     } else {
                         Some(Ok(parameter))
                     }
