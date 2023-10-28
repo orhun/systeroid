@@ -1,6 +1,6 @@
 use crate::cache::{Cache, CacheData};
 use crate::config::Config;
-use crate::error::Result;
+use crate::error::{Error, Result};
 use crate::parsers::{parse_kernel_docs, KERNEL_DOCS_PATH};
 use crate::sysctl::parameter::Parameter;
 use crate::sysctl::section::Section;
@@ -56,7 +56,7 @@ impl Sysctl {
                         log::trace!(target: "sysctl", "{} ({})", e, name);
                         None
                     }
-                    Err(e) => Some(Err(crate::error::Error::from(e))),
+                    Err(e) => Some(Err(Error::from(e))),
                 },
             })
             .collect::<Result<Vec<_>>>()?;
