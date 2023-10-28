@@ -1,6 +1,6 @@
 use crate::cache::{Cache, CacheData};
 use crate::config::Config;
-use crate::error::Result;
+use crate::error::{Error, Result};
 use crate::parsers::{parse_kernel_docs, KERNEL_DOCS_PATH};
 use crate::sysctl::parameter::Parameter;
 use crate::sysctl::section::Section;
@@ -14,6 +14,7 @@ use std::convert::TryFrom;
 use std::env;
 use std::fs::{File, OpenOptions};
 use std::io::Write;
+use std::ops::Not;
 use std::path::{Path, PathBuf};
 use std::result::Result as StdResult;
 use sysctl::{CtlFlags, CtlIter, Sysctl as SysctlImpl};
@@ -30,31 +31,36 @@ pub struct Sysctl {
 impl Sysctl {
     /// Constructs a new instance by fetching the available kernel parameters.
     pub fn init(config: Config) -> Result<Self> {
-        let mut parameters = Vec::new();
-        for ctl in CtlIter::root().filter_map(StdResult::ok).filter(|ctl| {
-            ctl.flags()
-                .map(|flags| !flags.contains(CtlFlags::SKIP))
-                .unwrap_or(false)
-        }) {
-            match Parameter::try_from(&ctl) {
+        let parameters = CtlIter::root()
+            .filter_map(StdResult::ok)
+            .filter(|ctl| {
+                ctl.flags()
+                    .map(|flags| !flags.contains(CtlFlags::SKIP))
+                    .unwrap_or(false)
+            })
+            .filter_map(|ctl| match Parameter::try_from(&ctl) {
                 Ok(parameter) => {
                     if !config.display_deprecated {
-                        let mut skip_param = false;
-                        if let Some(param_name) = parameter.get_absolute_name() {
-                            skip_param = DEPRECATED_PARAMS.contains(&param_name);
-                        }
-                        if !skip_param {
-                            parameters.push(parameter);
-                        }
+                        parameter
+                            .get_absolute_name()
+                            .map(|pname| DEPRECATED_PARAMS.contains(&pname))
+                            .unwrap_or(false)
+                            .not()
+                            .then_some(Ok(parameter))
                     } else {
-                        parameters.push(parameter);
+                        Some(Ok(parameter))
                     }
                 }
-                Err(e) => {
-                    log::trace!(target: "sysctl", "{} ({})", e, ctl.name()?);
-                }
-            }
-        }
+                Err(e) => match ctl.name() {
+                    Ok(name) => {
+                        log::trace!(target: "sysctl", "{} ({})", e, name);
+                        None
+                    }
+                    Err(e) => Some(Err(Error::from(e))),
+                },
+            })
+            .collect::<Result<Vec<_>>>()?;
+
         Ok(Self { parameters, config })
     }
 
@@ -92,11 +98,13 @@ impl Sysctl {
     /// Updates the descriptions of the kernel parameters using the given cached data.
     pub fn update_docs_from_cache(&mut self, cache: &Cache) -> Result<()> {
         log::trace!(target: "cache", "{:?}", cache);
-        let mut kernel_docs_path = if let Some(path) = &self.config.kernel_docs {
-            vec![path.to_path_buf()]
-        } else {
-            Vec::new()
-        };
+        let mut kernel_docs_path = self
+            .config
+            .kernel_docs
+            .as_ref()
+            .map(|p| vec![p.to_path_buf()])
+            .unwrap_or_default();
+
         for path in KERNEL_DOCS_PATH {
             if let Some(mut path) = globwalk::glob(path).ok().and_then(|glob| {
                 glob.filter_map(StdResult::ok)
