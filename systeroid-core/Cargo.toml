@@ -14,7 +14,7 @@ rust-version = "1.64.0"
 [dependencies]
 parseit.workspace = true
 log.workspace = true
-sysctl = "0.5.4"
+sysctl = "0.5.5"
 thiserror = "1.0.49"
 lazy_static = "1.4.0"
 rayon = "1.8.0"
