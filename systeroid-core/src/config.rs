@@ -131,20 +131,15 @@ impl Config {
                 }
             }
             if let Some(section) = ini.section(Some("cli.colors")) {
-                if let Some(default_color) = section
-                    .get("default_color")
-                    .and_then(|v| Color::try_from(v).ok())
-                {
+                if let Some(default_color) = section.get("default_color").map(Color::from) {
                     self.cli.color.default_color = default_color;
                 }
                 for (key, value) in section.iter() {
                     if key.starts_with("section_") {
-                        if let (sysctl_section, Some(color)) = (
+                        self.cli.color.section_colors.insert(
                             Section::from(key.trim_start_matches("section_").to_string()),
-                            Color::try_from(value).ok(),
-                        ) {
-                            self.cli.color.section_colors.insert(sysctl_section, color);
-                        }
+                            Color::from(value),
+                        );
                     }
                 }
             }
