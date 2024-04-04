@@ -12,14 +12,14 @@ use termion::screen::IntoAlternateScreen;
 fn main() -> Result<()> {
     if let Some(args) = Args::parse(env::args().collect()) {
         /* create a raw terminal, and immediately exit raw mode to set correct prev_ios value*/
-        let raw_output = io::stdout().into_raw_mode()?;
+        let raw_output = io::stderr().into_raw_mode()?;
         raw_output.suspend_raw_mode()?;
 
         let panic_hook = panic::take_hook();
 
         panic::set_hook(Box::new (move |panic| {
             let panic_cleanup = || -> Result<()> {
-                let mut output = io::stdout();
+                let mut output = io::stderr();
     
                 write!(
                     output,
