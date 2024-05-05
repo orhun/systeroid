@@ -177,7 +177,7 @@ impl<'a> App<'a> {
             clipboard: None,
             sysctl,
         };
-        app.parameter_list.items = app.sysctl.parameters.clone();
+        app.parameter_list.items.clone_from(&app.sysctl.parameters);
         #[cfg(feature = "clipboard")]
         {
             app.clipboard =

@@ -148,9 +148,9 @@ impl Sysctl {
                 .par_iter()
                 .find_any(|param| param.name == parameter.name)
             {
-                parameter.description = param.description.clone();
-                parameter.docs_path = param.docs_path.clone();
-                parameter.docs_title = param.docs_title.clone();
+                parameter.description.clone_from(&param.description);
+                parameter.docs_path.clone_from(&param.docs_path);
+                parameter.docs_title.clone_from(&param.docs_title);
             }
         });
     }
@@ -180,8 +180,8 @@ impl Sysctl {
                         })
                     {
                         param.description = Some(paragraph.contents.to_owned());
-                        param.docs_title = paragraph.title.to_owned();
-                        param.docs_path = document.path.clone();
+                        paragraph.title.clone_into(&mut param.docs_title);
+                        param.docs_path.clone_from(&document.path);
                         continue;
                     }
                 }
