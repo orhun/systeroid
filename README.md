@@ -688,7 +688,7 @@ See the example [systeroid.conf](./config/systeroid.conf) for the configuration 
 - [![Follow @systeroid](https://img.shields.io/twitter/follow/systeroid?style=flat&&logo=twitter&labelColor=000000&color=CECDCB&logoColor=CECDCB)](https://twitter.com/systeroid)
 - [![https://orhun.dev](https://img.shields.io/badge/author-orhun-000000?style=flat&logo=Rust&labelColor=000000&color=CECDCB&logoColor=CECDCB)](https://orhun.dev)
   - [![Follow @orhun](https://img.shields.io/github/followers/orhun?label=follow%20%40orhun&style=flat&logo=GitHub&labelColor=000000&color=CECDCB&logoColor=CECDCB)](https://github.com/orhun)
-  - [![Follow @orhunp_](https://img.shields.io/twitter/follow/orhunp_?style=flat&logo=twitter&labelColor=000000&color=CECDCB&logoColor=CECDCB)](https://twitter.com/orhunp_)
+  - [![Follow @orhundev](https://img.shields.io/twitter/follow/orhundev?style=flat&logo=twitter&labelColor=000000&color=CECDCB&logoColor=CECDCB)](https://twitter.com/orhundev)
 
 ### In The Media
 
