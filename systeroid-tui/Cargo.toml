@@ -18,7 +18,7 @@ default = ["clipboard"]
 clipboard = ["copypasta-ext"]
 
 [dependencies]
-termion = "2.0.1"
+termion = "3.0.0"
 unicode-width = "0.1.11"
 thiserror = "1.0.49"
 getopts = "0.2.21"
