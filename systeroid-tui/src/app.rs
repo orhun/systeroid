@@ -294,7 +294,7 @@ impl<'a> App<'a> {
                 self.show_logs = !self.show_logs;
             }
             Command::LoggerEvent(event) => {
-                self.logger_state.transition(&event.0);
+                self.logger_state.transition(event.0);
             }
             Command::Select => {
                 if let Some(copy_option) = self

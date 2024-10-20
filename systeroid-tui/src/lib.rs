@@ -30,7 +30,7 @@ use crate::style::Colors;
 use command::LoggerCommand;
 use log::LevelFilter;
 use ratatui::backend::Backend;
-use ratatui::terminal::Terminal;
+use ratatui::Terminal;
 use std::env;
 use std::str::FromStr;
 use systeroid_core::cache::Cache;

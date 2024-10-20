@@ -1,8 +1,7 @@
 use crate::app::{App, KeyBinding, HELP_TEXT};
 use crate::style::Colors;
 use crate::widgets::SelectableList;
-use ratatui::backend::Backend;
-use ratatui::layout::{Alignment, Constraint, Direction, Layout, Rect};
+use ratatui::layout::{Alignment, Constraint, Direction, Layout, Position, Rect};
 use ratatui::style::{Color as TuiColor, Style};
 use ratatui::text::{Span, Text};
 use ratatui::widgets::{Block, BorderType, Borders, Cell, Clear, Paragraph, Row, Table, Wrap};
@@ -11,12 +10,12 @@ use tui_logger::{TuiLoggerLevelOutput, TuiLoggerSmartWidget};
 use unicode_width::UnicodeWidthStr;
 
 /// Renders the user interface.
-pub fn render<B: Backend>(frame: &mut Frame<'_, B>, app: &mut App, colors: &Colors) {
+pub fn render(frame: &mut Frame<'_>, app: &mut App, colors: &Colors) {
     let documentation = app
         .parameter_list
         .selected()
         .and_then(|parameter| parameter.get_documentation());
-    let rect = frame.size();
+    let rect = frame.area();
     let chunks = Layout::default()
         .direction(Direction::Vertical)
         .constraints(if app.show_logs {
@@ -67,12 +66,7 @@ pub fn render<B: Backend>(frame: &mut Frame<'_, B>, app: &mut App, colors: &Colo
 }
 
 /// Renders the list that contains the sysctl parameters.
-fn render_parameter_list<B: Backend>(
-    frame: &mut Frame<'_, B>,
-    rect: Rect,
-    app: &mut App,
-    colors: &Colors,
-) {
+fn render_parameter_list(frame: &mut Frame<'_>, rect: Rect, app: &mut App, colors: &Colors) {
     let max_width = app
         .parameter_list
         .items
@@ -99,22 +93,24 @@ fn render_parameter_list<B: Backend>(
         .bottom_margin(0)
     });
     frame.render_stateful_widget(
-        Table::new(rows)
-            .block(
-                Block::default()
-                    .title(Span::styled("Parameters", colors.get_fg_style()))
-                    .title_alignment(Alignment::Left)
-                    .borders(Borders::all())
-                    .border_style(colors.get_fg_style())
-                    .border_type(BorderType::Rounded)
-                    .style(colors.get_bg_style()),
-            )
-            .highlight_style(colors.get_style())
-            .widths(&if minimize_rows {
+        Table::new(
+            rows,
+            &if minimize_rows {
                 [Constraint::Percentage(100), Constraint::Min(0)]
             } else {
                 [Constraint::Min(max_width), Constraint::Percentage(100)]
-            }),
+            },
+        )
+        .block(
+            Block::default()
+                .title(Span::styled("Parameters", colors.get_fg_style()))
+                .title_alignment(Alignment::Left)
+                .borders(Borders::all())
+                .border_style(colors.get_fg_style())
+                .border_type(BorderType::Rounded)
+                .style(colors.get_bg_style()),
+        )
+        .highlight_style(colors.get_style()),
         rect,
         &mut app.parameter_list.state,
     );
@@ -141,8 +137,8 @@ fn render_parameter_list<B: Backend>(
 }
 
 /// Renders the text for displaying the selected index.
-fn render_selection_text<B: Backend>(
-    frame: &mut Frame<'_, B>,
+fn render_selection_text(
+    frame: &mut Frame<'_>,
     rect: Rect,
     selection_text: String,
     colors: &Colors,
@@ -194,12 +190,7 @@ fn render_selection_text<B: Backend>(
 }
 
 /// Renders the text for displaying the parameter section.
-fn render_section_text<B: Backend>(
-    frame: &mut Frame<'_, B>,
-    rect: Rect,
-    section: &str,
-    colors: &Colors,
-) {
+fn render_section_text(frame: &mut Frame<'_>, rect: Rect, section: &str, colors: &Colors) {
     let section = format!("|{section}|");
     let text_width: u16 = section.width().try_into().unwrap_or(1);
     let vertical_area = Layout::default()
@@ -239,8 +230,8 @@ fn render_section_text<B: Backend>(
 }
 
 /// Renders the text for displaying help.
-fn render_help_text<B: Backend>(
-    frame: &mut Frame<'_, B>,
+fn render_help_text(
+    frame: &mut Frame<'_>,
     rect: Rect,
     key_bindings: &mut SelectableList<&KeyBinding>,
     colors: &Colors,
@@ -305,14 +296,17 @@ fn render_help_text<B: Backend>(
     );
     frame.render_widget(Clear, area[1]);
     frame.render_stateful_widget(
-        Table::new(key_bindings.items.iter().map(|item| {
-            Row::new(vec![
-                Cell::from(Span::styled(item.key, colors.get_fg_style())),
-                Cell::from(Span::styled(item.action, colors.get_fg_style())),
-            ])
-            .height(1)
-            .bottom_margin(0)
-        }))
+        Table::new(
+            key_bindings.items.iter().map(|item| {
+                Row::new(vec![
+                    Cell::from(Span::styled(item.key, colors.get_fg_style())),
+                    Cell::from(Span::styled(item.action, colors.get_fg_style())),
+                ])
+                .height(1)
+                .bottom_margin(0)
+            }),
+            &[Constraint::Percentage(50), Constraint::Percentage(50)],
+        )
         .block(
             Block::default()
                 .title(Span::styled("Key Bindings", colors.get_fg_style()))
@@ -322,16 +316,15 @@ fn render_help_text<B: Backend>(
                 .border_type(BorderType::Rounded)
                 .style(colors.get_bg_style()),
         )
-        .highlight_style(colors.get_style())
-        .widths(&[Constraint::Percentage(50), Constraint::Percentage(50)]),
+        .highlight_style(colors.get_style()),
         area[1],
         &mut key_bindings.state,
     );
 }
 
 /// Renders a list as a popup for showing options.
-fn render_options_menu<B: Backend>(
-    frame: &mut Frame<'_, B>,
+fn render_options_menu(
+    frame: &mut Frame<'_>,
     rect: Rect,
     options: &mut SelectableList<&str>,
     colors: &Colors,
@@ -368,14 +361,17 @@ fn render_options_menu<B: Backend>(
         .split(popup_layout[1])[1];
     frame.render_widget(Clear, rect);
     frame.render_stateful_widget(
-        Table::new(options.items.iter().map(|item| {
-            Row::new(vec![Cell::from(Span::styled(
-                item.to_string(),
-                colors.get_fg_style(),
-            ))])
-            .height(1)
-            .bottom_margin(0)
-        }))
+        Table::new(
+            options.items.iter().map(|item| {
+                Row::new(vec![Cell::from(Span::styled(
+                    item.to_string(),
+                    colors.get_fg_style(),
+                ))])
+                .height(1)
+                .bottom_margin(0)
+            }),
+            &[Constraint::Percentage(100)],
+        )
         .block(
             Block::default()
                 .title(Span::styled("Copy to clipboard", colors.get_fg_style()))
@@ -385,16 +381,15 @@ fn render_options_menu<B: Backend>(
                 .border_type(BorderType::Rounded)
                 .style(colors.get_bg_style()),
         )
-        .highlight_style(colors.get_style())
-        .widths(&[Constraint::Percentage(100)]),
+        .highlight_style(colors.get_style()),
         rect,
         &mut options.state,
     );
 }
 
 /// Renders the documentation of the selected sysctl parameter.
-fn render_parameter_documentation<B: Backend>(
-    frame: &mut Frame<'_, B>,
+fn render_parameter_documentation(
+    frame: &mut Frame<'_>,
     rect: Rect,
     documentation: String,
     scroll_amount: &mut u16,
@@ -428,8 +423,8 @@ fn render_parameter_documentation<B: Backend>(
 }
 
 /// Renders the input prompt for running commands.
-fn render_input_prompt<B: Backend>(
-    frame: &mut Frame<'_, B>,
+fn render_input_prompt(
+    frame: &mut Frame<'_>,
     rect: Rect,
     cursor_y: u16,
     app: &App,
@@ -448,7 +443,7 @@ fn render_input_prompt<B: Backend>(
                     skip_chars = width_overflow;
                     input.replace_range(skip_chars as usize..(skip_chars + 1) as usize, "\u{2026}");
                     if let Some(cursor_x_end) = rect.width.checked_sub(2) {
-                        frame.set_cursor(cursor_x_end, cursor_y);
+                        frame.set_cursor_position(Position::new(cursor_x_end, cursor_y));
                     }
                 } else {
                     let area_width = (rect.width - 4) as usize;
@@ -456,7 +451,7 @@ fn render_input_prompt<B: Backend>(
                         input.replace_range(area_width..(area_width + 1), "\u{2026}");
                     }
                     let cursor_x = input.width() as u16 - app.input_cursor + 2;
-                    frame.set_cursor(cursor_x, cursor_y);
+                    frame.set_cursor_position(Position::new(cursor_x, cursor_y));
                 }
                 format!(
                     "{}{}",
@@ -480,7 +475,7 @@ fn render_input_prompt<B: Backend>(
 }
 
 /// Renders the log view.
-fn render_log_view<B: Backend>(frame: &mut Frame<'_, B>, rect: Rect, app: &App, colors: &Colors) {
+fn render_log_view(frame: &mut Frame<'_>, rect: Rect, app: &App, colors: &Colors) {
     let logger_widget = TuiLoggerSmartWidget::default()
         .style_trace(Style::default().fg(TuiColor::DarkGray))
         .style_debug(Style::default().fg(TuiColor::Blue))

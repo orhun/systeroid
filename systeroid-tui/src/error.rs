@@ -21,6 +21,9 @@ pub enum Error {
     /// Error that may occur when the string doesn’t match any of the log levels.
     #[error(transparent)]
     LoggerParseError(#[from] log::ParseLevelError),
+    /// Error that may occur while initializing the TUI logger.
+    #[error(transparent)]
+    TuiLoggerError(#[from] tui_logger::TuiLoggerError),
     /// Error that may occur in the core library.
     #[error(transparent)]
     SysctlError(#[from] systeroid_core::error::Error),
