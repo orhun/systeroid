@@ -1,0 +1,14 @@
+---
+source: systeroid-tui/tests/integration_test.rs
+expression: terminal.backend()
+---
+"╭Parameters─────────────────────|user|─╮"
+"│user.name system                      │"
+"│                                      │"
+"│                                      │"
+"│                                      │"
+"│                                      │"
+"│                                      │"
+"│                                      │"
+"│                                  1/1 │"
+"╰──────────────────────────────────────╯"

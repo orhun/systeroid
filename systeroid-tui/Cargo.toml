@@ -39,6 +39,9 @@ version = "0.13.2"
 default-features = false
 features = ["termion"]
 
+[dev-dependencies]
+insta = "1.40.0"
+
 # metadata for cargo-binstall to get the right artifacts
 [package.metadata.binstall]
 pkg-url = "{ repo }/releases/download/v{ version }/systeroid-{ version }-{ target }.{ archive-format }"

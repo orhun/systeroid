@@ -1,0 +1,14 @@
+---
+source: systeroid-tui/tests/integration_test.rs
+expression: terminal.backend()
+---
+"╭Parameters──────────────────────|all|─╮"
+"│user.name                   system    │"
+"│kernel.fictional.test_param 0         │"
+"│vm.stat_interval            1         │"
+"│                                      │"
+"│                                  1/3 │"
+"╰──────────────────────────────────────╯"
+"╭──────────────────────────────────────╮"
+"│MSG: sysctl error: `no such sysctl: us│"
+"╰──────────────────────────────────────╯"
