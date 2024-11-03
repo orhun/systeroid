@@ -1,10 +1,13 @@
 use crate::app::{App, KeyBinding, HELP_TEXT};
 use crate::style::Colors;
 use crate::widgets::SelectableList;
-use ratatui::layout::{Alignment, Constraint, Direction, Layout, Position, Rect};
+use ratatui::layout::{Alignment, Constraint, Direction, Layout, Margin, Position, Rect};
 use ratatui::style::{Color as TuiColor, Style};
 use ratatui::text::{Span, Text};
-use ratatui::widgets::{Block, BorderType, Borders, Cell, Clear, Paragraph, Row, Table, Wrap};
+use ratatui::widgets::{
+    Block, BorderType, Borders, Cell, Clear, Paragraph, Row, Scrollbar, ScrollbarOrientation,
+    ScrollbarState, Table, Wrap,
+};
 use ratatui::Frame;
 use tui_logger::{TuiLoggerLevelOutput, TuiLoggerSmartWidget};
 use unicode_width::UnicodeWidthStr;
@@ -94,7 +97,7 @@ fn render_parameter_list(frame: &mut Frame<'_>, rect: Rect, app: &mut App, color
     });
     frame.render_stateful_widget(
         Table::new(
-            rows,
+            rows.clone(),
             &if minimize_rows {
                 [Constraint::Percentage(100), Constraint::Min(0)]
             } else {
@@ -127,6 +130,16 @@ fn render_parameter_list(frame: &mut Frame<'_>, rect: Rect, app: &mut App, color
             app.parameter_list.items.len()
         ),
         colors,
+    frame.render_stateful_widget(
+        Scrollbar::new(ScrollbarOrientation::VerticalRight)
+            .begin_symbol(Some("↑"))
+            .end_symbol(Some("↓")),
+        rect.inner(Margin {
+            vertical: 1,
+            horizontal: 0,
+        }),
+        &mut ScrollbarState::new(rows.len())
+            .position(app.parameter_list.state.selected().unwrap_or_default()),
     );
     if let Some(section) = app.section_list.selected() {
         render_section_text(frame, rect, section, colors);
