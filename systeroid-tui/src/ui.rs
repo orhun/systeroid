@@ -59,6 +59,20 @@ pub fn render(frame: &mut Frame<'_>, app: &mut App, colors: &Colors) {
                 colors,
             );
         }
+        render_selection_text(
+            frame,
+            rect,
+            format!(
+                "{}/{}",
+                app.parameter_list
+                    .state
+                    .selected()
+                    .map(|v| v + 1)
+                    .unwrap_or(0),
+                app.parameter_list.items.len()
+            ),
+            colors,
+        );
     }
     if app.show_logs {
         render_log_view(frame, chunks[1], app, colors);
@@ -117,19 +131,6 @@ fn render_parameter_list(frame: &mut Frame<'_>, rect: Rect, app: &mut App, color
         rect,
         &mut app.parameter_list.state,
     );
-    render_selection_text(
-        frame,
-        rect,
-        format!(
-            "{}/{}",
-            app.parameter_list
-                .state
-                .selected()
-                .map(|v| v + 1)
-                .unwrap_or(0),
-            app.parameter_list.items.len()
-        ),
-        colors,
     frame.render_stateful_widget(
         Scrollbar::new(ScrollbarOrientation::VerticalRight)
             .begin_symbol(Some("↑"))
