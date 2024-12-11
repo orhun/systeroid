@@ -4,6 +4,7 @@ members = ["systeroid-core", "systeroid-tui", "systeroid"]
 [workspace.dependencies]
 parseit = { version = "0.1.2", features = ["gzip"] }
 log = { version = "0.4.22", features = ["std"] }
+thiserror = "1.0.49"
 
 [profile.dev]
 opt-level = 0

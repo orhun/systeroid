@@ -127,7 +127,7 @@ fn render_parameter_list(frame: &mut Frame<'_>, rect: Rect, app: &mut App, color
                 .border_type(BorderType::Rounded)
                 .style(colors.get_bg_style()),
         )
-        .highlight_style(colors.get_style()),
+        .row_highlight_style(colors.get_style()),
         rect,
         &mut app.parameter_list.state,
     );
@@ -330,7 +330,7 @@ fn render_help_text(
                 .border_type(BorderType::Rounded)
                 .style(colors.get_bg_style()),
         )
-        .highlight_style(colors.get_style()),
+        .row_highlight_style(colors.get_style()),
         area[1],
         &mut key_bindings.state,
     );
@@ -395,7 +395,7 @@ fn render_options_menu(
                 .border_type(BorderType::Rounded)
                 .style(colors.get_bg_style()),
         )
-        .highlight_style(colors.get_style()),
+        .row_highlight_style(colors.get_style()),
         rect,
         &mut options.state,
     );
