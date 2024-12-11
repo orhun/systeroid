@@ -2,6 +2,38 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.4.5] - 2024-12-11
+
+### Refactor
+
+- Refactor some controller code by @matthiasbeyer in [#146](https://github.com/orhun/systeroid/pull/146)
+- Simplify config path finding by @matthiasbeyer in [#145](https://github.com/orhun/systeroid/pull/145)
+- Improve the termion panic hook by @eld4niz in [#169](https://github.com/orhun/systeroid/pull/169)
+
+### Documentation
+
+- Mention how to set transparent background
+
+### Styling
+
+- Add scrollbar to parameter list
+
+### Testing
+
+- Use snapshot testing
+
+### Miscellaneous Tasks
+
+- Bump dependencies and Rust version
+
+## New Contributors
+
+- @znley made their first contribution in [#170](https://github.com/orhun/systeroid/pull/170)
+- @eld4niz made their first contribution in [#169](https://github.com/orhun/systeroid/pull/169)
+- @matthiasbeyer made their first contribution in [#146](https://github.com/orhun/systeroid/pull/146)
+
+**Full Changelog**: https://github.com/orhun/systeroid/compare/v0.4.4...0.4.5
+
 ## [0.4.4] - 2023-09-19
 
 ### Miscellaneous Tasks

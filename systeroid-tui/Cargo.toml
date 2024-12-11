@@ -1,6 +1,6 @@
 [package]
 name = "systeroid-tui"
-version = "0.4.4" # managed by release.sh
+version = "0.4.5" # managed by release.sh
 description = "A terminal user interface for managing kernel parameters"
 authors = ["Orhun Parmaksız <orhunparmaksiz@gmail.com>"]
 license = "MIT OR Apache-2.0"
@@ -26,7 +26,7 @@ log.workspace = true
 thiserror.workspace = true
 
 [dependencies.systeroid-core]
-version = "0.4.4" # managed by release.sh
+version = "0.4.5" # managed by release.sh
 path = "../systeroid-core"
 
 [dependencies.ratatui]
