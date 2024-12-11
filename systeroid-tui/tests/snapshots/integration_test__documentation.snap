@@ -1,14 +1,15 @@
 ---
 source: systeroid-tui/tests/integration_test.rs
 expression: terminal.backend()
+snapshot_kind: text
 ---
 "╭Parameters──|all|─╮╭──Documentation───╮"
-"│kernel.fictional. ││This is a         │"
-"│vm.stat_interval  ││fictional         │"
-"│                  ││parameter for     │"
-"│                  ││testing           │"
-"│                  ││-                 │"
-"│                  ││Parameter:        │"
-"│                  ││kernel.fictional.t│"
-"│              1/2 ││est_param         │"
+"│kernel.fictional. ↑│This is a         │"
+"│vm.stat_interval  █│fictional         │"
+"│                  █│parameter for     │"
+"│                  █│testing           │"
+"│                  █│-                 │"
+"│                  █│Parameter:        │"
+"│                  ║│kernel.fictional.t│"
+"│                  ↓│est_param     1/2 │"
 "╰──────────────────╯╰──────────────────╯"
