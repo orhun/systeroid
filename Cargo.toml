@@ -1,5 +1,6 @@
 [workspace]
 members = ["systeroid-core", "systeroid-tui", "systeroid"]
+resolver = "2"
 
 [workspace.dependencies]
 parseit = { version = "0.1.2", features = ["gzip"] }

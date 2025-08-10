@@ -11,7 +11,7 @@ keywords = ["linux", "kernel", "parameter", "sysctl"]
 categories = ["command-line-utilities"]
 edition = "2021"
 default-run = "systeroid"
-rust-version = "1.73.0"
+rust-version = "1.89.0"
 
 [features]
 # tests that affect the system state
@@ -20,8 +20,8 @@ live-tests = []
 [dependencies]
 parseit.workspace = true
 log.workspace = true
-env_logger = "0.11.5"
-getopts = "0.2.21"
+env_logger = "0.11.8"
+getopts = "0.2.23"
 
 [dependencies.systeroid-core]
 version = "0.4.5" # managed by release.sh

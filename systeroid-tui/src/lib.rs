@@ -36,6 +36,7 @@ use std::str::FromStr;
 use systeroid_core::cache::Cache;
 use systeroid_core::config::Config;
 use systeroid_core::sysctl::controller::Sysctl;
+use tui_logger::TuiLoggerFile;
 
 /// Runs `systeroid-tui`.
 pub fn run<B: Backend>(args: Args, backend: B) -> Result<()> {
@@ -59,7 +60,8 @@ pub fn run<B: Backend>(args: Args, backend: B) -> Result<()> {
     })?;
     tui_logger::set_default_level(LevelFilter::Trace);
     if let Some(ref log_file) = config.tui.log_file {
-        tui_logger::set_log_file(log_file)?;
+        let file_options = TuiLoggerFile::new(log_file);
+        tui_logger::set_log_file(file_options);
     }
     log::trace!(target: "config", "{:?}", config);
     let mut sysctl = Sysctl::init(config)?;
