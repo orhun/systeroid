@@ -18,7 +18,7 @@ default = ["clipboard"]
 clipboard = ["copypasta-ext"]
 
 [dependencies]
-termion = "4.0.3"
+termion = "4.0.5"
 unicode-width = "0.2.0"
 getopts = "0.2.21"
 copypasta-ext = { version = "0.4.4", optional = true }
