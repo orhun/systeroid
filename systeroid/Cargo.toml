@@ -20,7 +20,7 @@ live-tests = []
 [dependencies]
 parseit.workspace = true
 log.workspace = true
-env_logger = "0.11.5"
+env_logger = "0.11.6"
 getopts = "0.2.21"
 
 [dependencies.systeroid-core]
