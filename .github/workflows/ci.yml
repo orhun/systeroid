@@ -97,7 +97,7 @@ jobs:
           mv cobertura.xml live-test-output.xml
 
       - name: Upload reports to codecov
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v5
         with:
           name: code-coverage-report
           files: test-output.xml,live-test-output.xml
@@ -138,7 +138,7 @@ jobs:
           args: --tests -- -D warnings
 
       - name: Run cargo-deny
-        uses: EmbarkStudios/cargo-deny-action@v1
+        uses: EmbarkStudios/cargo-deny-action@v2
         with:
           command: check licenses sources
 
@@ -162,7 +162,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Run lychee
-        uses: lycheeverse/lychee-action@v1
+        uses: lycheeverse/lychee-action@v2
         with:
           args: --exclude "repology.org|patreon.com" -v *.md
         env:
