@@ -21,7 +21,7 @@ live-tests = []
 parseit.workspace = true
 log.workspace = true
 env_logger = "0.11.5"
-getopts = "0.2.21"
+getopts = "0.2.24"
 
 [dependencies.systeroid-core]
 version = "0.4.5" # managed by release.sh
