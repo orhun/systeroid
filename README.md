@@ -141,7 +141,7 @@ cargo install systeroid-tui
 
 ### Arch Linux
 
-**systeroid** can be installed from the [community repository](https://archlinux.org/packages/community/x86_64/systeroid/) using [pacman](https://wiki.archlinux.org/title/Pacman):
+**systeroid** can be installed from the [community repository](https://archlinux.org/packages/extra/x86_64/systeroid/) using [pacman](https://wiki.archlinux.org/title/Pacman):
 
 ```sh
 pacman -S systeroid
