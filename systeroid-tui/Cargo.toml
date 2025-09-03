@@ -35,7 +35,7 @@ default-features = false
 features = ["termion"]
 
 [dependencies.tui-logger]
-version = "0.14.0"
+version = "0.17.0"
 default-features = false
 features = ["termion"]
 
