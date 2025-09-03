@@ -70,7 +70,7 @@ impl Args {
         opts.optopt(
             "",
             "bg-color",
-            "set the background color [default: black]",
+            "set the background color [default: reset (transparent)]",
             "<color>",
         );
         opts.optopt(
@@ -134,7 +134,7 @@ impl Args {
                     .unwrap_or_else(|| String::from("white")),
                 bg_color: matches
                     .opt_str("bg-color")
-                    .unwrap_or_else(|| String::from("black")),
+                    .unwrap_or_else(|| String::from("reset")),
                 no_docs: matches.opt_present("n"),
                 display_deprecated: matches.opt_present("deprecated"),
                 config: matches
