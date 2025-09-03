@@ -32,7 +32,7 @@ All notable changes to this project will be documented in this file.
 - @eld4niz made their first contribution in [#169](https://github.com/orhun/systeroid/pull/169)
 - @matthiasbeyer made their first contribution in [#146](https://github.com/orhun/systeroid/pull/146)
 
-**Full Changelog**: https://github.com/orhun/systeroid/compare/v0.4.4...0.4.5
+**Full Changelog**: https://github.com/orhun/systeroid/compare/v0.4.4...v0.4.5
 
 ## [0.4.4] - 2023-09-19
 
