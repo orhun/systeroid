@@ -572,6 +572,7 @@ Press <kbd>c</kbd> to show the options menu for copying the name, value, or docu
 #### Changing the colors
 
 Use `--bg-color` and `--fg-color` arguments to customize the colors of the terminal user interface.
+A transparent background is used by default.
 
 ```sh
 # use a color name for setting the foreground color
@@ -580,7 +581,7 @@ systeroid-tui --fg-color blue
 # use hexadecimal values for setting foreground/background colors
 systeroid-tui --bg-color ffff99 --fg-color 003366
 
-# use transparent background
+# use transparent background (default as of 0.4.6)
 systeroid-tui --bg-color reset
 ```
 
