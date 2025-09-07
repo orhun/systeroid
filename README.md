@@ -581,7 +581,7 @@ systeroid-tui --fg-color blue
 # use hexadecimal values for setting foreground/background colors
 systeroid-tui --bg-color ffff99 --fg-color 003366
 
-# use transparent background (default as of 0.5.0)
+# use transparent background (default as of 0.4.6)
 systeroid-tui --bg-color reset
 ```
 
