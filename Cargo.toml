@@ -4,7 +4,7 @@ resolver = "2"
 
 [workspace.dependencies]
 parseit = { version = "0.1.2", features = ["gzip"] }
-log = { version = "0.4.22", features = ["std"] }
+log = { version = "0.4.28", features = ["std"] }
 thiserror = "1.0.49"
 
 [profile.dev]
