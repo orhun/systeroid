@@ -48,7 +48,7 @@ impl<'a, Output: Write> App<'a, Output> {
                             .map(|v| v.as_ref()),
                     );
                 });
-                Tree::new(root_node.childs)
+                Tree::new(root_node.children)
                     .print(self.output, self.sysctl.config.cli.color.default_color)?;
             }
             OutputType::Json => {

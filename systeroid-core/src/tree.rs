@@ -15,8 +15,8 @@ const LAST_HORIZONTAL_STR: &str = "└──";
 pub struct TreeNode {
     /// Value of the node.
     value: String,
-    /// Childs of the node.
-    pub childs: Vec<TreeNode>,
+    /// Children of the node.
+    pub children: Vec<TreeNode>,
 }
 
 impl TreeNode {
@@ -27,7 +27,7 @@ impl TreeNode {
     {
         if let Some(value) = values.next() {
             let mut found = false;
-            for child in self.childs.iter_mut() {
+            for child in self.children.iter_mut() {
                 if &*child.value == value {
                     child.add(values);
                     found = true;
@@ -37,10 +37,10 @@ impl TreeNode {
             if !found {
                 let new_child = TreeNode {
                     value: value.to_string(),
-                    childs: Vec::new(),
+                    children: Vec::new(),
                 };
-                self.childs.push(new_child);
-                if let Some(last_child) = self.childs.last_mut() {
+                self.children.push(new_child);
+                if let Some(last_child) = self.children.last_mut() {
                     last_child.add(values);
                 }
             }
@@ -56,8 +56,8 @@ impl TreeNode {
     ) -> IoResult<()> {
         self.print_line(out, &connectors[..], connector_color)?;
         connectors.push(false);
-        for (i, child) in self.childs.iter().enumerate() {
-            if self.childs.len() == i + 1 {
+        for (i, child) in self.children.iter().enumerate() {
+            if self.children.len() == i + 1 {
                 if let Some(last_connector) = connectors.last_mut() {
                     *last_connector = true;
                 }
@@ -117,17 +117,17 @@ impl Tree {
     }
 
     /// Constructs a new instance from given input.
-    pub fn from_input<I, O>(input: &mut I, seperator: char) -> Self
+    pub fn from_input<I, O>(input: &mut I, separator: char) -> Self
     where
         I: Iterator<Item = O>,
         O: Display,
     {
         let mut root = TreeNode::default();
         for line in input.map(|v| v.to_string()) {
-            let mut components = line.split(seperator);
+            let mut components = line.split(separator);
             root.add(&mut components);
         }
-        Self::new(root.childs)
+        Self::new(root.children)
     }
 
     /// Prints the full tree to the given output.
@@ -143,8 +143,8 @@ impl Tree {
 mod tests {
     use super::*;
 
-    fn test_single_tree_creation(lines: &[&str], seperator: char, expected_tree: TreeNode) {
-        let tree = Tree::from_input(&mut lines.iter(), seperator);
+    fn test_single_tree_creation(lines: &[&str], separator: char, expected_tree: TreeNode) {
+        let tree = Tree::from_input(&mut lines.iter(), separator);
         assert_eq!(1, tree.nodes.len());
         assert_eq!(expected_tree, tree.nodes[0]);
     }
@@ -154,23 +154,23 @@ mod tests {
         let lines = ["a", "a/b", "a/b/c/d", "a/b/e"];
         let e = TreeNode {
             value: String::from("e"),
-            childs: Vec::new(),
+            children: Vec::new(),
         };
         let d = TreeNode {
             value: String::from("d"),
-            childs: Vec::new(),
+            children: Vec::new(),
         };
         let c = TreeNode {
             value: String::from("c"),
-            childs: vec![d],
+            children: vec![d],
         };
         let b = TreeNode {
             value: String::from("b"),
-            childs: vec![c, e],
+            children: vec![c, e],
         };
         let expected_tree = TreeNode {
             value: String::from("a"),
-            childs: vec![b],
+            children: vec![b],
         };
 
         test_single_tree_creation(&lines, '/', expected_tree);
@@ -181,23 +181,23 @@ mod tests {
         let lines = ["a", "a/b/e", "a/b", "a/b/c/d"];
         let e = TreeNode {
             value: String::from("e"),
-            childs: Vec::new(),
+            children: Vec::new(),
         };
         let d = TreeNode {
             value: String::from("d"),
-            childs: Vec::new(),
+            children: Vec::new(),
         };
         let c = TreeNode {
             value: String::from("c"),
-            childs: vec![d],
+            children: vec![d],
         };
         let b = TreeNode {
             value: String::from("b"),
-            childs: vec![e, c],
+            children: vec![e, c],
         };
         let expected_tree = TreeNode {
             value: String::from("a"),
-            childs: vec![b],
+            children: vec![b],
         };
 
         test_single_tree_creation(&lines, '/', expected_tree);
@@ -208,19 +208,19 @@ mod tests {
         let lines = ["a", "a/b", "c/d"];
         let d = TreeNode {
             value: String::from("d"),
-            childs: Vec::new(),
+            children: Vec::new(),
         };
         let c = TreeNode {
             value: String::from("c"),
-            childs: vec![d],
+            children: vec![d],
         };
         let b = TreeNode {
             value: String::from("b"),
-            childs: Vec::new(),
+            children: Vec::new(),
         };
         let a = TreeNode {
             value: String::from("a"),
-            childs: vec![b],
+            children: vec![b],
         };
 
         let tree = Tree::from_input(&mut lines.iter(), '/');
@@ -256,7 +256,7 @@ a
         let mut output = Vec::new();
         TreeNode {
             value: value.to_string(),
-            childs: Vec::new(),
+            children: Vec::new(),
         }
         .print_line(&mut output, &[], Color::White)?;
         assert_eq!(b"abc\ndef\n", &*output);
@@ -264,7 +264,7 @@ a
         let mut output = Vec::new();
         TreeNode {
             value: value.to_string(),
-            childs: Vec::new(),
+            children: Vec::new(),
         }
         .print_line(&mut output, &[true, false, true], Color::White)?;
         assert_eq!("    │   └── abc\ndef\n".as_bytes(), &*output);
@@ -272,7 +272,7 @@ a
         let mut output = Vec::new();
         TreeNode {
             value,
-            childs: Vec::new(),
+            children: Vec::new(),
         }
         .print_line(&mut output, &[true, false, false], Color::White)?;
         assert_eq!("    │   ├── abc\ndef\n".as_bytes(), &*output);
