@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.4.6] - 2025-09-07
+
+### Changed
+- Use transparent background by default by @tessus in [#193](https://github.com/orhun/systeroid/pull/193)
+- Update deps by @tessus
+- Update external actions by @tessus
+- Update getopts to 0.2.24 by @tessus
+- Update rust in Docker builds by @tessus
+
+### Fixed
+- Fix typos by @tessus in [#197](https://github.com/orhun/systeroid/pull/197)
+- Links in readme and changelog by @tessus in [#173](https://github.com/orhun/systeroid/pull/173)
+- Tui-logger breaking change by @tessus
+
+## New Contributors
+* @tessus made their first contribution in [#193](https://github.com/orhun/systeroid/pull/193)
+
+**Full Changelog**: https://github.com/orhun/systeroid/compare/v0.4.5...0.4.6
+
 ## [0.4.5] - 2024-12-11
 
 ### Refactor

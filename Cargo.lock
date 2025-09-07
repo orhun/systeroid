@@ -1323,7 +1323,7 @@ dependencies = [
 
 [[package]]
 name = "systeroid"
-version = "0.4.5"
+version = "0.4.6"
 dependencies = [
  "env_logger",
  "getopts",
@@ -1334,7 +1334,7 @@ dependencies = [
 
 [[package]]
 name = "systeroid-core"
-version = "0.4.5"
+version = "0.4.6"
 dependencies = [
  "dirs-next",
  "lazy_static",
@@ -1351,7 +1351,7 @@ dependencies = [
 
 [[package]]
 name = "systeroid-tui"
-version = "0.4.5"
+version = "0.4.6"
 dependencies = [
  "copypasta-ext",
  "getopts",
