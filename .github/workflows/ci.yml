@@ -34,21 +34,27 @@ jobs:
       - name: Checkout the repository
         uses: actions/checkout@v5
 
+      - name: Install musl-tools
+        if: ${{ endsWith(matrix.TARGET, 'musl') }}
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            --allow-unauthenticated musl-tools
+
       - name: Install Rust
         uses: dtolnay/rust-toolchain@master
         with:
           toolchain: ${{ matrix.TOOLCHAIN }}
           targets: ${{ matrix.TARGET }}
 
+      - name: Install cross
+        uses: taiki-e/install-action@cross
+
       - name: Cache Cargo dependencies
         uses: Swatinem/rust-cache@v2
 
       - name: Build
-        uses: actions-rs/cargo@v1
-        with:
-          use-cross: true
-          command: build
-          args: --locked --target ${{ matrix.TARGET }} --no-default-features
+        run: cross build --release --locked --target ${{ matrix.TARGET }} --no-default-features
 
   test:
     name: Test
@@ -126,16 +132,10 @@ jobs:
           components: rustfmt, clippy
 
       - name: Check formatting
-        uses: actions-rs/cargo@v1
-        with:
-          command: fmt
-          args: --all -- --check
+        run: cargo fmt -- --check
 
       - name: Run clippy
-        uses: actions-rs/cargo@v1
-        with:
-          command: clippy
-          args: --tests -- -D warnings
+        run: cargo clippy --tests -- -D warnings
 
       - name: Run cargo-deny
         uses: EmbarkStudios/cargo-deny-action@v2
@@ -157,7 +157,7 @@ jobs:
           done
 
       - name: Run cargo-audit
-        uses: actions-rs/audit-check@v1
+        uses: rustsec/audit-check@v2.0.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
