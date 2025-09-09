@@ -1,4 +1,4 @@
-FROM rust:1.89.0-alpine3.21 as builder
+FROM rust:1.89.0-alpine3.21 AS builder
 WORKDIR /app
 RUN apk update
 RUN apk add --no-cache musl-dev bash git
