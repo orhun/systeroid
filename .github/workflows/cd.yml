@@ -79,20 +79,21 @@ jobs:
         run: echo "RELEASE_VERSION=${GITHUB_REF:11}" >> $GITHUB_ENV
 
       - name: Install Rust
-        uses: actions-rs/toolchain@v1
+        uses: dtolnay/rust-toolchain@master
         with:
           toolchain: ${{ matrix.TOOLCHAIN }}
-          target: ${{ matrix.CONFIG.TARGET }}
-          profile: minimal
-          override: true
+          targets: ${{ matrix.CONFIG.TARGET }}
+
+      - name: Install cross
+        uses: taiki-e/install-action@cross
 
       - name: Build
-        uses: actions-rs/cargo@v1
-        with:
-          use-cross: ${{ matrix.CONFIG.FEATURES != '' }}
-          command: build
-          args: >
-            --release --locked --target ${{ matrix.CONFIG.TARGET }} ${{ matrix.CONFIG.FEATURES }}
+        run: |
+          if [ -z "${{ matrix.CONFIG.FEATURES }}" ]; then
+            cargo build --release --locked --target ${{ matrix.CONFIG.TARGET }}
+          else
+            cross build --release --locked --target ${{ matrix.CONFIG.TARGET }} ${{ matrix.CONFIG.FEATURES }}
+          fi
 
       - name: Prepare release assets
         id: assets
