@@ -441,7 +441,7 @@ systeroid-tui [options]
                     set the section to filter
 -q, --query <query> set the query to search
     --bg-color <color>
-                    set the background color [default: black]
+                    set the background color [default: reset (transparent)]
     --fg-color <color>
                     set the foreground color [default: white]
 -n, --no-docs       do not show the kernel documentation
@@ -579,7 +579,7 @@ A transparent background is used by default.
 systeroid-tui --fg-color blue
 
 # use hexadecimal values for setting foreground/background colors
-systeroid-tui --bg-color ffff99 --fg-color 003366
+systeroid-tui --bg-color '#ffff99' --fg-color '#003366'
 
 # use transparent background (default as of 0.4.6)
 systeroid-tui --bg-color reset
@@ -714,4 +714,4 @@ Licensed under either of [Apache License Version 2.0](http://www.apache.org/lice
 
 ## Copyright
 
-Copyright © 2022-2024, [Orhun Parmaksız](mailto:orhunparmaksiz@gmail.com)
+Copyright © 2022-2025, [Orhun Parmaksız](mailto:orhunparmaksiz@gmail.com)
