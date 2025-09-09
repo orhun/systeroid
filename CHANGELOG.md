@@ -16,10 +16,10 @@ All notable changes to this project will be documented in this file.
 - Links in readme and changelog by @tessus in [#173](https://github.com/orhun/systeroid/pull/173)
 - Tui-logger breaking change by @tessus
 
-## New Contributors
+### New Contributors
 * @tessus made their first contribution in [#193](https://github.com/orhun/systeroid/pull/193)
 
-**Full Changelog**: https://github.com/orhun/systeroid/compare/v0.4.5...0.4.6
+**Full Changelog**: https://github.com/orhun/systeroid/compare/v0.4.5...v0.4.6
 
 ## [0.4.5] - 2024-12-11
 
@@ -45,7 +45,7 @@ All notable changes to this project will be documented in this file.
 
 - Bump dependencies and Rust version
 
-## New Contributors
+### New Contributors
 
 - @znley made their first contribution in [#170](https://github.com/orhun/systeroid/pull/170)
 - @eld4niz made their first contribution in [#169](https://github.com/orhun/systeroid/pull/169)
