@@ -40,7 +40,7 @@ default-features = false
 features = ["termion"]
 
 [dev-dependencies]
-insta = "1.43.1"
+insta = "1.43.2"
 
 # metadata for cargo-binstall to get the right artifacts
 [package.metadata.binstall]
