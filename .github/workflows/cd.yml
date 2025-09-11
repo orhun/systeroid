@@ -88,7 +88,12 @@ jobs:
         uses: taiki-e/install-action@cross
 
       - name: Build
-        run: cross build --release --locked --target ${{ matrix.CONFIG.TARGET }} ${{ matrix.CONFIG.FEATURES }}
+        run: |
+          if [ -z "${{ matrix.CONFIG.FEATURES }}" ]; then
+            cargo build --release --locked --target ${{ matrix.CONFIG.TARGET }}
+          else
+            cross build --release --locked --target ${{ matrix.CONFIG.TARGET }} ${{ matrix.CONFIG.FEATURES }}
+          fi
 
       - name: Prepare release assets
         id: assets
