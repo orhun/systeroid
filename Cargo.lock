@@ -481,15 +481,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f81ec6369c545a7d40e4589b5597581fa1c441fe1cce96dd1de43159910a36a2"
 
 [[package]]
-name = "fxhash"
-version = "0.2.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c31b6d751ae2c7f11320402d34e41349dd1016f8d5d45e48c4312bc8625af50c"
-dependencies = [
- "byteorder",
-]
-
-[[package]]
 name = "gethostname"
 version = "0.2.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1419,13 +1410,12 @@ dependencies = [
 
 [[package]]
 name = "tui-logger"
-version = "0.17.3"
+version = "0.17.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "57ea457a31a3fff1073f83e5c9e1c61a7805c435b2476b1df3a78f934adebabe"
+checksum = "382b7ea88082dbe2236ed1e942552b1bfc59e98fdc5d0599f11a627aae9ee2be"
 dependencies = [
  "chrono",
  "env_filter",
- "fxhash",
  "lazy_static",
  "log",
  "parking_lot",
