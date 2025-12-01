@@ -18,7 +18,7 @@ default = ["clipboard"]
 clipboard = ["copypasta-ext"]
 
 [dependencies]
-termion = "4.0.5"
+termion = "4.0.6"
 unicode-width = "0.2.0"
 getopts = "0.2.24"
 copypasta-ext = { version = "0.4.4", optional = true }
@@ -35,7 +35,7 @@ default-features = false
 features = ["termion"]
 
 [dependencies.tui-logger]
-version = "0.17.3"
+version = "0.17.4"
 default-features = false
 features = ["termion"]
 
