@@ -169,14 +169,9 @@ impl Sysctl {
                 {
                     if let Some(paragraph) =
                         document.paragraphs.par_iter().find_first(|paragraph| {
-                            match param.get_absolute_name() {
-                                Some(absolute_name) => {
-                                    absolute_name == paragraph.title
-                                        || absolute_name.len() > 2
-                                            && paragraph.title.contains(absolute_name)
-                                }
-                                None => false,
-                            }
+                            param.get_absolute_name().is_some_and(|absolute_name| {
+                                documentation_title_matches(absolute_name, &paragraph.title)
+                            })
                         })
                     {
                         param.description = Some(paragraph.contents.to_owned());
@@ -229,9 +224,41 @@ impl Sysctl {
     }
 }
 
+/// Whether a parsed documentation heading refers to the given parameter name.
+///
+/// Exact matches and networking-style `"name - TYPE"` headings are accepted.
+/// Substring matching is intentionally avoided — e.g. parameter `enabled`
+/// must not match a heading like `seg6_enabled - BOOL` (#9).
+fn documentation_title_matches(absolute_name: &str, title: &str) -> bool {
+    if title == absolute_name {
+        return true;
+    }
+    title
+        .split_once(" - ")
+        .is_some_and(|(name, _)| name == absolute_name)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn documentation_title_matches_exact_and_typed_headings() {
+        assert!(documentation_title_matches("mount-max", "mount-max"));
+        assert!(documentation_title_matches(
+            "seg6_enabled",
+            "seg6_enabled - BOOL"
+        ));
+        assert!(!documentation_title_matches(
+            "enabled",
+            "seg6_enabled - BOOL"
+        ));
+        assert!(!documentation_title_matches(
+            "enabled",
+            "mptcp_enabled - BOOL"
+        ));
+        assert!(!documentation_title_matches("max", "mount-max"));
+    }
 
     #[test]
     fn test_sysctl_controller() -> Result<()> {
