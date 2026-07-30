@@ -425,8 +425,7 @@ impl<'a> App<'a> {
             Command::Scroll(ScrollArea::Documentation, Direction::Up, amount) => {
                 self.docs_scroll_amount = self
                     .docs_scroll_amount
-                    .checked_sub(amount.into())
-                    .unwrap_or_default();
+                    .saturating_sub(amount.into());
             }
             Command::Scroll(ScrollArea::Documentation, Direction::Down, amount) => {
                 self.docs_scroll_amount = self
