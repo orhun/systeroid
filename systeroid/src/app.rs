@@ -3,7 +3,7 @@ use parseit::reader;
 use parseit::regex::Regex;
 use std::env;
 use std::io::{self, BufRead, Write};
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use std::process::{Command, Stdio};
 use systeroid_core::error::Result;
 use systeroid_core::sysctl::controller::Sysctl;
@@ -166,7 +166,7 @@ impl<'a, Output: Write> App<'a, Output> {
 
     /// Processes the parameters in the given file.
     pub fn preload_from_file(&mut self, path: PathBuf) -> Result<()> {
-        if path == PathBuf::from("-") {
+        if path == Path::new("-") {
             let stdin = io::stdin();
             let lines = stdin.lock().lines();
             for line in lines {

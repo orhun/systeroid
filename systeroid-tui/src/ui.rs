@@ -351,9 +351,9 @@ fn render_options_menu(
         .direction(Direction::Vertical)
         .constraints(
             [
-                Constraint::Length((rect.height.checked_sub(length_y)).unwrap_or_default() / 2),
+                Constraint::Length(rect.height.saturating_sub(length_y) / 2),
                 Constraint::Min(length_y),
-                Constraint::Length((rect.height.checked_sub(length_y)).unwrap_or_default() / 2),
+                Constraint::Length(rect.height.saturating_sub(length_y) / 2),
             ]
             .as_ref(),
         )
@@ -362,13 +362,9 @@ fn render_options_menu(
         .direction(Direction::Horizontal)
         .constraints(
             [
-                Constraint::Length(
-                    (popup_layout[1].width.checked_sub(length_x)).unwrap_or_default() / 2,
-                ),
+                Constraint::Length(popup_layout[1].width.saturating_sub(length_x) / 2),
                 Constraint::Min(length_x),
-                Constraint::Length(
-                    (popup_layout[1].width.checked_sub(length_x)).unwrap_or_default() / 2,
-                ),
+                Constraint::Length(popup_layout[1].width.saturating_sub(length_x) / 2),
             ]
             .as_ref(),
         )
