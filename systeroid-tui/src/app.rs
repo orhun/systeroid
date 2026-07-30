@@ -423,9 +423,7 @@ impl<'a> App<'a> {
                 }
             }
             Command::Scroll(ScrollArea::Documentation, Direction::Up, amount) => {
-                self.docs_scroll_amount = self
-                    .docs_scroll_amount
-                    .saturating_sub(amount.into());
+                self.docs_scroll_amount = self.docs_scroll_amount.saturating_sub(amount.into());
             }
             Command::Scroll(ScrollArea::Documentation, Direction::Down, amount) => {
                 self.docs_scroll_amount = self
