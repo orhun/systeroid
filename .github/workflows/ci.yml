@@ -32,7 +32,7 @@ jobs:
           - riscv64gc-unknown-linux-gnu
     steps:
       - name: Checkout the repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Install musl-tools
         if: ${{ endsWith(matrix.TARGET, 'musl') }}
@@ -72,7 +72,7 @@ jobs:
               libxkbcommon-dev
 
       - name: Checkout the repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
@@ -117,7 +117,7 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout the repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Run shellcheck
         uses: ludeeus/action-shellcheck@master
